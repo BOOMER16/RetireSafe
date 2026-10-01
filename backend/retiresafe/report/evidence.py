@@ -5,7 +5,7 @@ import platform
 import uuid
 from datetime import datetime, timezone
 
-from .. import __version__
+from .. import __version__, redact
 from ..engine.assess import AssessmentResult
 from ..knowledge.fingerprints import CATALOGUE_COMMIT
 from ..knowledge.providers import RULES_VERSION
@@ -42,7 +42,9 @@ def record(result: AssessmentResult, policy_dict: dict, assessment_id: str | Non
         "created_at": datetime.now(timezone.utc).isoformat(),
         "as_of": result.as_of.isoformat(),
         "tool": {"name": "retiresafe", "version": __version__, "rules_version": RULES_VERSION,
-                 "fingerprint_catalogue_commit": CATALOGUE_COMMIT, "python": platform.python_version()},
+                 "fingerprint_catalogue_commit": CATALOGUE_COMMIT, "python": platform.python_version(),
+                 "redaction": {"terraform_sensitivity_mask": True, "attribute_minimisation": True,
+                               "secret_rules": {k: v for k, v in redact.rules()[1].items()}}},
         "policy": policy_dict,
         "inputs": result.inputs,
         "plan": {"terraform_version": result.plan.terraform_version, "format_version": result.plan.format_version,

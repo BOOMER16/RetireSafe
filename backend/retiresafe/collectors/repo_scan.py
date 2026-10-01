@@ -15,7 +15,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from .. import names
+from .. import names, redact
 
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", ".terraform", "dist", "build", ".tox"}
 MAX_BYTES = 2_000_000
@@ -86,5 +86,5 @@ def scan(root: str | Path, buckets: set[str], hostnames: set[str]) -> tuple[list
                         control = "sri"
                     elif owner_check and kind == "s3_bucket":
                         control = "expected_bucket_owner"
-                    hits.append(CodeHit(rel, i, line.strip()[:240], target, kind, control))
+                    hits.append(CodeHit(rel, i, redact.scrub(line.strip())[:240], target, kind, control))
     return hits, ScanStats(scanned, binary, large)

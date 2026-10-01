@@ -1,4 +1,4 @@
-# RetireSafe assessment 1e543e8c-7e6b-4273-9c27-89e86fa92d84
+# RetireSafe assessment 5f5b34c6-60ff-483a-9221-f445a777fdaa
 
 *As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy strict*
 
@@ -24,6 +24,17 @@ Name `None` · reclaimable: **unknown** (resource type outside pilot coverage)
 
 Not checked: takeover rules for aws_s3_bucket_website_configuration
 
+## aws_ssm_parameter.legacy_db_password: **NOT_NAME_BEARING**
+
+Name `None` · reclaimable: **unknown** (resource type outside pilot coverage)
+
+- aws_ssm_parameter is not a name-bearing type in the pilot rule set
+
+- Risk interval: 0.000 to 0.000
+
+Not checked: takeover rules for aws_ssm_parameter
+
 ## Outside coverage
 
 - deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)
+- deleted resource outside pilot coverage: aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)

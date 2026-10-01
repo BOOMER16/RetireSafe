@@ -10,16 +10,30 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from .. import redact
 from ..knowledge import providers
 from ..models import RetiringResource
+
+
+# Attributes an evidence record may keep about a retiring resource (everything else is dropped).
+KEEP_ATTRIBUTES = {
+    "id", "arn", "name", "bucket", "bucket_prefix", "bucket_namespace", "region", "location",
+    "website_endpoint", "website_domain", "bucket_domain_name", "bucket_regional_domain_name",
+    "default_hostname", "default_site_hostname", "cname", "cname_prefix", "endpoint_url",
+    "auto_generated_domain_name_label_scope", "domain_name_label", "domain_name_label_scope",
+    "dns_name_label", "dns_name_label_reuse_policy", "fqdn", "host_name", "gateway_url",
+    "primary_blob_host", "public_ip", "public_dns", "ip_address", "allocation_id", "domain",
+    "relative_name", "aliases", "domain_name",
+}
 
 
 @dataclass
 class StateResource:
     address: str
     type: str
-    values: dict
+    values: dict                      # raw values: used for matching only, never stored
     deleted_in_change: bool
+    sensitive: dict | bool | None = None   # Terraform's sensitivity mask for ``values``
 
 
 @dataclass
@@ -30,6 +44,7 @@ class PlanView:
     retiring: list[RetiringResource]
     state: list[StateResource]
     unsupported_deletions: list[str]
+    raw_before: dict[str, dict] = None    # address -> raw "before" values (internal only)
 
 
 def _walk_modules(mod: dict):
@@ -54,7 +69,7 @@ def load(path: str | Path) -> PlanView:
     if "resource_changes" not in plan and "prior_state" not in plan:
         raise ValueError(f"{path}: not a Terraform plan JSON (run `terraform show -json plan.out`)")
     regions = _provider_regions(plan)
-    retiring, unsupported, deleted = [], [], set()
+    retiring, unsupported, deleted, raw_before = [], [], set(), {}
     for rc in plan.get("resource_changes", []) or []:
         if rc.get("mode", "managed") != "managed":
             continue
@@ -64,6 +79,7 @@ def load(path: str | Path) -> PlanView:
         deleted.add(rc["address"])
         action = "delete" if actions == ["delete"] else "replace"
         before = rc["change"].get("before") or {}
+        raw_before[rc["address"]] = before
         ptype = rc["type"]
         pname = rc.get("provider_name", "")
         short = pname.rsplit("/", 1)[-1]
@@ -73,12 +89,15 @@ def load(path: str | Path) -> PlanView:
         retiring.append(RetiringResource(
             address=rc["address"], type=ptype, provider=pname, action=action,
             name=view.name if view else None, region=view.region if view else None,
-            attributes=before, endpoints=view.endpoints if view else []))
+            attributes=redact.minimise(redact.by_mask(before, rc["change"].get("before_sensitive")),
+                                       KEEP_ATTRIBUTES),
+            endpoints=view.endpoints if view else []))
     state = []
     prior = (plan.get("prior_state") or {}).get("values", {}).get("root_module", {})
     for r in _walk_modules(prior):
         if r.get("mode", "managed") != "managed":
             continue
-        state.append(StateResource(r["address"], r["type"], r.get("values") or {}, r["address"] in deleted))
+        state.append(StateResource(r["address"], r["type"], r.get("values") or {}, r["address"] in deleted,
+                                   r.get("sensitive_values")))
     return PlanView(plan.get("terraform_version"), plan.get("format_version"), regions,
-                    retiring, state, unsupported)
+                    retiring, state, unsupported, raw_before)

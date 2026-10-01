@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .. import names
+from .. import names, redact
 from ..analysis.traffic import Policy, summarise
 from ..collectors import access_logs, dns_zone, repo_scan, terraform_plan
 from ..collectors.dns_zone import DnsRecord
@@ -156,6 +156,10 @@ def run(inp: AssessmentInput) -> AssessmentResult:
             attr = _iac_hit(s.values, res)
             if attr:
                 key, val = attr
+                if redact.mask_at(s.sensitive, key.split(".")) or redact.SECRET_KEYS.search(key):
+                    val = f"[sensitive value; contains a reference to {res.name}]"
+                else:
+                    val = redact.scrub(val)
                 rid = f"ref:{res.address}:iac:{len(refs)}"
                 ev = f"ev:iac:{s.address}"
                 evidence.append(Evidence(ev, "terraform_plan", f"{s.address}.{key} = {val}", s.address))
@@ -241,7 +245,7 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                 [], [f"takeover rules for {res.type}"]))
             continue
         v = per_res[res.address]
-        c2 = providers.view(res.type, res.attributes, res.region).reclaimable
+        c2 = providers.view(res.type, plan.raw_before.get(res.address, {}), res.region).reclaimable
         c1 = decide.c1_released(res)
         c4 = decide.c4_consumers(traffic[res.address])
         refs = list(v["refs"])

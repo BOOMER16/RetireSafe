@@ -231,7 +231,8 @@ def main() -> int:
     after_app = OUT / "app_after_fix"
     shutil.rmtree(after_app, ignore_errors=True)
     shutil.copytree(PILOT / "app", after_app)
-    changed = apply_patch.apply("".join(diffs), after_app) if diffs else []
+    ops = [p.operation for x in before.resources for p in x.patches if p.kind == "code_diff" and p.operation]
+    changed = sorted({f for op in ops for f in apply_patch.apply_operation(op, after_app)})
     say(f"1. code diff applied to a copy of the app: {', '.join(changed) or 'nothing to change'}  "
         f"(in {after_app})")
     say("2. DNS team removes the two surviving CNAMEs     -> pilot/generated/route53_after.json")

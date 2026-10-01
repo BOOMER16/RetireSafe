@@ -7,7 +7,7 @@
         "release": 1,
         "block": 2,
         "tombstone": 1,
-        "not_name_bearing": 1
+        "not_name_bearing": 2
       },
       "summary": "deletion must not proceed as planned; see blocked / tombstone / review resources"
     },
@@ -16,7 +16,8 @@
       "aws_s3_bucket.event_assets": "block",
       "aws_s3_bucket.event_site": "block",
       "aws_s3_bucket.legacy_downloads": "tombstone",
-      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing"
+      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing",
+      "aws_ssm_parameter.legacy_db_password": "not_name_bearing"
     }
   },
   "before_balanced": {
@@ -26,7 +27,7 @@
       "verdict_counts": {
         "release": 2,
         "block": 2,
-        "not_name_bearing": 1
+        "not_name_bearing": 2
       },
       "summary": "deletion must not proceed as planned; see blocked / tombstone / review resources"
     },
@@ -35,7 +36,8 @@
       "aws_s3_bucket.event_assets": "block",
       "aws_s3_bucket.event_site": "block",
       "aws_s3_bucket.legacy_downloads": "release",
-      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing"
+      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing",
+      "aws_ssm_parameter.legacy_db_password": "not_name_bearing"
     }
   },
   "after_strict": {
@@ -44,13 +46,14 @@
       "passed": true,
       "verdict_counts": {
         "release": 1,
-        "not_name_bearing": 1
+        "not_name_bearing": 2
       },
       "summary": "all retiring resources may be released"
     },
     "verdicts": {
       "aws_s3_bucket.archive": "release",
-      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing"
+      "aws_s3_bucket_website_configuration.event_site": "not_name_bearing",
+      "aws_ssm_parameter.legacy_db_password": "not_name_bearing"
     }
   }
 }

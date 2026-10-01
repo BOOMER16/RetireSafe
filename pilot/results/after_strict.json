@@ -1,14 +1,30 @@
 {
   "schema": "retiresafe.evidence/v1",
-  "assessment_id": "1e543e8c-7e6b-4273-9c27-89e86fa92d84",
-  "created_at": "2026-10-01T18:42:48.034509+00:00",
+  "assessment_id": "5f5b34c6-60ff-483a-9221-f445a777fdaa",
+  "created_at": "2026-10-01T19:32:38.894639+00:00",
   "as_of": "1995-09-01T03:59:53+00:00",
   "tool": {
     "name": "retiresafe",
     "version": "0.1.0",
     "rules_version": "2026-10-01.1",
     "fingerprint_catalogue_commit": "5bd4e12837911c8475486f1da922c9b9c706e632",
-    "python": "3.11.15"
+    "python": "3.11.15",
+    "redaction": {
+      "terraform_sensitivity_mask": true,
+      "attribute_minimisation": true,
+      "secret_rules": {
+        "loaded": 216,
+        "skipped": [
+          "curl-auth-header",
+          "curl-auth-user",
+          "gocardless-api-token",
+          "openshift-user-token",
+          "planetscale-password",
+          "sentry-org-token"
+        ],
+        "commit": "b58d3f102cf3a2c84cb7f923d05c25c9b1aed84b"
+      }
+    }
   },
   "policy": {
     "alpha": 0.01,
@@ -29,8 +45,8 @@
     {
       "role": "terraform_plan",
       "name": "plan_after.json",
-      "sha256": "a575a47173d0e405703fc650419c54a5d0807d62d7b477e1c4d59ded870c3c6c",
-      "bytes": 44474
+      "sha256": "683ff9645d0cd77a0151c310c6d038e2b77f311bd67c5f0f94a62f3880224b5a",
+      "bytes": 47630
     },
     {
       "role": "dns_inventory",
@@ -41,8 +57,8 @@
     {
       "role": "repository",
       "name": "app_after",
-      "sha256_tree": "9e6f246e7e80ed8fd47d6abb32676d1b1a7e0f524b24a3f59b3f320552158e70",
-      "files": 6,
+      "sha256_tree": "e6827e489c7fb4d4ba5662946b0500acffb4c9f4e0c488568f8367f46d8a04f7",
+      "files": 8,
       "label": "app"
     },
     {
@@ -72,14 +88,15 @@
     "format_version": "1.2",
     "retiring": [
       "aws_s3_bucket.archive",
-      "aws_s3_bucket_website_configuration.event_site"
+      "aws_s3_bucket_website_configuration.event_site",
+      "aws_ssm_parameter.legacy_db_password"
     ]
   },
   "gate": {
     "passed": true,
     "verdict_counts": {
       "release": 1,
-      "not_name_bearing": 1
+      "not_name_bearing": 2
     },
     "summary": "all retiring resources may be released"
   },
@@ -93,50 +110,17 @@
         "name": "rs-pilot-archive-123456789012-us-east-1-an",
         "region": "us-east-1",
         "attributes": {
-          "acceleration_status": "",
-          "acl": null,
           "arn": "arn:aws:s3:::rs-pilot-archive-123456789012-us-east-1-an",
           "bucket": "rs-pilot-archive-123456789012-us-east-1-an",
           "bucket_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.amazonaws.com",
           "bucket_namespace": "account-regional",
           "bucket_prefix": "",
-          "bucket_region": "us-east-1",
           "bucket_regional_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.us-east-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3AQBSTGFYJSTF",
           "id": "rs-pilot-archive-123456789012-us-east-1-an",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
           "region": "us-east-1",
-          "replication_configuration": [],
-          "request_payer": "",
-          "server_side_encryption_configuration": [],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
           "website_domain": null,
-          "website_endpoint": null
+          "website_endpoint": null,
+          "_omitted_attributes": 20
         },
         "endpoints": [
           {
@@ -195,20 +179,11 @@
         "region": null,
         "attributes": {
           "bucket": "event.retiresafe-pilot.example",
-          "error_document": [],
-          "expected_bucket_owner": "",
           "id": "event.retiresafe-pilot.example",
-          "index_document": [
-            {
-              "suffix": "index.html"
-            }
-          ],
-          "redirect_all_requests_to": [],
           "region": "us-east-1",
-          "routing_rule": [],
-          "routing_rules": "",
           "website_domain": "s3-website-us-east-1.amazonaws.com",
-          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com"
+          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com",
+          "_omitted_attributes": 6
         },
         "endpoints": []
       },
@@ -232,6 +207,44 @@
       "not_checked": [
         "takeover rules for aws_s3_bucket_website_configuration"
       ]
+    },
+    {
+      "resource": {
+        "address": "aws_ssm_parameter.legacy_db_password",
+        "type": "aws_ssm_parameter",
+        "provider": "registry.terraform.io/hashicorp/aws",
+        "action": "delete",
+        "name": null,
+        "region": null,
+        "attributes": {
+          "arn": "arn:aws:ssm:us-east-1:123456789012:parameter/pilot/legacy_db_password",
+          "id": "/pilot/legacy_db_password",
+          "name": "/pilot/legacy_db_password",
+          "region": "us-east-1",
+          "_omitted_attributes": 15
+        },
+        "endpoints": []
+      },
+      "reclaimable": {
+        "value": "unknown",
+        "reason": "resource type outside pilot coverage",
+        "evidence_ids": []
+      },
+      "references": [],
+      "traffic": [],
+      "paths": [],
+      "verdict": "not_name_bearing",
+      "reasons": [
+        "aws_ssm_parameter is not a name-bearing type in the pilot rule set"
+      ],
+      "risk_interval": [
+        0.0,
+        0.0
+      ],
+      "patches": [],
+      "not_checked": [
+        "takeover rules for aws_ssm_parameter"
+      ]
     }
   ],
   "evidence": [
@@ -252,13 +265,14 @@
   },
   "scan_stats": {
     "app": {
-      "files_scanned": 6,
+      "files_scanned": 8,
       "files_skipped_binary": 0,
       "files_skipped_large": 0
     }
   },
   "not_checked": [
-    "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)"
+    "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)",
+    "deleted resource outside pilot coverage: aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)"
   ],
   "sources": {
     "aws-sdk-s3-account-regional": {

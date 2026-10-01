@@ -1,14 +1,30 @@
 {
   "schema": "retiresafe.evidence/v1",
-  "assessment_id": "0c4ebb7d-f0b4-42ed-bd15-337bb585baec",
-  "created_at": "2026-10-01T18:41:59.503003+00:00",
+  "assessment_id": "7e736294-1479-4649-9ce9-a1bb1d198c15",
+  "created_at": "2026-10-01T19:31:49.618493+00:00",
   "as_of": "1995-09-01T03:59:53+00:00",
   "tool": {
     "name": "retiresafe",
     "version": "0.1.0",
     "rules_version": "2026-10-01.1",
     "fingerprint_catalogue_commit": "5bd4e12837911c8475486f1da922c9b9c706e632",
-    "python": "3.11.15"
+    "python": "3.11.15",
+    "redaction": {
+      "terraform_sensitivity_mask": true,
+      "attribute_minimisation": true,
+      "secret_rules": {
+        "loaded": 216,
+        "skipped": [
+          "curl-auth-header",
+          "curl-auth-user",
+          "gocardless-api-token",
+          "openshift-user-token",
+          "planetscale-password",
+          "sentry-org-token"
+        ],
+        "commit": "b58d3f102cf3a2c84cb7f923d05c25c9b1aed84b"
+      }
+    }
   },
   "policy": {
     "alpha": 0.01,
@@ -29,8 +45,8 @@
     {
       "role": "terraform_plan",
       "name": "plan_before.json",
-      "sha256": "4e47fb1f7627123a933de52cfba8e766ad264c0f81d87cc4e46e01f0068bc991",
-      "bytes": 32653
+      "sha256": "de26f628ba9da2b46e1bc0a86ae86794ca9dbdf19d0d892212b08c48e2986bed",
+      "bytes": 35809
     },
     {
       "role": "dns_inventory",
@@ -41,8 +57,8 @@
     {
       "role": "repository",
       "name": "app",
-      "sha256_tree": "8f6386db0bd42efaf63e91574d7aabbf493c577c50b26aa9f5baf1e78f9b2bd4",
-      "files": 6,
+      "sha256_tree": "81eb6e78063c7faed4d6c9d1a8ad07a6bd4012c23a5630f45bbbc45d6405cb7f",
+      "files": 8,
       "label": "app"
     },
     {
@@ -75,7 +91,8 @@
       "aws_s3_bucket.event_assets",
       "aws_s3_bucket.event_site",
       "aws_s3_bucket.legacy_downloads",
-      "aws_s3_bucket_website_configuration.event_site"
+      "aws_s3_bucket_website_configuration.event_site",
+      "aws_ssm_parameter.legacy_db_password"
     ]
   },
   "gate": {
@@ -84,7 +101,7 @@
       "release": 1,
       "block": 2,
       "tombstone": 1,
-      "not_name_bearing": 1
+      "not_name_bearing": 2
     },
     "summary": "deletion must not proceed as planned; see blocked / tombstone / review resources"
   },
@@ -98,50 +115,17 @@
         "name": "rs-pilot-archive-123456789012-us-east-1-an",
         "region": "us-east-1",
         "attributes": {
-          "acceleration_status": "",
-          "acl": null,
           "arn": "arn:aws:s3:::rs-pilot-archive-123456789012-us-east-1-an",
           "bucket": "rs-pilot-archive-123456789012-us-east-1-an",
           "bucket_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.amazonaws.com",
           "bucket_namespace": "account-regional",
           "bucket_prefix": "",
-          "bucket_region": "us-east-1",
           "bucket_regional_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.us-east-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3AQBSTGFYJSTF",
           "id": "rs-pilot-archive-123456789012-us-east-1-an",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
           "region": "us-east-1",
-          "replication_configuration": [],
-          "request_payer": "",
-          "server_side_encryption_configuration": [],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
           "website_domain": null,
-          "website_endpoint": null
+          "website_endpoint": null,
+          "_omitted_attributes": 20
         },
         "endpoints": [
           {
@@ -199,50 +183,17 @@
         "name": "rs-pilot-event-assets-2025",
         "region": "us-east-1",
         "attributes": {
-          "acceleration_status": "",
-          "acl": null,
           "arn": "arn:aws:s3:::rs-pilot-event-assets-2025",
           "bucket": "rs-pilot-event-assets-2025",
           "bucket_domain_name": "rs-pilot-event-assets-2025.s3.amazonaws.com",
           "bucket_namespace": "global",
           "bucket_prefix": "",
-          "bucket_region": "us-east-1",
           "bucket_regional_domain_name": "rs-pilot-event-assets-2025.s3.us-east-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3AQBSTGFYJSTF",
           "id": "rs-pilot-event-assets-2025",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
           "region": "us-east-1",
-          "replication_configuration": [],
-          "request_payer": "",
-          "server_side_encryption_configuration": [],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
           "website_domain": null,
-          "website_endpoint": null
+          "website_endpoint": null,
+          "_omitted_attributes": 20
         },
         "endpoints": [
           {
@@ -293,7 +244,7 @@
           "id": "ref:aws_s3_bucket.event_assets:iac:1",
           "kind": "iac",
           "location": "aws_ssm_parameter.assets_base_url.value",
-          "text": "value = https://rs-pilot-event-assets-2025.s3.amazonaws.com",
+          "text": "value = [sensitive value; contains a reference to rs-pilot-event-assets-2025]",
           "target_name": "rs-pilot-event-assets-2025",
           "removed_in_change": false,
           "integrity_control": null,
@@ -658,7 +609,8 @@
           "content": "{\n  \"Comment\": \"RetireSafe: remove references to rs-pilot-event-assets-2025\",\n  \"Changes\": [\n    {\n      \"Action\": \"DELETE\",\n      \"ResourceRecordSet\": {\n        \"Name\": \"cdn.retiresafe-pilot.example.\",\n        \"Type\": \"CNAME\",\n        \"TTL\": 300,\n        \"ResourceRecords\": [\n          {\n            \"Value\": \"rs-pilot-event-assets-2025.s3.amazonaws.com\"\n          }\n        ]\n      }\n    }\n  ]\n}\n\n# apply with:\n# aws route53 change-resource-record-sets --hosted-zone-id <ZONE_ID> --change-batch file://change-batch.json",
           "applies_to": [
             "route53_before.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME"
-          ]
+          ],
+          "operation": null
         },
         {
           "kind": "code_diff",
@@ -666,15 +618,24 @@
           "content": "--- a/index.html\n+++ b/index.html\n@@ -4,13 +4,13 @@\n   <meta charset=\"utf-8\">\n   <title>Pilot Event 2025</title>\n   <!-- Stylesheet pinned with Subresource Integrity: a swapped file would be refused. -->\n-  <link rel=\"stylesheet\" href=\"https://rs-pilot-event-assets-2025.s3.amazonaws.com/css/site.css\" integrity=\"sha384-3t7H6LVInKxmxEb88i+acpyiaE6jBt4F0zncfK1kvdZWQTQf5p7YFQDIXiBnWv3M\" crossorigin=\"anonymous\">\n+  <link rel=\"stylesheet\" href=\"https://rs-pilot-event-assets-123456789012-us-east-1-an.s3.amazonaws.com/css/site.css\" integrity=\"sha384-3t7H6LVInKxmxEb88i+acpyiaE6jBt4F0zncfK1kvdZWQTQf5p7YFQDIXiBnWv3M\" crossorigin=\"anonymous\">\n </head>\n <body>\n   <h1>Pilot Event 2025</h1>\n   <p class=\"countdown\" data-target=\"2025-11-20T09:00:00Z\"></p>\n   <p>Schedule: <a href=\"https://event.retiresafe-pilot.example/schedule.html\">event.retiresafe-pilot.example/schedule.html</a></p>\n   <!-- Script loaded without integrity pinning: whoever owns the bucket controls this code. -->\n-  <script src=\"https://rs-pilot-event-assets-2025.s3.amazonaws.com/js/countdown.js\"></script>\n+  <script src=\"https://rs-pilot-event-assets-123456789012-us-east-1-an.s3.amazonaws.com/js/countdown.js\"></script>\n </body>\n </html>\n",
           "applies_to": [
             "index.html"
-          ]
+          ],
+          "operation": {
+            "type": "rename",
+            "old": "rs-pilot-event-assets-2025",
+            "new": "rs-pilot-event-assets-123456789012-us-east-1-an",
+            "files": [
+              "index.html"
+            ]
+          }
         },
         {
           "kind": "advice",
           "title": "Update infrastructure that still references the resource",
-          "content": "  aws_ssm_parameter.assets_base_url.value: value = https://rs-pilot-event-assets-2025.s3.amazonaws.com",
+          "content": "  aws_ssm_parameter.assets_base_url.value: value = [sensitive value; contains a reference to rs-pilot-event-assets-2025]",
           "applies_to": [
             "aws_ssm_parameter.assets_base_url.value"
-          ]
+          ],
+          "operation": null
         },
         {
           "kind": "terraform_hcl",
@@ -682,7 +643,8 @@
           "content": "# Keep owning the bucket name instead of releasing it.\n# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,\n# 3. keep the resource below in your configuration.\nresource \"aws_s3_bucket\" \"event_assets\" {\n  bucket = \"rs-pilot-event-assets-2025\"\n  lifecycle {\n    prevent_destroy = true\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"event_assets\" {\n  bucket                  = aws_s3_bucket.event_assets.id\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\n# If the content must move, create its replacement in your account regional namespace,\n# which other accounts cannot claim (format verified from the AWS SDK model):\n#   bucket           = \"rs-pilot-event-assets-123456789012-us-east-1-an\"\n#   bucket_namespace = \"account-regional\"\n",
           "applies_to": [
             "aws_s3_bucket.event_assets"
-          ]
+          ],
+          "operation": null
         }
       ],
       "not_checked": [
@@ -698,57 +660,17 @@
         "name": "event.retiresafe-pilot.example",
         "region": "us-east-1",
         "attributes": {
-          "acceleration_status": "",
-          "acl": null,
           "arn": "arn:aws:s3:::event.retiresafe-pilot.example",
           "bucket": "event.retiresafe-pilot.example",
           "bucket_domain_name": "event.retiresafe-pilot.example.s3.amazonaws.com",
           "bucket_namespace": "global",
           "bucket_prefix": "",
-          "bucket_region": "us-east-1",
           "bucket_regional_domain_name": "event.retiresafe-pilot.example.s3.us-east-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3AQBSTGFYJSTF",
           "id": "event.retiresafe-pilot.example",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
           "region": "us-east-1",
-          "replication_configuration": [],
-          "request_payer": "",
-          "server_side_encryption_configuration": [],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [
-            {
-              "error_document": "",
-              "index_document": "index.html",
-              "redirect_all_requests_to": "",
-              "routing_rules": ""
-            }
-          ],
           "website_domain": "s3-website-us-east-1.amazonaws.com",
-          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com"
+          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com",
+          "_omitted_attributes": 20
         },
         "endpoints": [
           {
@@ -1048,7 +970,8 @@
           "content": "{\n  \"Comment\": \"RetireSafe: remove references to event.retiresafe-pilot.example\",\n  \"Changes\": [\n    {\n      \"Action\": \"DELETE\",\n      \"ResourceRecordSet\": {\n        \"Name\": \"event.retiresafe-pilot.example.\",\n        \"Type\": \"CNAME\",\n        \"TTL\": 300,\n        \"ResourceRecords\": [\n          {\n            \"Value\": \"event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com\"\n          }\n        ]\n      }\n    }\n  ]\n}\n\n# apply with:\n# aws route53 change-resource-record-sets --hosted-zone-id <ZONE_ID> --change-batch file://change-batch.json",
           "applies_to": [
             "route53_before.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME"
-          ]
+          ],
+          "operation": null
         },
         {
           "kind": "advice",
@@ -1056,7 +979,8 @@
           "content": "  app::index.html:12: <p>Schedule: <a href=\"https://event.retiresafe-pilot.example/schedule.html\">event.retiresafe-pilot.example/schedule.html</a></p>",
           "applies_to": [
             "app::index.html:12"
-          ]
+          ],
+          "operation": null
         },
         {
           "kind": "terraform_hcl",
@@ -1064,7 +988,8 @@
           "content": "# Keep owning the bucket name instead of releasing it.\n# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,\n# 3. keep the resource below in your configuration.\nresource \"aws_s3_bucket\" \"event_site\" {\n  bucket = \"event.retiresafe-pilot.example\"\n  lifecycle {\n    prevent_destroy = true\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"event_site\" {\n  bucket                  = aws_s3_bucket.event_site.id\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\n# If the content must move, create its replacement in your account regional namespace,\n# which other accounts cannot claim (format verified from the AWS SDK model):\n#   bucket           = \"event-retiresafe-pilot-example-123456789012-us-east-1-an\"\n#   bucket_namespace = \"account-regional\"\n",
           "applies_to": [
             "aws_s3_bucket.event_site"
-          ]
+          ],
+          "operation": null
         }
       ],
       "not_checked": [
@@ -1080,50 +1005,17 @@
         "name": "rs-pilot-legacy-downloads",
         "region": "us-east-1",
         "attributes": {
-          "acceleration_status": "",
-          "acl": null,
           "arn": "arn:aws:s3:::rs-pilot-legacy-downloads",
           "bucket": "rs-pilot-legacy-downloads",
           "bucket_domain_name": "rs-pilot-legacy-downloads.s3.amazonaws.com",
           "bucket_namespace": "global",
           "bucket_prefix": "",
-          "bucket_region": "us-east-1",
           "bucket_regional_domain_name": "rs-pilot-legacy-downloads.s3.us-east-1.amazonaws.com",
-          "cors_rule": [],
-          "force_destroy": false,
-          "grant": [
-            {
-              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
-              "permissions": [
-                "FULL_CONTROL"
-              ],
-              "type": "CanonicalUser",
-              "uri": ""
-            }
-          ],
-          "hosted_zone_id": "Z3AQBSTGFYJSTF",
           "id": "rs-pilot-legacy-downloads",
-          "lifecycle_rule": [],
-          "logging": [],
-          "object_lock_configuration": [],
-          "object_lock_enabled": false,
-          "policy": "",
           "region": "us-east-1",
-          "replication_configuration": [],
-          "request_payer": "",
-          "server_side_encryption_configuration": [],
-          "tags": {},
-          "tags_all": {},
-          "timeouts": null,
-          "versioning": [
-            {
-              "enabled": false,
-              "mfa_delete": false
-            }
-          ],
-          "website": [],
           "website_domain": null,
-          "website_endpoint": null
+          "website_endpoint": null,
+          "_omitted_attributes": 20
         },
         "endpoints": [
           {
@@ -1161,6 +1053,30 @@
         {
           "id": "ref:aws_s3_bucket.legacy_downloads:code:0",
           "kind": "code",
+          "location": "app::config/legacy.env:3",
+          "text": "DOWNLOADS_URL=https://rs-pilot-legacy-downloads.s3.amazonaws.com/",
+          "target_name": "rs-pilot-legacy-downloads",
+          "removed_in_change": false,
+          "integrity_control": null,
+          "evidence_ids": [
+            "ev:code:app::config/legacy.env:3"
+          ]
+        },
+        {
+          "id": "ref:aws_s3_bucket.legacy_downloads:code:1",
+          "kind": "code",
+          "location": "app::tools/mirror_legacy.sh:3",
+          "text": "AWS_SECRET_ACCESS_KEY=[REDACTED] aws s3 sync s3://rs-pilot-legacy-downloads ./mirror",
+          "target_name": "rs-pilot-legacy-downloads",
+          "removed_in_change": false,
+          "integrity_control": null,
+          "evidence_ids": [
+            "ev:code:app::tools/mirror_legacy.sh:3"
+          ]
+        },
+        {
+          "id": "ref:aws_s3_bucket.legacy_downloads:code:2",
+          "kind": "code",
           "location": "app::tools/sync_downloads.py:8",
           "text": "for obj in s3.list_objects_v2(Bucket=\"rs-pilot-legacy-downloads\", Prefix=prefix).get(\"Contents\", []):",
           "target_name": "rs-pilot-legacy-downloads",
@@ -1171,7 +1087,7 @@
           ]
         },
         {
-          "id": "ref:aws_s3_bucket.legacy_downloads:code:1",
+          "id": "ref:aws_s3_bucket.legacy_downloads:code:3",
           "kind": "code",
           "location": "app::tools/sync_downloads.py:9",
           "text": "s3.download_file(\"rs-pilot-legacy-downloads\", obj[\"Key\"], f\"{dest}/{obj['Key'].split('/')[-1]}\")",
@@ -1240,6 +1156,98 @@
               "value": "true",
               "reason": "the reference is not removed by this change",
               "evidence_ids": [
+                "ev:code:app::config/legacy.env:3"
+              ]
+            },
+            "c4": {
+              "value": "false",
+              "reason": "logs are fresh, long enough and quiet past the quarantine (nasa_jul_aug_1995.log[/payloads/level4/]: 87 requests, silent 16.5 d)",
+              "evidence_ids": [
+                "ev:traffic:nasa_jul_aug_1995.log[/payloads/level4/]"
+              ]
+            },
+            "c5": {
+              "value": "true",
+              "reason": "no integrity or owner check detected for this reference",
+              "evidence_ids": [
+                "ev:code:app::config/legacy.env:3"
+              ]
+            }
+          },
+          "status": "safe",
+          "broken_by": [
+            "c4"
+          ]
+        },
+        {
+          "reference_id": "ref:aws_s3_bucket.legacy_downloads:code:1",
+          "conditions": {
+            "c1": {
+              "value": "true",
+              "reason": "the plan deletes this resource",
+              "evidence_ids": [
+                "ev:plan"
+              ]
+            },
+            "c2": {
+              "value": "true",
+              "reason": "bucket is in the shared global namespace; after deletion the name can be created by any AWS account in the partition",
+              "evidence_ids": [
+                "src:aws-sdk-s3-createbucket",
+                "src:watchtowr-s3-2025",
+                "src:infoblox-hazyhawk-2025"
+              ]
+            },
+            "c3": {
+              "value": "true",
+              "reason": "the reference is not removed by this change",
+              "evidence_ids": [
+                "ev:code:app::tools/mirror_legacy.sh:3"
+              ]
+            },
+            "c4": {
+              "value": "false",
+              "reason": "logs are fresh, long enough and quiet past the quarantine (nasa_jul_aug_1995.log[/payloads/level4/]: 87 requests, silent 16.5 d)",
+              "evidence_ids": [
+                "ev:traffic:nasa_jul_aug_1995.log[/payloads/level4/]"
+              ]
+            },
+            "c5": {
+              "value": "true",
+              "reason": "no integrity or owner check detected for this reference",
+              "evidence_ids": [
+                "ev:code:app::tools/mirror_legacy.sh:3"
+              ]
+            }
+          },
+          "status": "safe",
+          "broken_by": [
+            "c4"
+          ]
+        },
+        {
+          "reference_id": "ref:aws_s3_bucket.legacy_downloads:code:2",
+          "conditions": {
+            "c1": {
+              "value": "true",
+              "reason": "the plan deletes this resource",
+              "evidence_ids": [
+                "ev:plan"
+              ]
+            },
+            "c2": {
+              "value": "true",
+              "reason": "bucket is in the shared global namespace; after deletion the name can be created by any AWS account in the partition",
+              "evidence_ids": [
+                "src:aws-sdk-s3-createbucket",
+                "src:watchtowr-s3-2025",
+                "src:infoblox-hazyhawk-2025"
+              ]
+            },
+            "c3": {
+              "value": "true",
+              "reason": "the reference is not removed by this change",
+              "evidence_ids": [
                 "ev:code:app::tools/sync_downloads.py:8"
               ]
             },
@@ -1264,7 +1272,7 @@
           ]
         },
         {
-          "reference_id": "ref:aws_s3_bucket.legacy_downloads:code:1",
+          "reference_id": "ref:aws_s3_bucket.legacy_downloads:code:3",
           "conditions": {
             "c1": {
               "value": "true",
@@ -1371,7 +1379,8 @@
           "content": "# Keep owning the bucket name instead of releasing it.\n# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,\n# 3. keep the resource below in your configuration.\nresource \"aws_s3_bucket\" \"legacy_downloads\" {\n  bucket = \"rs-pilot-legacy-downloads\"\n  lifecycle {\n    prevent_destroy = true\n  }\n}\n\nresource \"aws_s3_bucket_public_access_block\" \"legacy_downloads\" {\n  bucket                  = aws_s3_bucket.legacy_downloads.id\n  block_public_acls       = true\n  block_public_policy     = true\n  ignore_public_acls      = true\n  restrict_public_buckets = true\n}\n\n# If the content must move, create its replacement in your account regional namespace,\n# which other accounts cannot claim (format verified from the AWS SDK model):\n#   bucket           = \"rs-pilot-legacy-downloads-123456789012-us-east-1-an\"\n#   bucket_namespace = \"account-regional\"\n",
           "applies_to": [
             "aws_s3_bucket.legacy_downloads"
-          ]
+          ],
+          "operation": null
         }
       ],
       "not_checked": [
@@ -1388,20 +1397,11 @@
         "region": null,
         "attributes": {
           "bucket": "event.retiresafe-pilot.example",
-          "error_document": [],
-          "expected_bucket_owner": "",
           "id": "event.retiresafe-pilot.example",
-          "index_document": [
-            {
-              "suffix": "index.html"
-            }
-          ],
-          "redirect_all_requests_to": [],
           "region": "us-east-1",
-          "routing_rule": [],
-          "routing_rules": "",
           "website_domain": "s3-website-us-east-1.amazonaws.com",
-          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com"
+          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com",
+          "_omitted_attributes": 6
         },
         "endpoints": []
       },
@@ -1425,6 +1425,44 @@
       "not_checked": [
         "takeover rules for aws_s3_bucket_website_configuration"
       ]
+    },
+    {
+      "resource": {
+        "address": "aws_ssm_parameter.legacy_db_password",
+        "type": "aws_ssm_parameter",
+        "provider": "registry.terraform.io/hashicorp/aws",
+        "action": "delete",
+        "name": null,
+        "region": null,
+        "attributes": {
+          "arn": "arn:aws:ssm:us-east-1:123456789012:parameter/pilot/legacy_db_password",
+          "id": "/pilot/legacy_db_password",
+          "name": "/pilot/legacy_db_password",
+          "region": "us-east-1",
+          "_omitted_attributes": 15
+        },
+        "endpoints": []
+      },
+      "reclaimable": {
+        "value": "unknown",
+        "reason": "resource type outside pilot coverage",
+        "evidence_ids": []
+      },
+      "references": [],
+      "traffic": [],
+      "paths": [],
+      "verdict": "not_name_bearing",
+      "reasons": [
+        "aws_ssm_parameter is not a name-bearing type in the pilot rule set"
+      ],
+      "risk_interval": [
+        0.0,
+        0.0
+      ],
+      "patches": [],
+      "not_checked": [
+        "takeover rules for aws_ssm_parameter"
+      ]
     }
   ],
   "evidence": [
@@ -1445,7 +1483,7 @@
     {
       "id": "ev:iac:aws_ssm_parameter.assets_base_url",
       "source": "terraform_plan",
-      "detail": "aws_ssm_parameter.assets_base_url.value = https://rs-pilot-event-assets-2025.s3.amazonaws.com",
+      "detail": "aws_ssm_parameter.assets_base_url.value = [sensitive value; contains a reference to rs-pilot-event-assets-2025]",
       "location": "aws_ssm_parameter.assets_base_url",
       "data": {}
     },
@@ -1491,12 +1529,30 @@
       }
     },
     {
+      "id": "ev:code:app::config/legacy.env:3",
+      "source": "repo_scan",
+      "detail": "DOWNLOADS_URL=https://rs-pilot-legacy-downloads.s3.amazonaws.com/",
+      "location": "app::config/legacy.env:3",
+      "data": {
+        "integrity_control": null
+      }
+    },
+    {
       "id": "ev:code:app::tools/upload_assets.py:10",
       "source": "repo_scan",
       "detail": "s3.put_object(Bucket=\"rs-pilot-event-assets-2025\", Key=key, Body=f, ExpectedBucketOwner=ACCOUNT_ID)",
       "location": "app::tools/upload_assets.py:10",
       "data": {
         "integrity_control": "expected_bucket_owner"
+      }
+    },
+    {
+      "id": "ev:code:app::tools/mirror_legacy.sh:3",
+      "source": "repo_scan",
+      "detail": "AWS_SECRET_ACCESS_KEY=[REDACTED] aws s3 sync s3://rs-pilot-legacy-downloads ./mirror",
+      "location": "app::tools/mirror_legacy.sh:3",
+      "data": {
+        "integrity_control": null
       }
     },
     {
@@ -1548,13 +1604,14 @@
   },
   "scan_stats": {
     "app": {
-      "files_scanned": 6,
+      "files_scanned": 8,
       "files_skipped_binary": 0,
       "files_skipped_large": 0
     }
   },
   "not_checked": [
-    "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)"
+    "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)",
+    "deleted resource outside pilot coverage: aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)"
   ],
   "sources": {
     "aws-sdk-s3-account-regional": {

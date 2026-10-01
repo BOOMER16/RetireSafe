@@ -66,3 +66,22 @@ def apply(diff: str, root: str | Path) -> list[str]:
         target.write_text("".join(new), encoding="utf-8", newline="")
         changed.append(rel)
     return changed
+
+
+def apply_operation(op: dict, root: str | Path) -> list[str]:
+    """Apply a patch's machine-readable ``operation`` (used when its human diff was redacted)."""
+    if op.get("type") != "rename":
+        raise PatchError(f"unsupported operation {op.get('type')!r}")
+    from .remediate import rename
+    root = Path(root)
+    changed = []
+    for rel in op["files"]:
+        target = (root / rel).resolve()
+        if root.resolve() not in target.parents:
+            raise PatchError(f"path escapes the target directory: {rel}")
+        before = target.read_text(encoding="utf-8")
+        after = rename(before, op["old"], op["new"])
+        if after != before:
+            target.write_text(after, encoding="utf-8", newline="")
+            changed.append(rel)
+    return changed

@@ -1,4 +1,4 @@
-# RetireSafe assessment 0c4ebb7d-f0b4-42ed-bd15-337bb585baec
+# RetireSafe assessment 7e736294-1479-4649-9ce9-a1bb1d198c15
 
 *As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy strict*
 
@@ -81,7 +81,7 @@ Name `rs-pilot-event-assets-2025` · reclaimable: **true** (bucket is in the sha
 
 ### Patch: Update infrastructure that still references the resource
 ```
-  aws_ssm_parameter.assets_base_url.value: value = https://rs-pilot-event-assets-2025.s3.amazonaws.com
+  aws_ssm_parameter.assets_base_url.value: value = [sensitive value; contains a reference to rs-pilot-event-assets-2025]
 ```
 
 ### Patch: Tombstone aws_s3_bucket.event_assets: keep the name, drop the content
@@ -194,6 +194,8 @@ Name `rs-pilot-legacy-downloads` · reclaimable: **true** (bucket is in the shar
 
 | Reference | Kind | Path status | Broken by |
 |---|---|---|---|
+| `app::config/legacy.env:3` | code | safe | c4 |
+| `app::tools/mirror_legacy.sh:3` | code | safe | c4 |
 | `app::tools/sync_downloads.py:8` | code | safe | c4 |
 | `app::tools/sync_downloads.py:9` | code | safe | c4 |
 | `access logs` | traffic | safe | c4 |
@@ -239,6 +241,17 @@ Name `None` · reclaimable: **unknown** (resource type outside pilot coverage)
 
 Not checked: takeover rules for aws_s3_bucket_website_configuration
 
+## aws_ssm_parameter.legacy_db_password: **NOT_NAME_BEARING**
+
+Name `None` · reclaimable: **unknown** (resource type outside pilot coverage)
+
+- aws_ssm_parameter is not a name-bearing type in the pilot rule set
+
+- Risk interval: 0.000 to 0.000
+
+Not checked: takeover rules for aws_ssm_parameter
+
 ## Outside coverage
 
 - deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)
+- deleted resource outside pilot coverage: aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)

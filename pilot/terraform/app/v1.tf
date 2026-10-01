@@ -30,3 +30,11 @@ resource "aws_ssm_parameter" "assets_base_url" {
   type  = "String"
   value = "https://rs-pilot-event-assets-2025.s3.amazonaws.com"
 }
+
+# A secret that is deleted along with the event stack. Terraform marks `value` sensitive,
+# but `terraform show -json` prints it in plain text: RetireSafe must never store it.
+resource "aws_ssm_parameter" "legacy_db_password" {
+  name  = "/pilot/legacy_db_password"
+  type  = "SecureString"
+  value = "RS-CANARY-db-password-7f3c9a"
+}

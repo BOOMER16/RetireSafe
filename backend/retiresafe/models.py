@@ -114,6 +114,7 @@ class Patch:
     title: str
     content: str
     applies_to: list[str] = field(default_factory=list)
+    operation: dict | None = None   # machine-applicable form (the content is for people and may be redacted)
 
 
 @dataclass

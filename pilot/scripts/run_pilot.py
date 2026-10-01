@@ -59,9 +59,10 @@ def main() -> None:
     shutil.rmtree(after_app, ignore_errors=True)
     shutil.copytree(PILOT / "app", after_app)
     rec = json.loads((R / "before_strict.json").read_text(encoding="utf-8"))
-    diffs = [p["content"] for r in rec["resources"] for p in r["patches"] if p["kind"] == "code_diff"]
-    (R / "applied_code.patch").write_text("".join(diffs), encoding="utf-8")
-    apply_patch.apply("".join(diffs), after_app)
+    code = [p for r in rec["resources"] for p in r["patches"] if p["kind"] == "code_diff"]
+    (R / "applied_code.patch").write_text("".join(p["content"] for p in code), encoding="utf-8")
+    for p in code:
+        apply_patch.apply_operation(p["operation"], after_app)
     summary["after_strict"] = assess("after_strict", "plan_after.json", "route53_after.json", after_app,
                                      "strict", log_path)
     (R / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

@@ -48,13 +48,15 @@ def test_plan_before_retiring_resources():
     assert pv.terraform_version == "1.16.4"
     by = {r.address: r for r in pv.retiring}
     assert set(by) == {"aws_s3_bucket.archive", "aws_s3_bucket.event_assets", "aws_s3_bucket.event_site",
-                       "aws_s3_bucket.legacy_downloads", "aws_s3_bucket_website_configuration.event_site"}
+                       "aws_s3_bucket.legacy_downloads", "aws_s3_bucket_website_configuration.event_site",
+                       "aws_ssm_parameter.legacy_db_password"}
     assert by["aws_s3_bucket.event_assets"].name == "rs-pilot-event-assets-2025"
     assert by["aws_s3_bucket.event_site"].region == "us-east-1"
     eps = {e.name for e in by["aws_s3_bucket.event_site"].endpoints}
     assert "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com" in eps
     assert pv.unsupported_deletions == ["aws_s3_bucket_website_configuration.event_site "
-                                        "(aws_s3_bucket_website_configuration)"]
+                                        "(aws_s3_bucket_website_configuration)",
+                                        "aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)"]
     assert any(s.address == "aws_ssm_parameter.assets_base_url" and not s.deleted_in_change for s in pv.state)
 
 

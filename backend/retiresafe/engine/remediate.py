@@ -9,6 +9,7 @@ import json
 import re
 from pathlib import Path
 
+from .. import redact
 from ..analysis.traffic import Policy
 from ..collectors.dns_zone import DnsRecord
 from ..knowledge.providers import ACCOUNT_REGIONAL_NAME, AZURE_WEBAPP_TYPES, EB_TYPES, S3_TYPES
@@ -53,13 +54,19 @@ def code_patch(repo_root: Path, refs: list[Reference], old: str, new: str) -> Pa
             before = p.read_text(encoding="utf-8")
         except OSError:
             continue
-        after = re.sub(rf"(?<![a-z0-9.-]){re.escape(old)}(?![a-z0-9-])", new, before)
+        after = rename(before, old, new)
         if after != before:
             diffs.append("".join(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
                                                       f"a/{rel}", f"b/{rel}")))
     if not diffs:
         return None
-    return Patch("code_diff", f"Rewrite references from {old} to {new}", "".join(diffs), files)
+    shown = "".join(redact.scrub(line) for line in "".join(diffs).splitlines(True))
+    return Patch("code_diff", f"Rewrite references from {old} to {new}", shown, files,
+                 {"type": "rename", "old": old, "new": new, "files": files})
+
+
+def rename(text: str, old: str, new: str) -> str:
+    return re.sub(rf"(?<![a-z0-9.-]){re.escape(old)}(?![a-z0-9-])", new, text)
 
 
 def tombstone(res: RetiringResource, policy: Policy, chosen: str | None = None) -> Patch:
