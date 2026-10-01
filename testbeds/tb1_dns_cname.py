@@ -87,37 +87,57 @@ def walk(fqdn):
         rec["registrable_status"] = rs
     if fp_hit and fp_hit["service"] == "AWS/S3":
         rec["s3"] = s3_probe(s3_bucket(fqdn if len(chain) == 1 else chain[-2], chain[0]))
-    # classification on the evidence ladder
-    if rec.get("registrable_status") == "NXDOMAIN":
-        rec["class"] = "dangling_unregistered_domain"
-    elif fp_hit and fp_hit["service"] == "AWS/S3" and rec.get("s3") == "NoSuchBucket":
-        rec["class"] = "reclaimable_candidate"
-    elif fp_hit and st == "NXDOMAIN" and fp_hit["nxdomain"] and fp_hit["vulnerable"]:
-        rec["class"] = "reclaimable_candidate"
-    elif st == "NXDOMAIN":
-        rec["class"] = "stale_cname_target_missing"
-    elif fp_hit and fp_hit["vulnerable"] and not fp_hit["nxdomain"]:
-        rec["class"] = "provider_needs_http_fingerprint"
-    else:
-        rec["class"] = "cname_resolves"
+    rec["class"] = classify(rec, fp_hit)
     return rec
 
 
+def classify(rec, fp_hit):
+    """Evidence-ladder class. Correction (2026-10-01): an S3 bucket that exists (403/301/200) is a healthy
+    reference; the first version fell through to "provider_needs_http_fingerprint" for those."""
+    st = rec.get("target_status")
+    if not rec["chain"]:
+        return "no_cname"
+    if rec.get("registrable_status") == "NXDOMAIN":
+        return "dangling_unregistered_domain"
+    if fp_hit and fp_hit["service"] == "AWS/S3" and rec.get("s3") == "NoSuchBucket":
+        return "reclaimable_candidate"
+    if fp_hit and fp_hit["service"] == "AWS/S3" and str(rec.get("s3", "")).startswith("exists"):
+        return "cname_resolves"
+    if fp_hit and st == "NXDOMAIN" and fp_hit["nxdomain"] and fp_hit["vulnerable"]:
+        return "reclaimable_candidate"
+    if st == "NXDOMAIN":
+        return "stale_cname_target_missing"
+    if fp_hit and fp_hit["vulnerable"] and not fp_hit["nxdomain"]:
+        return "provider_needs_http_fingerprint"
+    return "cname_resolves"
+
+
 def main():
-    rows = list(csv.reader(open(os.path.join(DATA, "top-1m.csv"))))
-    names = [r[1] for r in rows]
-    rng = random.Random(42)
-    sample = names[:N_TOP] + rng.sample(names[N_TOP:], N_RAND)
+    raw_path = os.path.join(OUT, "tb1_raw.private.jsonl")
     t0 = time.time()
-    out = []
-    with cf.ThreadPoolExecutor(128) as ex:
-        for i, rec in enumerate(ex.map(walk, sample)):
-            rec["stratum"] = "top" if i < N_TOP else "random"
-            out.append(rec)
-    with open(os.path.join(OUT, "tb1_raw.private.jsonl"), "w") as f:
+    if "--from-raw" in sys.argv:
+        # re-derive the summary from stored per-host results (no new network queries)
+        by_service = {fp["service"]: fp for fp in fps}
+        out = [json.loads(line) for line in open(raw_path)]
         for r in out:
-            f.write(json.dumps(r) + "\n")
-    agg = {"n": len(out), "seconds": round(time.time() - t0), "by_stratum": {}}
+            r["class"] = classify(r, by_service.get(r.get("service")))
+        seconds = None
+    else:
+        rows = list(csv.reader(open(os.path.join(DATA, "top-1m.csv"))))
+        names = [r[1] for r in rows]
+        rng = random.Random(42)
+        sample = names[:N_TOP] + rng.sample(names[N_TOP:], N_RAND)
+        out = []
+        with cf.ThreadPoolExecutor(128) as ex:
+            for i, rec in enumerate(ex.map(walk, sample)):
+                rec["stratum"] = "top" if i < N_TOP else "random"
+                out.append(rec)
+        with open(raw_path, "w") as f:
+            for r in out:
+                f.write(json.dumps(r) + "\n")
+        seconds = round(time.time() - t0)
+    agg = {"n": len(out), "seconds": seconds, "by_stratum": {},
+           "classification_rule": "2026-10-01 corrected: existing S3 buckets count as cname_resolves"}
     for s in ("top", "random"):
         sub = [r for r in out if r["stratum"] == s]
         agg["by_stratum"][s] = {

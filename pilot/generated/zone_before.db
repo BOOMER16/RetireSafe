@@ -1,0 +1,10 @@
+retiresafe-pilot.example. 172800 IN NS ns-2048.awsdns-64.com.
+retiresafe-pilot.example. 172800 IN NS ns-2049.awsdns-65.net.
+retiresafe-pilot.example. 172800 IN NS ns-2050.awsdns-66.org.
+retiresafe-pilot.example. 172800 IN NS ns-2051.awsdns-67.co.uk.
+retiresafe-pilot.example. 900 IN SOA ns-2048.awsdns-64.com. hostmaster.example.com. 1 7200 900 1209600 86400
+retiresafe-pilot.example. 300 IN TXT "v=spf1 include:_spf.mail.retiresafe-pilot.example -all"
+cdn.retiresafe-pilot.example. 300 IN CNAME rs-pilot-event-assets-2025.s3.amazonaws.com.
+event.retiresafe-pilot.example. 300 IN CNAME event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com.
+www.retiresafe-pilot.example. 300 IN A 192.0.2.10
+

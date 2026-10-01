@@ -39,7 +39,7 @@ The research ran in a sandbox whose egress proxy only allows certain hosts. Conn
 | `api.npmjs.org`, `pypistats.org` | download time-series of deprecated packages (consumer persistence) | NASA logs used for consumer persistence instead |
 | `tranco-list.eu` | research-grade domain ranking | Umbrella used instead |
 | `ita.ee.lbl.gov` | original NASA log host | GitHub mirror used |
-| arbitrary hosts (HTTP fingerprints) | HTTP-body takeover fingerprints | left as "needs HTTP check", **not counted** |
+| arbitrary hosts (HTTP fingerprints) | HTTP-body takeover fingerprints | would be "needs HTTP check"; after the TB1 correction no sampled name required it |
 
 Running the code on an ordinary machine with open internet removes all of these limits.
 

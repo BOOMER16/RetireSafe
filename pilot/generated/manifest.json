@@ -1,0 +1,17 @@
+{
+  "built_at": "2026-10-01T14:34:08Z",
+  "terraform": "1.16.4",
+  "providers": {
+    "registry.terraform.io/hashicorp/aws": "6.67.0"
+  },
+  "moto": "5.2.3",
+  "boto3": "1.43.106",
+  "note": "Real Terraform and AWS provider output against a moto emulator. Resource names and the retiresafe-pilot.example zone are an invented scenario (.example is reserved, RFC 2606). Known emulator quirk: moto returns the SOA value as a Python dict repr; RetireSafe does not use SOA records.",
+  "files": {
+    "plan_after.json": "a575a47173d0e405703fc650419c54a5d0807d62d7b477e1c4d59ded870c3c6c",
+    "plan_before.json": "4e47fb1f7627123a933de52cfba8e766ad264c0f81d87cc4e46e01f0068bc991",
+    "route53_after.json": "53126c21294833c9db8c3843741d65bf472fd55df4f21b22f9252dbdcb17eef9",
+    "route53_before.json": "90d554d7109e6427a7a81ebe757caf7e63050348c83ce84d0e57a11d7a2eaa5d",
+    "zone_before.db": "3270d2d3bfa187a9d9add8dcc3d25742a880349724dfae5de3a20b35a6ae1f3b"
+  }
+}

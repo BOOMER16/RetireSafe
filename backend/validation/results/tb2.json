@@ -1,0 +1,30 @@
+{
+  "check": "tb2",
+  "match": true,
+  "engine": {
+    "requests_total": 1891715,
+    "parse_failures": 1958,
+    "distinct_resources": 7133,
+    "observed_span_days": 27.56,
+    "quarantine_days_for_1pct_miss": {
+      "p50": 42.31,
+      "p90": 126.94,
+      "p99": 126.94,
+      "max": 126.94,
+      "mean": 56.53
+    }
+  },
+  "research": {
+    "requests_total": 1891715,
+    "parse_failures": 1958,
+    "distinct_resources": 7133,
+    "observed_span_days": 27.56,
+    "quarantine_days_for_1pct_miss": {
+      "p50": 42.31,
+      "p90": 126.94,
+      "p99": 126.94,
+      "max": 126.94,
+      "mean": 56.53
+    }
+  }
+}

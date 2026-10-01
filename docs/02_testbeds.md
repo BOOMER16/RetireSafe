@@ -41,14 +41,13 @@ Among real, actively resolved hostnames, how many have a DNS reference that surv
 | Class | Top 8k | Random 8k | Total |
 |---|---:|---:|---:|
 | no CNAME | 6,061 | 6,421 | 12,482 |
-| CNAME resolves | 1,934 | 1,570 | 3,504 |
-| provider match, needs HTTP check | 1 | 3 | 4 |
+| CNAME resolves | 1,935 | 1,573 | 3,508 |
 | stale, target NXDOMAIN | 3 | 2 | 5 |
 | **reclaimable candidate** | **1** (Azure) | **4** (all S3 `NoSuchBucket`) | **5** |
 | dangling to unregistered domain | 0 | 0 | 0 |
 
 Provider hits along CNAME chains: Azure 82 / 42, AWS ELB 40 / 64, S3 1 / 7, Elastic Beanstalk 1 / 3 (top / random).
-S3 probes: top 1 exists (301); random 3 exist (301) and 4 return `NoSuchBucket`.
+S3 probes: top 1 exists (301); random 3 exist (301) and 4 return `NoSuchBucket`. The 4 existing buckets are healthy references.
 
 **Rates with Wilson 95% confidence intervals**
 
@@ -68,7 +67,8 @@ S3 probes: top 1 exists (301); random 3 exist (301) and 4 return `NoSuchBucket`.
 
 ### Limitations
 * This is a sample of 16,000, not a census. It establishes order of magnitude.
-* HTTP-body fingerprints could not be checked because the sandbox egress policy blocks arbitrary hosts. Those 4 names are left as "needs HTTP check" and are not counted as reclaimable.
+* **Correction (2026-10-01).** The first version of this table listed 4 "provider match, needs HTTP check" names. The backend cross-check showed all 4 were S3 buckets that exist (HTTP 301), which the research script had misfiled. They are healthy references and are now counted under "CNAME resolves". The reclaimable and stale counts did not change. The summary was re-derived from the stored per-host results with `tb1_dns_cname.py --from-raw`, without new network queries.
+* HTTP-body fingerprints for other providers could not be checked because the sandbox egress policy blocks arbitrary hosts. None of the 16,000 names needed that check after the correction above.
 * An NXDOMAIN Azure target is a *candidate*: Azure may hold some names, and we did not attempt to claim it.
 * DNS timeouts and SERVFAIL are treated as not dangling, so the count is a conservative undercount.
 * Running it again on another day will give different numbers, because this is live infrastructure.

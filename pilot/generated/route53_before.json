@@ -1,0 +1,73 @@
+{
+  "ResourceRecordSets": [
+    {
+      "Name": "retiresafe-pilot.example.",
+      "Type": "NS",
+      "TTL": 172800,
+      "ResourceRecords": [
+        {
+          "Value": "ns-2048.awsdns-64.com"
+        },
+        {
+          "Value": "ns-2049.awsdns-65.net"
+        },
+        {
+          "Value": "ns-2050.awsdns-66.org"
+        },
+        {
+          "Value": "ns-2051.awsdns-67.co.uk"
+        }
+      ]
+    },
+    {
+      "Name": "retiresafe-pilot.example.",
+      "Type": "SOA",
+      "TTL": 900,
+      "ResourceRecords": [
+        {
+          "Value": "{'Value': 'ns-2048.awsdns-64.com. hostmaster.example.com. 1 7200 900 1209600 86400'}"
+        }
+      ]
+    },
+    {
+      "Name": "retiresafe-pilot.example.",
+      "Type": "TXT",
+      "TTL": 300,
+      "ResourceRecords": [
+        {
+          "Value": "\"v=spf1 include:_spf.mail.retiresafe-pilot.example -all\""
+        }
+      ]
+    },
+    {
+      "Name": "cdn.retiresafe-pilot.example.",
+      "Type": "CNAME",
+      "TTL": 300,
+      "ResourceRecords": [
+        {
+          "Value": "rs-pilot-event-assets-2025.s3.amazonaws.com"
+        }
+      ]
+    },
+    {
+      "Name": "event.retiresafe-pilot.example.",
+      "Type": "CNAME",
+      "TTL": 300,
+      "ResourceRecords": [
+        {
+          "Value": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com"
+        }
+      ]
+    },
+    {
+      "Name": "www.retiresafe-pilot.example.",
+      "Type": "A",
+      "TTL": 300,
+      "ResourceRecords": [
+        {
+          "Value": "192.0.2.10"
+        }
+      ]
+    }
+  ]
+}

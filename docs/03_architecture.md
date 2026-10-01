@@ -1,6 +1,6 @@
 # 03 · Proposed architecture
 
-> Status: **design**. Nothing in this file has been built yet. The Probe and Observe stages are backed by working test-bed code (TB1, TB2, TB3) that the build can reuse.
+> Status: **pilot backend built** ([`backend/`](../backend/README.md)). Collect, Probe, Observe, Decide and Act are implemented for S3, Elastic Beanstalk and Azure App Service; Fuse is the in-memory reference graph. Neo4j, tree-sitter parsing and the UI from the original design are not built; regex scanning and FastAPI/SQLite are used instead. SPF and continuous scheduling remain roadmap items.
 
 ## 3.1 What RetireSafe is
 

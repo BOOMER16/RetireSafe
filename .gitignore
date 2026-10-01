@@ -3,3 +3,11 @@ data/
 __pycache__/
 *.pyc
 testbeds/results/*.private.*
+.venv/
+pilot/.work/
+*.db
+*.db-wal
+*.db-shm
+*.egg-info/
+.pytest_cache/
+!pilot/generated/*.db

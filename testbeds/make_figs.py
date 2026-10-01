@@ -22,10 +22,8 @@ tb3 = json.load(open(f"{R}/tb3_summary.json"))
 
 # Fig 1: TB1 evidence ladder (stacked, excluding the dominant no_cname/resolves)
 fig, ax = plt.subplots(figsize=(6.6, 2.9))
-cats = ["cname_resolves", "provider_needs_http_fingerprint",
-        "stale_cname_target_missing", "reclaimable_candidate"]
-labels = ["CNAME resolves\n(healthy)", "Provider match,\nneeds HTTP check",
-          "Stale: target\nNXDOMAIN", "Reclaimable\ncandidate"]
+cats = ["cname_resolves", "stale_cname_target_missing", "reclaimable_candidate"]
+labels = ["CNAME resolves\n(healthy)", "Stale: target\nNXDOMAIN", "Reclaimable\ncandidate"]
 top = [tb1["by_stratum"]["top"]["class"].get(c, 0) for c in cats]
 rnd = [tb1["by_stratum"]["random"]["class"].get(c, 0) for c in cats]
 x = range(len(cats))

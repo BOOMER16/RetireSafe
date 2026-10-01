@@ -179,7 +179,7 @@ E += [Paragraph("TB1 · Base rate of surviving reclaimable references in the liv
                 "handful sit on the reclaimable rung. Counts are symlog-scaled.", cap)]
 E += [Paragraph(f"<b>Result.</b> Of 16,000 live names, the pipeline flagged roughly "
                 f"<b>5 reclaimable candidates</b> (4 S3 <font face=Courier>NoSuchBucket</font>, 1 Azure "
-                f"NXDOMAIN) plus a few stale/needs-HTTP references — a base rate near <b>0.03%</b>. "
+                f"NXDOMAIN) plus 5 stale references — a base rate near <b>0.03%</b>. "
                 "This is the single most important number for the product: the dangerous cases are "
                 "<i>rare and buried</i>, which is precisely why manual review misses them and why an "
                 "automated, evidence-first scanner earns its place. It also validates our fingerprint + "

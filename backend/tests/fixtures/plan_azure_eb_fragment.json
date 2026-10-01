@@ -1,0 +1,24 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.16.4",
+  "configuration": {"provider_config": {"aws": {"name": "aws", "full_name": "registry.terraform.io/hashicorp/aws",
+    "expressions": {"region": {"constant_value": "eu-west-1"}}}}},
+  "resource_changes": [
+    {"address": "azurerm_linux_web_app.legacy", "mode": "managed", "type": "azurerm_linux_web_app",
+     "name": "legacy", "provider_name": "registry.terraform.io/hashicorp/azurerm",
+     "change": {"actions": ["delete"], "before": {"name": "contoso-legacy-portal", "location": "westeurope",
+       "default_hostname": "contoso-legacy-portal.azurewebsites.net"}, "after": null}},
+    {"address": "azurerm_linux_web_app.scoped", "mode": "managed", "type": "azurerm_linux_web_app",
+     "name": "scoped", "provider_name": "registry.terraform.io/hashicorp/azurerm",
+     "change": {"actions": ["delete"], "before": {"name": "contoso-new-portal", "location": "westeurope",
+       "auto_generated_domain_name_label_scope": "NoReuse"}, "after": null}},
+    {"address": "aws_elastic_beanstalk_environment.old", "mode": "managed", "type": "aws_elastic_beanstalk_environment",
+     "name": "old", "provider_name": "registry.terraform.io/hashicorp/aws",
+     "change": {"actions": ["delete"], "before": {"name": "old-env", "cname_prefix": "contoso-old-env",
+       "cname": "contoso-old-env.eu-west-1.elasticbeanstalk.com"}, "after": null}},
+    {"address": "aws_instance.worker", "mode": "managed", "type": "aws_instance", "name": "worker",
+     "provider_name": "registry.terraform.io/hashicorp/aws",
+     "change": {"actions": ["delete"], "before": {"ami": "ami-12345678"}, "after": null}}
+  ],
+  "prior_state": {"values": {"root_module": {"resources": []}}}
+}

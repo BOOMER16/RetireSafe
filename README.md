@@ -8,6 +8,7 @@ When a cloud resource (an S3 bucket, an Azure app, a temporary event site) is de
 This repository contains the **research, the proposed solution, and three test beds that were run on real public data**. The product itself has not been built yet; that is the hackathon's job. Every number in the dossier comes from a script and a committed output file in this repo.
 
 > 📄 **Main deliverable:** [`RetireSafe_Solution_Dossier.pdf`](RetireSafe_Solution_Dossier.pdf) (7 pages)
+> 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 39 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
 > 📘 **New to the topic?** Start with [`RetireSafe_Beginners_Guide.pdf`](RetireSafe_Beginners_Guide.pdf): DNS, cloud naming, takeovers, SPF, Terraform, logs, the statistics, our findings, FAQ and glossary (21 pages)
 > 📄 Original problem brief: [`docs/brief/RetireSafe_Research_Brief.pdf`](docs/brief/RetireSafe_Research_Brief.pdf)
 
@@ -17,7 +18,7 @@ This repository contains the **research, the proposed solution, and three test b
 
 | Test bed | Real data | Result |
 |---|---|---|
-| **TB1**: base rate of reclaimable references | 16,000 live hostnames from the Cisco Umbrella top-1M, the *can-i-take-over-xyz* fingerprints, and a live read-only S3 probe | **5 reclaimable candidates (0.031%, 95% CI 0.013–0.073%)**: 4 S3 `NoSuchBucket` and 1 Azure NXDOMAIN, plus 5 stale CNAMEs and 4 provider matches that need an HTTP check |
+| **TB1**: base rate of reclaimable references | 16,000 live hostnames from the Cisco Umbrella top-1M, the *can-i-take-over-xyz* fingerprints, and a live read-only S3 probe | **5 reclaimable candidates (0.031%, 95% CI 0.013–0.073%)**: 4 S3 `NoSuchBucket` and 1 Azure NXDOMAIN, plus 5 stale CNAMEs (corrected 2026-10-01, see research log) |
 | **TB2**: "is this endpoint really dead?" | NASA-HTTP July 1995 log, **1,891,715 requests**, 7,133 resources | To be 99% sure a resource is dead you need **42 days of silence (median) and up to 127 days (tail)**. A naive Poisson model **over-predicts** returns by 1.48× (1,161 predicted vs 783 observed): it ranks resources well but is mis-calibrated as a probability |
 | **TB3**: the coordination gap | Same NASA log | **108 of 108** resources that look idle on a 3-day dashboard had external clients in their history. `/shuttle/countdown/count.gif` had **0** recent hits and **15,054** distinct external clients |
 
@@ -35,6 +36,8 @@ RetireSafe/
 ├── requirements.txt
 ├── scripts/
 │   └── fetch_data.sh                 ← downloads the real datasets into ./data (git-ignored)
+├── backend/                          ← pilot backend: engine, CLI, API, drift scanner, tests, validation
+├── pilot/                            ← end-to-end scenario: real Terraform output + real traffic
 ├── testbeds/
 │   ├── common.py                     ← DNS / PSL helpers, shared paths
 │   ├── tb1_dns_cname.py              ← TB1 live-DNS surviving-reference scan
@@ -100,6 +103,7 @@ A takeover needs **all five** conditions: *resource released*, *name reassignabl
 
 * ✅ Research, problem model, architecture and maths are written up.
 * ✅ Three test beds were run on real data, with committed outputs.
-* ⏳ The product (scanners, decision engine, CLI, demo) is the hackathon build. See [`docs/07_hackathon_plan.md`](docs/07_hackathon_plan.md).
+* ✅ **Pilot backend built**: Terraform plan, DNS, repository and log collectors; five-condition decision engine; patches; evidence records; CLI gate; REST API; live drift scanner. In strict mode a reclaimable name is never released through the gate. See [`backend/README.md`](backend/README.md) for exactly what that does and does not guarantee.
+* ⏳ Frontend and wider provider coverage (SPF, domain expiry, more resource types) are next.
 * Two further test beds were **designed but not run**: an SPF dangling-include audit and a scan of published packages for S3 bucket references. The reasons are recorded in the [research log](docs/RESEARCH_LOG.md).
 * A *reclaimable candidate* is only a candidate. **No takeover was attempted** and nothing was registered.

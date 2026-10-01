@@ -1,0 +1,81 @@
+{
+  "check": "tb3",
+  "match": true,
+  "engine": {
+    "resources_looking_dead_in_window": 108,
+    "of_those_with_live_external_dependents": 108,
+    "max_hidden_external_clients_on_one_dead_looking_resource": 15054
+  },
+  "research": {
+    "resources_looking_dead_in_window": 108,
+    "of_those_with_live_external_dependents": 108,
+    "max_hidden_external_clients_on_one_dead_looking_resource": 15054
+  },
+  "top5": [
+    {
+      "resource": "/shuttle/countdown/count.gif",
+      "engine": {
+        "clients": 15319,
+        "networks_24": 14736,
+        "external": 15054
+      },
+      "research": {
+        "clients": 15319,
+        "networks_24": 14736,
+        "external": 15054
+      }
+    },
+    {
+      "resource": "/cgi-bin/imagemap/countdown",
+      "engine": {
+        "clients": 8138,
+        "networks_24": 7900,
+        "external": 7996
+      },
+      "research": {
+        "clients": 8138,
+        "networks_24": 7900,
+        "external": 7996
+      }
+    },
+    {
+      "resource": "/shuttle/countdown/video/livevideo.gif",
+      "engine": {
+        "clients": 4358,
+        "networks_24": 4235,
+        "external": 4221
+      },
+      "research": {
+        "clients": 4358,
+        "networks_24": 4235,
+        "external": 4221
+      }
+    },
+    {
+      "resource": "/shuttle/countdown/images/cdtclock.gif",
+      "engine": {
+        "clients": 2228,
+        "networks_24": 2154,
+        "external": 2087
+      },
+      "research": {
+        "clients": 2228,
+        "networks_24": 2154,
+        "external": 2087
+      }
+    },
+    {
+      "resource": "/shuttle/countdown/video/landing.gif",
+      "engine": {
+        "clients": 875,
+        "networks_24": 869,
+        "external": 847
+      },
+      "research": {
+        "clients": 875,
+        "networks_24": 869,
+        "external": 847
+      }
+    }
+  ]
+}

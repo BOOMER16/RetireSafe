@@ -1,0 +1,270 @@
+{
+  "schema": "retiresafe.evidence/v1",
+  "assessment_id": "3ffb51be-ea79-48e3-a1de-9ae16322b416",
+  "created_at": "2026-10-01T15:04:47.558443+00:00",
+  "as_of": "1995-09-01T03:59:53+00:00",
+  "tool": {
+    "name": "retiresafe",
+    "version": "0.1.0",
+    "rules_version": "2026-10-01.1",
+    "fingerprint_catalogue_commit": "5bd4e12837911c8475486f1da922c9b9c706e632",
+    "python": "3.11.15"
+  },
+  "policy": {
+    "alpha": 0.01,
+    "beta": 0.05,
+    "min_window_days": 31.0,
+    "max_staleness_days": 2.0,
+    "horizon_days": 90.0,
+    "mode": "strict",
+    "internal_domains": [
+      "nasa.gov"
+    ],
+    "internal_cidrs": [],
+    "org_account_ids": [
+      "123456789012"
+    ]
+  },
+  "inputs": [
+    {
+      "role": "terraform_plan",
+      "name": "plan_after.json",
+      "sha256": "a575a47173d0e405703fc650419c54a5d0807d62d7b477e1c4d59ded870c3c6c",
+      "bytes": 44474
+    },
+    {
+      "role": "dns_inventory",
+      "name": "route53_after.json",
+      "sha256": "53126c21294833c9db8c3843741d65bf472fd55df4f21b22f9252dbdcb17eef9",
+      "bytes": 1092
+    },
+    {
+      "role": "repository",
+      "name": "app_after",
+      "sha256_tree": "9e6f246e7e80ed8fd47d6abb32676d1b1a7e0f524b24a3f59b3f320552158e70",
+      "files": 6,
+      "label": "app"
+    },
+    {
+      "role": "access_log:clf",
+      "name": "nasa_jul_aug_1995.log",
+      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
+      "bytes": 373056138,
+      "host": "event.retiresafe-pilot.example"
+    },
+    {
+      "role": "access_log:clf",
+      "name": "nasa_jul_aug_1995.log",
+      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
+      "bytes": 373056138,
+      "host": "rs-pilot-event-assets-2025.s3.amazonaws.com"
+    },
+    {
+      "role": "access_log:clf",
+      "name": "nasa_jul_aug_1995.log",
+      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
+      "bytes": 373056138,
+      "host": "rs-pilot-legacy-downloads.s3.amazonaws.com"
+    }
+  ],
+  "plan": {
+    "terraform_version": "1.16.4",
+    "format_version": "1.2",
+    "retiring": [
+      "aws_s3_bucket.archive",
+      "aws_s3_bucket_website_configuration.event_site"
+    ]
+  },
+  "gate": {
+    "passed": true,
+    "verdict_counts": {
+      "release": 1,
+      "not_name_bearing": 1
+    },
+    "summary": "all retiring resources may be released"
+  },
+  "resources": [
+    {
+      "resource": {
+        "address": "aws_s3_bucket.archive",
+        "type": "aws_s3_bucket",
+        "provider": "registry.terraform.io/hashicorp/aws",
+        "action": "delete",
+        "name": "rs-pilot-archive-123456789012-us-east-1-an",
+        "region": "us-east-1",
+        "attributes": {
+          "acceleration_status": "",
+          "acl": null,
+          "arn": "arn:aws:s3:::rs-pilot-archive-123456789012-us-east-1-an",
+          "bucket": "rs-pilot-archive-123456789012-us-east-1-an",
+          "bucket_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.amazonaws.com",
+          "bucket_namespace": "account-regional",
+          "bucket_prefix": "",
+          "bucket_region": "us-east-1",
+          "bucket_regional_domain_name": "rs-pilot-archive-123456789012-us-east-1-an.s3.us-east-1.amazonaws.com",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [
+            {
+              "id": "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a",
+              "permissions": [
+                "FULL_CONTROL"
+              ],
+              "type": "CanonicalUser",
+              "uri": ""
+            }
+          ],
+          "hosted_zone_id": "Z3AQBSTGFYJSTF",
+          "id": "rs-pilot-archive-123456789012-us-east-1-an",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "",
+          "region": "us-east-1",
+          "replication_configuration": [],
+          "request_payer": "",
+          "server_side_encryption_configuration": [],
+          "tags": {},
+          "tags_all": {},
+          "timeouts": null,
+          "versioning": [
+            {
+              "enabled": false,
+              "mfa_delete": false
+            }
+          ],
+          "website": [],
+          "website_domain": null,
+          "website_endpoint": null
+        },
+        "endpoints": [
+          {
+            "name": "rs-pilot-archive-123456789012-us-east-1-an",
+            "kind": "s3_bucket"
+          },
+          {
+            "name": "rs-pilot-archive-123456789012-us-east-1-an.s3.amazonaws.com",
+            "kind": "s3_rest"
+          },
+          {
+            "name": "rs-pilot-archive-123456789012-us-east-1-an.s3.us-east-1.amazonaws.com",
+            "kind": "s3_rest"
+          },
+          {
+            "name": "rs-pilot-archive-123456789012-us-east-1-an.s3-website-us-east-1.amazonaws.com",
+            "kind": "s3_website"
+          },
+          {
+            "name": "rs-pilot-archive-123456789012-us-east-1-an.s3-website.us-east-1.amazonaws.com",
+            "kind": "s3_website"
+          }
+        ]
+      },
+      "reclaimable": {
+        "value": "false",
+        "reason": "bucket is in the account regional namespace; only the owning account can create buckets there",
+        "evidence_ids": [
+          "src:aws-sdk-s3-account-regional"
+        ]
+      },
+      "references": [],
+      "traffic": [],
+      "paths": [],
+      "verdict": "release",
+      "reasons": [
+        "the name cannot be obtained by another party (bucket is in the account regional namespace; only the owning account can create buckets there)"
+      ],
+      "risk_interval": [
+        0.0,
+        0.0
+      ],
+      "patches": [],
+      "not_checked": [
+        "no access logs cover this resource",
+        "consumers outside the supplied inventories (third-party sites, offline clients) can only be observed through logs"
+      ]
+    },
+    {
+      "resource": {
+        "address": "aws_s3_bucket_website_configuration.event_site",
+        "type": "aws_s3_bucket_website_configuration",
+        "provider": "registry.terraform.io/hashicorp/aws",
+        "action": "delete",
+        "name": null,
+        "region": null,
+        "attributes": {
+          "bucket": "event.retiresafe-pilot.example",
+          "error_document": [],
+          "expected_bucket_owner": "",
+          "id": "event.retiresafe-pilot.example",
+          "index_document": [
+            {
+              "suffix": "index.html"
+            }
+          ],
+          "redirect_all_requests_to": [],
+          "region": "us-east-1",
+          "routing_rule": [],
+          "routing_rules": "",
+          "website_domain": "s3-website-us-east-1.amazonaws.com",
+          "website_endpoint": "event.retiresafe-pilot.example.s3-website-us-east-1.amazonaws.com"
+        },
+        "endpoints": []
+      },
+      "reclaimable": {
+        "value": "unknown",
+        "reason": "resource type outside pilot coverage",
+        "evidence_ids": []
+      },
+      "references": [],
+      "traffic": [],
+      "paths": [],
+      "verdict": "not_name_bearing",
+      "reasons": [
+        "aws_s3_bucket_website_configuration is not a name-bearing type in the pilot rule set"
+      ],
+      "risk_interval": [
+        0.0,
+        0.0
+      ],
+      "patches": [],
+      "not_checked": [
+        "takeover rules for aws_s3_bucket_website_configuration"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev:plan",
+      "source": "terraform_plan",
+      "detail": "Terraform 1.16.4 plan, format 1.2",
+      "location": "plan_after.json",
+      "data": {}
+    }
+  ],
+  "parse_stats": {
+    "nasa_jul_aug_1995.log": {
+      "lines": 3461612,
+      "parsed": 3458009,
+      "failed": 3603
+    }
+  },
+  "scan_stats": {
+    "app": {
+      "files_scanned": 6,
+      "files_skipped_binary": 0,
+      "files_skipped_large": 0
+    }
+  },
+  "not_checked": [
+    "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)"
+  ],
+  "sources": {
+    "aws-sdk-s3-account-regional": {
+      "title": "AWS SDK service model, S3 CreateBucket BucketNamespace member (x-amz-bucket-namespace)",
+      "quote": "Your account regional namespace is a subdivision of the global namespace that only your account can create buckets in. ... Bucket names must follow the format bucket-name-prefix-accountId-region-an (for example, amzn-s3-demo-bucket-111122223333-us-west-2-an).",
+      "verified_via": "botocore data model shipped with boto3 1.43.106; enum values account-regional | global"
+    }
+  }
+}

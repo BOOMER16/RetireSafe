@@ -1,14 +1,13 @@
 {
   "n": 16000,
-  "seconds": 407,
+  "seconds": null,
   "by_stratum": {
     "top": {
       "n": 8000,
       "class": {
         "no_cname": 6061,
-        "cname_resolves": 1934,
+        "cname_resolves": 1935,
         "reclaimable_candidate": 1,
-        "provider_needs_http_fingerprint": 1,
         "stale_cname_target_missing": 3
       },
       "provider_hits": {
@@ -38,9 +37,8 @@
       "n": 8000,
       "class": {
         "no_cname": 6421,
-        "cname_resolves": 1570,
+        "cname_resolves": 1573,
         "stale_cname_target_missing": 2,
-        "provider_needs_http_fingerprint": 3,
         "reclaimable_candidate": 4
       },
       "provider_hits": {
@@ -67,5 +65,6 @@
         "6": 10
       }
     }
-  }
+  },
+  "classification_rule": "2026-10-01 corrected: existing S3 buckets count as cname_resolves"
 }

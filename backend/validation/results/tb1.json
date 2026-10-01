@@ -1,0 +1,18 @@
+{
+  "check": "tb1",
+  "names": 3518,
+  "seconds": 284,
+  "agreement": 0.9926,
+  "tb1_reclaimable": 5,
+  "engine_also_reclaimable": 5,
+  "engine_reclaimable_total": 5,
+  "confusion": {
+    "cname_resolves -> cname_resolves": 3482,
+    "cname_resolves -> lookup_error": 20,
+    "cname_resolves -> stale_target_missing": 2,
+    "provider_needs_http_check -> cname_resolves": 4,
+    "reclaimable_candidate -> reclaimable_candidate": 5,
+    "stale_target_missing -> stale_target_missing": 5
+  },
+  "note": "TB1 ran earlier the same day; live DNS can change between runs, so disagreement on a handful of names is expected and reported, not hidden."
+}

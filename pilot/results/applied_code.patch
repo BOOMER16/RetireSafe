@@ -1,0 +1,18 @@
+--- a/index.html
++++ b/index.html
+@@ -4,13 +4,13 @@
+   <meta charset="utf-8">
+   <title>Pilot Event 2025</title>
+   <!-- Stylesheet pinned with Subresource Integrity: a swapped file would be refused. -->
+-  <link rel="stylesheet" href="https://rs-pilot-event-assets-2025.s3.amazonaws.com/css/site.css" integrity="sha384-3t7H6LVInKxmxEb88i+acpyiaE6jBt4F0zncfK1kvdZWQTQf5p7YFQDIXiBnWv3M" crossorigin="anonymous">
++  <link rel="stylesheet" href="https://rs-pilot-event-assets-123456789012-us-east-1-an.s3.amazonaws.com/css/site.css" integrity="sha384-3t7H6LVInKxmxEb88i+acpyiaE6jBt4F0zncfK1kvdZWQTQf5p7YFQDIXiBnWv3M" crossorigin="anonymous">
+ </head>
+ <body>
+   <h1>Pilot Event 2025</h1>
+   <p class="countdown" data-target="2025-11-20T09:00:00Z"></p>
+   <p>Schedule: <a href="https://event.retiresafe-pilot.example/schedule.html">event.retiresafe-pilot.example/schedule.html</a></p>
+   <!-- Script loaded without integrity pinning: whoever owns the bucket controls this code. -->
+-  <script src="https://rs-pilot-event-assets-2025.s3.amazonaws.com/js/countdown.js"></script>
++  <script src="https://rs-pilot-event-assets-123456789012-us-east-1-an.s3.amazonaws.com/js/countdown.js"></script>
+ </body>
+ </html>

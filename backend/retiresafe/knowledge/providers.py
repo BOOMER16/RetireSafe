@@ -1,0 +1,127 @@
+"""Provider rules: which retiring resources carry a reclaimable public name.
+
+Pilot coverage (each rule cites ids from ``sources.SOURCES``):
+
+* aws_s3_bucket                       global namespace -> reclaimable; account-regional -> not
+* aws_elastic_beanstalk_environment   CNAME prefix pool -> reclaimable
+* azurerm_*web_app / app_service / *function_app
+                                      classic <name>.azurewebsites.net -> reclaimable;
+                                      scoped default hostnames -> not reclaimable by outsiders
+Any other resource type is reported as NOT_NAME_BEARING (outside pilot scope) and
+listed in the evidence record so the scope limit is visible.
+"""
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+
+from ..models import ConditionResult, Endpoint, Tri
+
+RULES_VERSION = "2026-10-01.1"
+
+ACCOUNT_REGIONAL_NAME = re.compile(r"^(?P<prefix>.+)-(?P<account>\d{12})-(?P<region>[a-z]{2}(?:-[a-z]+)+-\d)-an$")
+AZURE_WEBAPP_TYPES = {
+    "azurerm_linux_web_app", "azurerm_windows_web_app", "azurerm_app_service",
+    "azurerm_function_app", "azurerm_linux_function_app", "azurerm_windows_function_app",
+}
+S3_TYPES = {"aws_s3_bucket"}
+EB_TYPES = {"aws_elastic_beanstalk_environment"}
+NAME_BEARING = S3_TYPES | EB_TYPES | AZURE_WEBAPP_TYPES
+
+
+@dataclass
+class ProviderView:
+    name: str | None
+    region: str | None
+    endpoints: list[Endpoint]
+    reclaimable: ConditionResult
+
+
+def s3_endpoints(bucket: str, region: str | None) -> list[Endpoint]:
+    eps = [Endpoint(bucket, "s3_bucket"), Endpoint(f"{bucket}.s3.amazonaws.com", "s3_rest")]
+    if region:
+        eps += [Endpoint(f"{bucket}.s3.{region}.amazonaws.com", "s3_rest"),
+                Endpoint(f"{bucket}.s3-website-{region}.amazonaws.com", "s3_website"),
+                Endpoint(f"{bucket}.s3-website.{region}.amazonaws.com", "s3_website")]
+    return eps
+
+
+def _s3(attrs: dict, provider_region: str | None) -> ProviderView:
+    bucket = attrs.get("bucket")
+    region = attrs.get("region") or provider_region
+    ns = attrs.get("bucket_namespace")
+    if ns == "account-regional":
+        rec = ConditionResult(Tri.FALSE, "bucket is in the account regional namespace; only the owning account "
+                              "can create buckets there", ["src:aws-sdk-s3-account-regional"])
+    elif ns == "global":
+        rec = ConditionResult(Tri.TRUE, "bucket is in the shared global namespace; after deletion the name can be "
+                              "created by any AWS account in the partition",
+                              ["src:aws-sdk-s3-createbucket", "src:watchtowr-s3-2025", "src:infoblox-hazyhawk-2025"])
+    elif bucket and ACCOUNT_REGIONAL_NAME.match(bucket):
+        rec = ConditionResult(Tri.UNKNOWN, "name follows the account-regional format but the plan does not record "
+                              "bucket_namespace; confirm the namespace", ["src:aws-sdk-s3-account-regional"])
+    elif bucket:
+        rec = ConditionResult(Tri.TRUE, "no account-regional namespace recorded, so the bucket is a global-namespace "
+                              "bucket (the default); its name is reclaimable after deletion",
+                              ["src:aws-sdk-s3-createbucket", "src:watchtowr-s3-2025", "src:infoblox-hazyhawk-2025"])
+    else:
+        rec = ConditionResult(Tri.UNKNOWN, "bucket name not present in the plan", [])
+    eps = s3_endpoints(bucket, region) if bucket else []
+    if attrs.get("website_endpoint"):
+        eps.append(Endpoint(attrs["website_endpoint"], "s3_website"))
+    return ProviderView(bucket, region, _dedupe(eps), rec)
+
+
+def _eb(attrs: dict, provider_region: str | None) -> ProviderView:
+    prefix = attrs.get("cname_prefix")
+    region = attrs.get("region") or provider_region
+    eps = []
+    if attrs.get("cname"):
+        eps.append(Endpoint(attrs["cname"].rstrip("."), "eb_cname"))
+    if prefix and region:
+        eps.append(Endpoint(f"{prefix}.{region}.elasticbeanstalk.com", "eb_cname"))
+    if prefix:
+        rec = ConditionResult(Tri.TRUE, "Elastic Beanstalk CNAME prefixes come from a shared pool checked for "
+                              "availability; a released prefix can be reserved by another account",
+                              ["src:aws-sdk-eb-checkdns", "src:cito-fingerprints"])
+    else:
+        rec = ConditionResult(Tri.UNKNOWN, "no cname_prefix in the plan; cannot tell which name is released", [])
+    return ProviderView(prefix or attrs.get("cname"), region, _dedupe(eps), rec)
+
+
+def _azure(attrs: dict, provider_region: str | None) -> ProviderView:
+    name = attrs.get("name")
+    host = (attrs.get("default_hostname") or (f"{name}.azurewebsites.net" if name else "")).lower().rstrip(".")
+    scope = attrs.get("auto_generated_domain_name_label_scope")
+    eps = [Endpoint(host, "azure_app")] if host else []
+    if scope:
+        rec = ConditionResult(Tri.FALSE, f"default hostname uses autoGeneratedDomainNameLabelScope={scope}; the "
+                              "endpoint name is not reusable outside that scope", ["src:azure-sdk-web-label-scope"])
+    elif host and re.fullmatch(r"[a-z0-9-]+\.azurewebsites\.net", host):
+        rec = ConditionResult(Tri.TRUE, "classic <name>.azurewebsites.net hostname; the app name can be claimed by "
+                              "another tenant after deletion",
+                              ["src:ms-learn-dangling-dns", "src:infoblox-cdc-2025", "src:cito-fingerprints"])
+    else:
+        rec = ConditionResult(Tri.UNKNOWN, "hostname is not the classic single-label form; confirm the label scope",
+                              ["src:azure-sdk-web-label-scope"])
+    return ProviderView(name, attrs.get("location") or provider_region, eps, rec)
+
+
+def view(resource_type: str, attrs: dict, provider_region: str | None) -> ProviderView | None:
+    if resource_type in S3_TYPES:
+        return _s3(attrs, provider_region)
+    if resource_type in EB_TYPES:
+        return _eb(attrs, provider_region)
+    if resource_type in AZURE_WEBAPP_TYPES:
+        return _azure(attrs, provider_region)
+    return None
+
+
+def _dedupe(eps: list[Endpoint]) -> list[Endpoint]:
+    seen, out = set(), []
+    for e in eps:
+        k = (e.name.lower(), e.kind)
+        if k not in seen:
+            seen.add(k)
+            out.append(e)
+    return out
