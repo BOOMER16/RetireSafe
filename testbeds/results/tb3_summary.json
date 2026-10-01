@@ -1,0 +1,171 @@
+{
+  "dataset": "NASA-HTTP Jul 1995",
+  "recency_window_days": 3,
+  "resources_looking_dead_in_window": 108,
+  "of_those_with_live_external_dependents": 108,
+  "share_with_hidden_external_dependents": 1.0,
+  "max_hidden_external_clients_on_one_dead_looking_resource": 15054,
+  "interpretation": "108 of 108 resources that a 3-day activity dashboard would flag as idle still carry traffic from external (non-nasa.gov) clients over their history. Deleting on the dashboard signal alone would silently break those third-party dependents - the coordination gap, measured.",
+  "top_offenders": [
+    {
+      "resource": "/shuttle/countdown/count.gif",
+      "total_requests": 22216,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 15319,
+      "distinct_/24_networks": 14736,
+      "distinct_external_clients": 15054
+    },
+    {
+      "resource": "/cgi-bin/imagemap/countdown",
+      "total_requests": 16983,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 8138,
+      "distinct_/24_networks": 7900,
+      "distinct_external_clients": 7996
+    },
+    {
+      "resource": "/shuttle/countdown/video/livevideo.gif",
+      "total_requests": 10150,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 4358,
+      "distinct_/24_networks": 4235,
+      "distinct_external_clients": 4221
+    },
+    {
+      "resource": "/shuttle/countdown/images/cdtclock.gif",
+      "total_requests": 8662,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 2228,
+      "distinct_/24_networks": 2154,
+      "distinct_external_clients": 2087
+    },
+    {
+      "resource": "/shuttle/countdown/video/landing.gif",
+      "total_requests": 1365,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 875,
+      "distinct_/24_networks": 869,
+      "distinct_external_clients": 847
+    },
+    {
+      "resource": "/shuttle/missions/51-l/news",
+      "total_requests": 761,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 670,
+      "distinct_/24_networks": 666,
+      "distinct_external_clients": 658
+    },
+    {
+      "resource": "/shuttle/missions/sts-70/news/shuttle-status-5-25.txt",
+      "total_requests": 292,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 257,
+      "distinct_/24_networks": 255,
+      "distinct_external_clients": 245
+    },
+    {
+      "resource": "/statistics/1995/Jun/Jun95.html",
+      "total_requests": 202,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 175,
+      "distinct_/24_networks": 175,
+      "distinct_external_clients": 164
+    },
+    {
+      "resource": "/shuttle/countdown/images/cdtclock-large.gif",
+      "total_requests": 198,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 166,
+      "distinct_/24_networks": 165,
+      "distinct_external_clients": 155
+    },
+    {
+      "resource": "/statistics/1995/Jun/Jun95_request.gif",
+      "total_requests": 175,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 152,
+      "distinct_/24_networks": 152,
+      "distinct_external_clients": 142
+    },
+    {
+      "resource": "/statistics/1995/Jun/Jun95_byte.gif",
+      "total_requests": 168,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 143,
+      "distinct_/24_networks": 143,
+      "distinct_external_clients": 133
+    },
+    {
+      "resource": "/shuttle/missions/sts-70/news/N95-29-New-MCC-Briefing.txt",
+      "total_requests": 133,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 131,
+      "distinct_/24_networks": 130,
+      "distinct_external_clients": 120
+    },
+    {
+      "resource": "/history/apollo/publications/sp-350/sp-350.txt~",
+      "total_requests": 140,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 113,
+      "distinct_/24_networks": 112,
+      "distinct_external_clients": 111
+    },
+    {
+      "resource": "/shuttle/missions/sts-70/movies/",
+      "total_requests": 142,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 101,
+      "distinct_/24_networks": 101,
+      "distinct_external_clients": 100
+    },
+    {
+      "resource": "/shuttle/missions/sts-71/news/sts-71-mcc-08.txt",
+      "total_requests": 107,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 100,
+      "distinct_/24_networks": 100,
+      "distinct_external_clients": 98
+    },
+    {
+      "resource": "/shuttle/missions/sts-71/news/sts-71-mcc-14.txt",
+      "total_requests": 107,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 100,
+      "distinct_/24_networks": 100,
+      "distinct_external_clients": 95
+    },
+    {
+      "resource": "/shuttle/missions/sts-71/news/sts-71-mcc-12.txt",
+      "total_requests": 109,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 98,
+      "distinct_/24_networks": 98,
+      "distinct_external_clients": 92
+    },
+    {
+      "resource": "/shuttle/missions/sts-71/news/sts-71-mcc-11.txt",
+      "total_requests": 104,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 97,
+      "distinct_/24_networks": 97,
+      "distinct_external_clients": 90
+    },
+    {
+      "resource": "/shuttle/missions/sts-71/news/sts-71-mcc-06.txt",
+      "total_requests": 99,
+      "recent_3d_requests": 1,
+      "distinct_clients_all_time": 91,
+      "distinct_/24_networks": 91,
+      "distinct_external_clients": 88
+    },
+    {
+      "resource": "/shuttle/missions/sts-70/news/sts-70-mcc-02.txt",
+      "total_requests": 102,
+      "recent_3d_requests": 0,
+      "distinct_clients_all_time": 94,
+      "distinct_/24_networks": 94,
+      "distinct_external_clients": 88
+    }
+  ]
+}

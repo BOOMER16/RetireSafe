@@ -1,0 +1,43 @@
+# Research log
+
+A chronological record of how the research was done, including dead ends, so the results can be audited and reproduced. Date: **2026-10-01**. Environment: a sandboxed cloud container with a policy-restricted egress proxy.
+
+## 1. Brief analysis
+* Read `docs/brief/RetireSafe_Research_Brief.pdf` (9 pages): the problem definition, five takeover conditions, documented incidents (CDC, Hazy Hawk, SubdoMailing, NSDI '24, watchTowr S3 and .mobi), existing protections, and the suggested hackathon scope.
+* Pulled the 11 source links embedded in the PDF into [`SOURCES.md`](SOURCES.md).
+* Decision: the most useful thing to validate with data was the product's *core judgements*, i.e. (a) how often reclaimable references really exist, (b) when silence in traffic means a resource is dead, and (c) how much hidden dependence a deleting team cannot see.
+
+## 2. Data-source reconnaissance
+* Tested reachability of candidate sources. Blocked by the egress policy: DoH (`dns.google`, `cloudflare-dns.com`), `crt.sh`, `api.npmjs.org`, `pypistats.org`, `tranco-list.eu`, `rdap.org`, `ita.ee.lbl.gov`, `archive.org`, `huggingface.co`, Common Crawl.
+* Reachable: the system DNS resolver, `*.amazonaws.com` (S3), GitHub (public git and raw files), PyPI, the npm registry.
+* BigQuery public datasets (for example the PyPI downloads table) needed a billing project that was not configured, so they were not used.
+* Chosen real data: **Cisco Umbrella top-1M** (from S3), **NASA-HTTP 1995** (GitHub mirror of the Internet Traffic Archive), **can-i-take-over-xyz** fingerprints (GitHub), and the **top-15k PyPI list** (fetched, not used).
+* Spot check: `ahbazuretestapp.cdc.gov` (the CDC incident host) now returns NXDOMAIN, so the record has been removed.
+
+## 3. TB1 (live DNS)
+* Smoke test on 400 names, then the full run on 16,000 names (top 8k plus random 8k, seed 42) in 407 s.
+* Result: 5 reclaimable candidates (4 S3 `NoSuchBucket`, 1 Azure), 5 stale, 4 needing an HTTP check.
+* Per-host output is kept private and git-ignored. See [06](06_ethics_and_limitations.md).
+* Note: an attempt to launch the long run as a detached background process was blocked by the session's safety tooling, so the run was done in the foreground instead.
+
+## 4. TB2 (traffic survival)
+* Parsed 1,891,715 lines (1,958 unparseable), 7,133 resources, over 27.56 days.
+* D\* at 99%: p50 42.3 d, p90 126.9 d. 33% of resources are singletons.
+* Hold-out: 3,973 idle-looking resources, 783 returned vs 1,161.4 predicted.
+* **Correction made during documentation:** the first version labelled this hold-out "Poisson tracks empirical returns within noise". That was wrong given a 1.48× gap. The label logic was fixed to report the direction and ratio, and the result was regenerated.
+
+## 5. TB3 (blast radius)
+* 108 resources look dead in a 3-day window. All 108 had external clients in their history; the largest had 15,054 (`/shuttle/countdown/count.gif`, 0 recent hits).
+* **Correction made during documentation:** the first PDF said that resource had "1 hit" in the window. The data says 0. The PDF now reads the value straight from the results file.
+
+## 6. Synthesis
+* Figures: `make_figs.py` → `testbeds/figs/`.
+* Dossier: `make_pdf.py` → `RetireSafe_Solution_Dossier.pdf` (7 pages).
+* Wilson CIs for TB1 calculated for the docs: overall 0.013–0.073%.
+* Documentation written in `docs/01`–`07`.
+
+## 7. Planned but not run
+* **TB4 SPF audit** and **TB5 package S3 scan**. Reasons are in [02](02_testbeds.md#test-beds-designed-but-not-run). Both can run with the code and data already present.
+
+## 8. Fabricated data
+* **None.** Every number comes from a real dataset, a live read-only query, or a published source.

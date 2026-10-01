@@ -1,0 +1,71 @@
+{
+  "n": 16000,
+  "seconds": 407,
+  "by_stratum": {
+    "top": {
+      "n": 8000,
+      "class": {
+        "no_cname": 6061,
+        "cname_resolves": 1934,
+        "reclaimable_candidate": 1,
+        "provider_needs_http_fingerprint": 1,
+        "stale_cname_target_missing": 3
+      },
+      "provider_hits": {
+        "Microsoft Azure": 82,
+        "AWS/Load Balancer (ELB)": 40,
+        "AWS/S3": 1,
+        "AWS/Elastic Beanstalk": 1
+      },
+      "reclaimable_by_service": {
+        "Microsoft Azure": 1
+      },
+      "s3_probe": {
+        "exists:301": 1
+      },
+      "cname_chain_len": {
+        "0": 6061,
+        "2": 629,
+        "3": 216,
+        "4": 63,
+        "1": 998,
+        "5": 26,
+        "6": 6,
+        "8": 1
+      }
+    },
+    "random": {
+      "n": 8000,
+      "class": {
+        "no_cname": 6421,
+        "cname_resolves": 1570,
+        "stale_cname_target_missing": 2,
+        "provider_needs_http_fingerprint": 3,
+        "reclaimable_candidate": 4
+      },
+      "provider_hits": {
+        "AWS/Load Balancer (ELB)": 64,
+        "Microsoft Azure": 42,
+        "AWS/Elastic Beanstalk": 3,
+        "AWS/S3": 7
+      },
+      "reclaimable_by_service": {
+        "AWS/S3": 4
+      },
+      "s3_probe": {
+        "exists:301": 3,
+        "NoSuchBucket": 4
+      },
+      "cname_chain_len": {
+        "0": 6421,
+        "1": 1151,
+        "2": 305,
+        "4": 23,
+        "3": 73,
+        "7": 10,
+        "5": 7,
+        "6": 10
+      }
+    }
+  }
+}

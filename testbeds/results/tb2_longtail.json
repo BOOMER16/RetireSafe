@@ -1,0 +1,177 @@
+[
+  {
+    "resource": "/shuttle/missions/sts-69/test/count71.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/sts-69/test/sts69.jpg",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/sts-69/test/a",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/images/cdrom-1-95/img0037.jpg",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/status/r90-6",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/news/sci.space.news/1183",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/payloads/org/bbruckne.jpg",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/payloads/org/cm-gsd.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/payloads/schedules/pics/cr/cr02.bps",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/41-b/docs/",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/payloads/org/cg-iso/",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/payloads/schedules/test/p310204.bps",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/elv/uplink.htm/",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/statistics/1993/1993.html",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/news/sci.space.news/2577",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/sts-69/test/test.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/news/sci.space.news/643",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/msfc/who.html",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/sts-69/test/test1.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/msfc/description/instruments/uit.html",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/msfc/description/instruments/uit_line_bay-small.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/msfc/description/instruments/uitlogo.gif",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/sts-67/news/ksc-status-02-21-95.txt",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/news/sci.space.news/102",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  },
+  {
+    "resource": "/shuttle/missions/news/1993/h03.03.93",
+    "req": 1,
+    "rate_per_day": 0.036,
+    "quarantine_days": 126.9,
+    "ok_2xx": 1
+  }
+]

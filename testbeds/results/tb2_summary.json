@@ -1,0 +1,85 @@
+{
+  "dataset": "NASA-HTTP Jul 1995 (Internet Traffic Archive)",
+  "requests_total": 1891715,
+  "parse_failures": 1958,
+  "distinct_resources": 7133,
+  "observed_span_days": 27.56,
+  "quarantine_days_for_1pct_miss": {
+    "p50": 42.31,
+    "p90": 126.94,
+    "p99": 126.94,
+    "max": 126.94,
+    "mean": 56.53
+  },
+  "interpretation": "A single mean-rate rule is unsafe: half of resources need <= 42.31d of silence to be 99% sure they are dead, but the long tail needs up to 126.9d. Retirement must quarantine per-resource, not globally.",
+  "holdout_validation": {
+    "train_days": 24.0,
+    "idle_cohort_size": 3973,
+    "actually_returned": 783,
+    "poisson_expected_return": 1161.4,
+    "predicted_over_observed_ratio": 1.483,
+    "note": "Poisson OVER-predicts returns (conservative, mis-calibrated): good for ranking, recalibrate before using as a probability",
+    "reliability_deciles": [
+      {
+        "bin": 0,
+        "n": 397,
+        "pred": 0.138,
+        "obs": 0.055
+      },
+      {
+        "bin": 1,
+        "n": 397,
+        "pred": 0.138,
+        "obs": 0.098
+      },
+      {
+        "bin": 2,
+        "n": 397,
+        "pred": 0.138,
+        "obs": 0.058
+      },
+      {
+        "bin": 3,
+        "n": 398,
+        "pred": 0.138,
+        "obs": 0.06
+      },
+      {
+        "bin": 4,
+        "n": 397,
+        "pred": 0.138,
+        "obs": 0.038
+      },
+      {
+        "bin": 5,
+        "n": 397,
+        "pred": 0.225,
+        "obs": 0.141
+      },
+      {
+        "bin": 6,
+        "n": 398,
+        "pred": 0.264,
+        "obs": 0.131
+      },
+      {
+        "bin": 7,
+        "n": 397,
+        "pred": 0.383,
+        "obs": 0.295
+      },
+      {
+        "bin": 8,
+        "n": 397,
+        "pred": 0.531,
+        "obs": 0.385
+      },
+      {
+        "bin": 9,
+        "n": 398,
+        "pred": 0.83,
+        "obs": 0.709
+      }
+    ]
+  }
+}

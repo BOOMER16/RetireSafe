@@ -1,0 +1,7 @@
+# Versions used to produce the committed results (Python 3.11)
+dnspython==2.8.0
+tldextract==5.3.2
+requests==2.34.2
+matplotlib==3.11.2
+numpy==2.4.6
+reportlab==5.0.1
