@@ -151,3 +151,17 @@ def test_c4_requires_fresh_sufficient_quiet_logs():
                       start + timedelta(days=40), pol)
     assert decide.c4_consumers([busy]).value == Tri.TRUE
     assert decide.c4_consumers([quiet]).value == Tri.FALSE
+
+
+def test_vendored_catalogue_is_tracked_and_pinned():
+    # regression: a gitignore rule once kept this file out of the repository
+    import hashlib
+    import subprocess
+    from retiresafe.knowledge import fingerprints
+    data = fingerprints.CATALOGUE.read_bytes()
+    assert hashlib.sha256(data).hexdigest() == "a108bf6e6d10d4e4861c4293eef8c224a0fd243ec4f3a39de321de69f284c64f"
+    repo = fingerprints.CATALOGUE.parents[4]
+    if (repo / ".git").exists():
+        tracked = subprocess.run(["git", "ls-files", "--error-unmatch", str(fingerprints.CATALOGUE)], cwd=repo,
+                                 capture_output=True)
+        assert tracked.returncode == 0, "fingerprint catalogue is not tracked by git"

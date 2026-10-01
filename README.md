@@ -8,7 +8,8 @@ When a cloud resource (an S3 bucket, an Azure app, a temporary event site) is de
 This repository contains the **research, the proposed solution, and three test beds that were run on real public data**. The product itself has not been built yet; that is the hackathon's job. Every number in the dossier comes from a script and a committed output file in this repo.
 
 > 📄 **Main deliverable:** [`RetireSafe_Solution_Dossier.pdf`](RetireSafe_Solution_Dossier.pdf) (7 pages)
-> 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 39 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
+> 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 43 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
+> 💻 **Run it yourself:** [`RUN_LOCALLY.md`](RUN_LOCALLY.md): Anaconda Prompt setup and `python demo.py`, a step-by-step walkthrough of what the system does.
 > 📘 **New to the topic?** Start with [`RetireSafe_Beginners_Guide.pdf`](RetireSafe_Beginners_Guide.pdf): DNS, cloud naming, takeovers, SPF, Terraform, logs, the statistics, our findings, FAQ and glossary (21 pages)
 > 📄 Original problem brief: [`docs/brief/RetireSafe_Research_Brief.pdf`](docs/brief/RetireSafe_Research_Brief.pdf)
 

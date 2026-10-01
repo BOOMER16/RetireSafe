@@ -2,7 +2,7 @@
 
 A pre-flight gate for cloud-resource retirement. It reads a proposed Terraform change, finds every reference that would survive the deletion, checks whether another party could re-register the released name, and measures whether consumers remain. The result is a per-resource verdict, a set of patches, and an auditable evidence record. It also runs a live drift scan to catch references left dangling by deletions made outside the gate.
 
-* **Status:** pilot. Single node, SQLite storage, synchronous assessments. 39 automated tests. Validated against the research test beds on the same real data (see [Validation](#validation)).
+* **Status:** pilot. Single node, SQLite storage, synchronous assessments. 43 automated tests. Validated against the research test beds on the same real data (see [Validation](#validation)).
 * **Never executes changes.** It reads inputs and proposes patches. All network probes are read-only.
 
 ---
@@ -167,7 +167,7 @@ Run with `python validation/cross_check.py tb2 tb3 [tb1]` (`tb1` needs live DNS 
 ## Tests
 
 ```bash
-cd backend && ../.venv/bin/python -m pytest -q        # 39 tests, about 1 minute with the real data present
+cd backend && ../.venv/bin/python -m pytest -q        # 43 tests, about 1 minute with the real data present
 ```
 
 Tests marked `realdata` need the NASA logs in `/home/user/data/nasa-http` (see `../scripts/fetch_data.sh`) and skip cleanly without them.

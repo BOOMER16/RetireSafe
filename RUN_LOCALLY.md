@@ -108,7 +108,10 @@ retiresafe assess --plan pilot\generated\plan_before.json --dns pilot\generated\
 echo %ERRORLEVEL%
 ```
 
-(On macOS/Linux use `/` instead of `\` and `echo $?`.)
+It prints `gate: FAIL` and exit code `2`. This command gives traffic for one bucket only, so
+`event_site` comes out as TOMBSTONE rather than BLOCK: without logs for it, RetireSafe cannot see
+whether anyone still uses it, and does not count that as safe. (On macOS/Linux use `/` instead of
+`\` and `echo $?`.)
 
 Other commands:
 
@@ -150,7 +153,7 @@ python -m pytest -q
 cd ..
 ```
 
-Expect `42 passed` with the traffic data downloaded. Without it, 2 tests are skipped.
+Expect `43 passed` with the traffic data downloaded. Without it, 2 tests are skipped.
 
 ---
 

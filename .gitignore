@@ -1,5 +1,4 @@
-/data
-data/
+/data/
 __pycache__/
 *.pyc
 testbeds/results/*.private.*
