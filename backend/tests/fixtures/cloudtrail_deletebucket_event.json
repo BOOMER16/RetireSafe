@@ -1,0 +1,37 @@
+{
+  "version": "0",
+  "id": "6a7e8feb-b491-4cf7-a9f1-bf3703467718",
+  "detail-type": "AWS API Call via CloudTrail",
+  "source": "aws.s3",
+  "account": "111122223333",
+  "time": "2019-02-01T03:22:33Z",
+  "region": "us-west-2",
+  "resources": [],
+  "detail": {
+    "eventVersion": "1.03",
+    "userIdentity": {
+      "type": "IAMUser",
+      "principalId": "111122223333",
+      "arn": "arn:aws:iam::111122223333:user/myUserName",
+      "accountId": "111122223333",
+      "userName": "myUserName"
+    },
+    "eventTime": "2019-02-01T03:22:33Z",
+    "eventSource": "s3.amazonaws.com",
+    "eventName": "DeleteBucket",
+    "awsRegion": "us-west-2",
+    "sourceIPAddress": "",
+    "userAgent": "[]",
+    "requestParameters": {
+      "bucketName": "amzn-s3-demo-bucket",
+      "host": [
+        "s3.us-west-2.amazonaws.com"
+      ]
+    },
+    "responseElements": null,
+    "requestID": "BD8798EACDD16751",
+    "eventID": "607b9532-1423-41c7-b048-ec2641693c47",
+    "eventType": "AwsApiCall",
+    "recipientAccountId": "111122223333"
+  }
+}

@@ -121,6 +121,39 @@ def cmd_scan(a: argparse.Namespace) -> int:
 LOOPBACK = {"127.0.0.1", "::1", "localhost"}
 
 
+def cmd_guardrails(a: argparse.Namespace) -> int:
+    from . import guardrails
+    from .collectors import terraform_plan
+    out = Path(a.out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    written = []
+    if a.pipeline_role:
+        (out / "retiresafe-scp.json").write_text(json.dumps(guardrails.aws_scp(a.pipeline_role, a.break_glass_role),
+                                                            indent=2), encoding="utf-8")
+        written.append("retiresafe-scp.json")
+    (out / "retiresafe-eventbridge.tf").write_text(guardrails.eventbridge_terraform(), encoding="utf-8")
+    (out / "retiresafe-eventbridge-pattern.json").write_text(json.dumps(guardrails.eventbridge_pattern(), indent=2),
+                                                             encoding="utf-8")
+    written += ["retiresafe-eventbridge.tf", "retiresafe-eventbridge-pattern.json"]
+    if a.plan:
+        from .knowledge.providers import AZURE_WEBAPP_TYPES
+        pv = terraform_plan.load(a.plan)
+        az = sorted(s.address for s in pv.state if s.type in AZURE_WEBAPP_TYPES or s.type.startswith("azurerm_")
+                    and s.type in guardrails_azure_types())
+        if az:
+            (out / "retiresafe-azure-locks.tf").write_text(guardrails.azure_locks_terraform(az), encoding="utf-8")
+            written.append("retiresafe-azure-locks.tf")
+    print("wrote " + ", ".join(written) + f" to {out}")
+    print("note: SCPs do not apply to the organisation's management account; keep the pipeline role assumable "
+          "only from CI")
+    return 0
+
+
+def guardrails_azure_types() -> set[str]:
+    from .knowledge import providers
+    return {t for t in providers.NAME_BEARING if t.startswith("azurerm_")}
+
+
 def cmd_serve(a: argparse.Namespace) -> int:
     import os
     import uvicorn
@@ -168,6 +201,12 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--dns", action="append")
     s.add_argument("--out")
     s.set_defaults(fn=cmd_scan)
+    s = sub.add_parser("guardrails", help="generate controls that stop deletions bypassing the gate")
+    s.add_argument("--pipeline-role", action="append", help="ARN (wildcards allowed) of the role that runs the gate")
+    s.add_argument("--break-glass-role", action="append")
+    s.add_argument("--plan", help="Terraform plan/state JSON to find Azure resources needing delete locks")
+    s.add_argument("--out-dir", default="retiresafe-guardrails")
+    s.set_defaults(fn=cmd_guardrails)
     s = sub.add_parser("serve", help="run the REST API")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8080)

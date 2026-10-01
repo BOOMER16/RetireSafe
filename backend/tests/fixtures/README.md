@@ -9,3 +9,5 @@
 
 The pilot's Terraform plans and Route 53 exports in `../../pilot/generated/` are real tool output
 (Terraform 1.16.4, hashicorp/aws 6.67.0 against moto 5.2.3); see `pilot/generated/manifest.json`.
+| `cloudtrail_deletebucket_event.json` | AWS's documented CloudTrail S3 record (`PutBucketAcl` example in `awsdocs/amazon-s3-userguide`, `cloudtrail-logging-understanding-s3-entries.md`, CC BY-SA 4.0) with `eventName` changed to `DeleteBucket`, a placeholder bucket name added, and the access key removed, wrapped in EventBridge's "AWS API Call via CloudTrail" envelope. | **Adapted** from an AWS example |
+| `sarif-schema-2.1.0.json` | OASIS SARIF 2.1.0 JSON schema (`oasis-tcs/sarif-spec`). | Official schema |
