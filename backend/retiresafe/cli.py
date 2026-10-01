@@ -18,6 +18,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from . import __version__
+from . import ownership
 from .collectors import dns_zone
 from .config import log_from, parse_as_of, policy_dict, policy_from
 from .engine.assess import AssessmentInput, run
@@ -74,6 +75,11 @@ def cmd_assess(a: argparse.Namespace) -> int:
     return 0 if g["passed"] else 2
 
 
+def _dns_spec(spec: str) -> tuple[str, str | None]:
+    path, _, origin = spec.partition("@")
+    return path, origin or None
+
+
 def cmd_scan(a: argparse.Namespace) -> int:
     from .probes import live
     hosts: list[str] = []
@@ -82,6 +88,17 @@ def cmd_scan(a: argparse.Namespace) -> int:
     for spec in a.dns or []:
         path, _, origin = spec.partition("@")
         hosts += [r.name for r in dns_zone.load_any(path, origin or None) if r.type == "CNAME" or r.alias_target]
+    domains = ownership.owned_domains(a.owned_domain or [])
+    if a.dns and not a.owned_domain:          # a zone export is, by definition, a zone you control
+        domains = ownership.owned_domains([r.name for spec in a.dns
+                                           for r in dns_zone.load_any(*_dns_spec(spec)) if r.type == "SOA"])
+    if not domains:
+        print("error: pass --owned-domain example.com (or set RETIRESAFE_OWNED_DOMAINS); live checks only "
+              "run against names your organisation owns", file=sys.stderr)
+        return 1
+    hosts, refused = ownership.split(hosts, domains)
+    if refused:
+        print(f"skipped {len(refused)} name(s) outside the owned domains {domains}", file=sys.stderr)
     findings = live.scan(hosts)
     out = [asdict(f) for f in findings]
     if a.out:
@@ -94,9 +111,21 @@ def cmd_scan(a: argparse.Namespace) -> int:
     return 3 if bad else 0
 
 
+LOOPBACK = {"127.0.0.1", "::1", "localhost"}
+
+
 def cmd_serve(a: argparse.Namespace) -> int:
+    import os
     import uvicorn
-    uvicorn.run("retiresafe.api.app:app", host=a.host, port=a.port)
+    if a.host not in LOOPBACK and not os.environ.get("RETIRESAFE_API_KEY"):
+        print("error: refusing to listen on a non-loopback address without RETIRESAFE_API_KEY set "
+              "(evidence records describe your infrastructure)", file=sys.stderr)
+        return 1
+    if a.host not in LOOPBACK and not (a.ssl_certfile and a.ssl_keyfile):
+        print("warning: serving without TLS on a network address; use --ssl-certfile/--ssl-keyfile or a "
+              "TLS-terminating reverse proxy", file=sys.stderr)
+    uvicorn.run("retiresafe.api.app:app", host=a.host, port=a.port, ssl_certfile=a.ssl_certfile,
+                ssl_keyfile=a.ssl_keyfile, server_header=False)
     return 0
 
 
@@ -124,12 +153,15 @@ def main(argv: list[str] | None = None) -> int:
     s.set_defaults(fn=cmd_assess)
     s = sub.add_parser("scan", help="live drift scan of DNS names you own")
     s.add_argument("--hosts")
+    s.add_argument("--owned-domain", action="append", help="domain your organisation owns (repeatable)")
     s.add_argument("--dns", action="append")
     s.add_argument("--out")
     s.set_defaults(fn=cmd_scan)
     s = sub.add_parser("serve", help="run the REST API")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8080)
+    s.add_argument("--ssl-certfile")
+    s.add_argument("--ssl-keyfile")
     s.set_defaults(fn=cmd_serve)
     s = sub.add_parser("sources", help="print the source register behind every rule")
     s.set_defaults(fn=lambda a: print(json.dumps(SOURCES, indent=2)) or 0)

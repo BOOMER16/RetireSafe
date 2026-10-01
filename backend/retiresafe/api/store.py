@@ -5,7 +5,7 @@ import json
 import os
 import sqlite3
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 _lock = threading.Lock()
 
@@ -24,7 +24,28 @@ class Store:
               reclaimable INTEGER NOT NULL, findings TEXT NOT NULL);
         """)
 
+    @staticmethod
+    def retention_days() -> int:
+        return int(os.environ.get("RETIRESAFE_RETENTION_DAYS", "90"))
+
+    def purge(self) -> int:
+        """Delete records older than the retention period (0 disables purging)."""
+        days = self.retention_days()
+        if days <= 0:
+            return 0
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        with _lock, self._db:
+            n = self._db.execute("DELETE FROM assessments WHERE created_at < ?", (cutoff,)).rowcount
+            n += self._db.execute("DELETE FROM drift_scans WHERE created_at < ?", (cutoff,)).rowcount
+        return n
+
+    def delete(self, table: str, rid: str) -> bool:
+        assert table in ("assessments", "drift_scans")
+        with _lock, self._db:
+            return self._db.execute(f"DELETE FROM {table} WHERE id=?", (rid,)).rowcount > 0
+
     def put_assessment(self, rec: dict) -> None:
+        self.purge()
         with _lock, self._db:
             self._db.execute("INSERT INTO assessments VALUES (?,?,?,?,?)",
                              (rec["assessment_id"], rec["created_at"], int(rec["gate"]["passed"]),
@@ -42,6 +63,7 @@ class Store:
 
     def put_scan(self, sid: str, findings: list[dict]) -> dict:
         now = datetime.now(timezone.utc).isoformat()
+        self.purge()
         bad = sum(f["classification"] in ("reclaimable_candidate", "dangling_unregistered_domain") for f in findings)
         with _lock, self._db:
             self._db.execute("INSERT INTO drift_scans VALUES (?,?,?,?,?)",

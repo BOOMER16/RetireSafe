@@ -13,6 +13,7 @@ Set RETIRESAFE_API_KEY to require an ``X-API-Key`` header on /v1 routes.
 """
 from __future__ import annotations
 
+import hmac
 import json
 import os
 import shutil
@@ -27,7 +28,7 @@ from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadF
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
-from .. import __version__
+from .. import __version__, ownership
 from ..config import log_from, parse_as_of, policy_dict, policy_from
 from ..engine.assess import AssessmentInput, run
 from ..knowledge import providers
@@ -37,6 +38,8 @@ from ..report import evidence
 from .store import Store
 
 MAX_UPLOAD = int(os.environ.get("RETIRESAFE_MAX_UPLOAD_MB", "512")) * 1024 * 1024
+MAX_EXTRACT = int(os.environ.get("RETIRESAFE_MAX_EXTRACT_MB", "2048")) * 1024 * 1024
+MAX_MEMBERS = int(os.environ.get("RETIRESAFE_MAX_ARCHIVE_FILES", "100000"))
 MAX_SCAN_NAMES = 2000
 
 app = FastAPI(title="RetireSafe", version=__version__,
@@ -53,8 +56,18 @@ def store() -> Store:
 
 def auth(x_api_key: str | None = Header(default=None)) -> None:
     key = os.environ.get("RETIRESAFE_API_KEY")
-    if key and x_api_key != key:
+    if key and not hmac.compare_digest((x_api_key or "").encode(), key.encode()):
         raise HTTPException(401, "missing or invalid X-API-Key")
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    resp = await call_next(request)
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("Referrer-Policy", "no-referrer")
+    if request.url.path.startswith("/v1"):
+        resp.headers["Cache-Control"] = "no-store"        # evidence records should not sit in caches
+    return resp
 
 
 async def _save(up: UploadFile, dest: Path) -> Path:
@@ -79,14 +92,34 @@ def _safe_extract(archive: Path, dest: Path) -> None:
         p = (dest / member).resolve()
         if dest != p and dest not in p.parents:
             raise HTTPException(400, f"archive member escapes the extraction directory: {member}")
+    def limits(sizes: list[int]) -> None:
+        if len(sizes) > MAX_MEMBERS:
+            raise HTTPException(413, f"archive has {len(sizes)} files; limit {MAX_MEMBERS}")
+        if sum(sizes) > MAX_EXTRACT:
+            raise HTTPException(413, f"archive expands to {sum(sizes) // 2**20} MB; limit {MAX_EXTRACT // 2**20} MB")
     if zipfile.is_zipfile(archive):
         with zipfile.ZipFile(archive) as z:
+            infos = z.infolist()
+            limits([i.file_size for i in infos])             # declared sizes; checked again while writing
             for m in z.namelist():
                 check(m)
-            z.extractall(dest)
+            budget = MAX_EXTRACT
+            for info in infos:
+                if info.is_dir():
+                    continue
+                target = dest / info.filename
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with z.open(info) as src, open(target, "wb") as out:
+                    while chunk := src.read(1 << 20):
+                        budget -= len(chunk)
+                        if budget < 0:
+                            raise HTTPException(413, "archive expands beyond the extraction limit")
+                        out.write(chunk)
     elif tarfile.is_tarfile(archive):
         with tarfile.open(archive) as t:
-            for m in t.getmembers():
+            members = t.getmembers()
+            limits([m.size for m in members])
+            for m in members:
                 check(m.name)
                 if m.issym() or m.islnk() or m.isdev():
                     raise HTTPException(400, f"links and devices are not allowed in the archive: {m.name}")
@@ -173,8 +206,31 @@ class ScanRequest(BaseModel):
 @app.post("/v1/drift-scans", dependencies=[Depends(auth)])
 def create_scan(req: ScanRequest) -> dict:
     from ..probes import live
-    findings = [asdict(f) for f in live.scan(req.hostnames)]
-    return store().put_scan(str(uuid.uuid4()), findings)
+    domains = ownership.owned_domains()
+    if not domains:
+        raise HTTPException(403, "live scans are disabled until RETIRESAFE_OWNED_DOMAINS lists the domains "
+                                 "your organisation owns (only scan names you own)")
+    ok, refused = ownership.split(req.hostnames, domains)
+    if not ok:
+        raise HTTPException(422, f"none of the hostnames are under the owned domains {domains}")
+    findings = [asdict(f) for f in live.scan(ok)]
+    rec = store().put_scan(str(uuid.uuid4()), findings)
+    rec["refused_not_owned"] = refused
+    return rec
+
+
+@app.delete("/v1/assessments/{aid}", dependencies=[Depends(auth)])
+def delete_assessment(aid: str) -> dict:
+    if not store().delete("assessments", aid):
+        raise HTTPException(404, "assessment not found")
+    return {"deleted": aid}
+
+
+@app.delete("/v1/drift-scans/{sid}", dependencies=[Depends(auth)])
+def delete_scan(sid: str) -> dict:
+    if not store().delete("drift_scans", sid):
+        raise HTTPException(404, "scan not found")
+    return {"deleted": sid}
 
 
 @app.get("/v1/drift-scans/{sid}", dependencies=[Depends(auth)])

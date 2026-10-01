@@ -13,7 +13,10 @@ rules turn short or stale evidence into UNKNOWN instead of a false all-clear.
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import ipaddress
+import secrets
 import math
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -53,6 +56,13 @@ def quarantine_days(rate: float | None, alpha: float) -> float | None:
     return -math.log(alpha) / rate
 
 
+_KEY = secrets.token_bytes(32)
+
+
+def _pseudo(value: str) -> bytes:
+    return hmac.new(_KEY, value.encode("utf-8", "replace"), hashlib.sha256).digest()
+
+
 def network_of(client: str) -> str:
     """/24 for IPv4, /48 for IPv6, the hostname itself otherwise (matches research test bed TB3)."""
     try:
@@ -80,8 +90,13 @@ def summarise(source: str, window_start: datetime | None, window_end: datetime |
     mle, lo, _hi = rate_bounds(n, t_days, policy.beta)
     last = max((r.ts for r in rows), default=None)
     silence = (as_of - last).total_seconds() / 86400.0 if last else None
-    clients = {r.client for r in rows}
-    ext = {c for c in clients if not is_internal(c, policy)}
+    # Pseudonymise as early as possible: only keyed hashes of client identifiers are kept, with a key
+    # that exists for this process only. Internal/external and /24 network are derived first.
+    raw = {r.client for r in rows}
+    clients = {_pseudo(c) for c in raw}
+    ext = {_pseudo(c) for c in raw if not is_internal(c, policy)}
+    networks = {_pseudo(network_of(c)) for c in raw}
+    del raw
     fresh = bool(window_end) and (as_of - window_end).total_seconds() / 86400.0 <= policy.max_staleness_days
     return TrafficSummary(
         source=source,
@@ -93,6 +108,6 @@ def summarise(source: str, window_start: datetime | None, window_end: datetime |
         rate_mle_per_day=mle, rate_lower_per_day=lo if n else 0.0,
         quarantine_days_mle=quarantine_days(mle, policy.alpha),
         quarantine_days_conservative=quarantine_days(lo, policy.alpha),
-        distinct_clients=len(clients), distinct_networks_24=len({network_of(c) for c in clients}),
+        distinct_clients=len(clients), distinct_networks_24=len(networks),
         external_clients=len(ext), external_share=(len(ext) / len(clients)) if clients else None,
         fresh=fresh, window_sufficient=t_days >= policy.min_window_days)
