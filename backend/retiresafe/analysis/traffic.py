@@ -35,6 +35,8 @@ class Policy:
     max_staleness_days: float = 2.0   # logs must end within this many days of as_of
     horizon_days: float = 90.0        # horizon for "a consumer returns" probability in risk scores
     mode: str = "strict"              # strict: never release a reclaimable name; balanced: release on evidence
+    enforcement: str = "enforce"      # enforce: failing gate exits 2; advisory: report only (for rollout)
+    max_waiver_days: int = 90         # waivers may not run longer than this
     internal_domains: list[str] = field(default_factory=list)
     internal_cidrs: list[str] = field(default_factory=list)
     org_account_ids: list[str] = field(default_factory=list)

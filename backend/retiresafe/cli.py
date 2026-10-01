@@ -37,7 +37,7 @@ def _kv(spec: str) -> tuple[str, dict]:
 
 def cmd_assess(a: argparse.Namespace) -> int:
     pol = json.loads(Path(a.policy).read_text(encoding="utf-8")) if a.policy else {}
-    for k in ("mode",):
+    for k in ("mode", "enforcement"):
         if getattr(a, k):
             pol[k] = getattr(a, k)
     if a.org_account:
@@ -61,14 +61,21 @@ def cmd_assess(a: argparse.Namespace) -> int:
         repos[label] = d
     logs = [log_from(opts, path) for path, opts in map(_kv, a.log or [])]
     migrate = dict(m.split("=", 1) for m in a.migrate or [])
-    inp = AssessmentInput(a.plan, dns, repos, logs, policy, parse_as_of(a.as_of), migrate)
+    inp = AssessmentInput(a.plan, dns, repos, logs, policy, parse_as_of(a.as_of), migrate, a.waivers)
     result = run(inp)
     rec = evidence.record(result, policy_dict(policy))
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     if a.markdown:
         Path(a.markdown).write_text(evidence.markdown(rec), encoding="utf-8")
+    if a.sarif:
+        from .report import sarif
+        Path(a.sarif).write_text(json.dumps(sarif.build(rec, {k: Path(v) for k, v in repos.items()},
+                                                        a.sarif_anchor), indent=2), encoding="utf-8")
     g = rec["gate"]
-    print(f"gate: {'PASS' if g['passed'] else 'FAIL'}  {g['verdict_counts']}")
+    label = "PASS" if g["would_pass"] else ("FAIL (advisory, not enforced)" if g["passed"] else "FAIL")
+    print(f"gate: {label}  {g['verdict_counts']}")
+    if g["waivers_rejected"]:
+        print(f"  {g['waivers_rejected']} waiver(s) rejected; see waivers_rejected in the evidence record")
     for r in rec["resources"]:
         print(f"  {r['verdict'].upper():16} {r['resource']['address']}  ({r['reasons'][0]})")
     print(f"evidence record: {a.out}")
@@ -143,6 +150,10 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--log", action="append", help="path,format=clf|s3|cloudfront[,host=..][,path_prefix=..][,covers=a|b]")
     s.add_argument("--policy", help="policy JSON file")
     s.add_argument("--mode", choices=["strict", "balanced"])
+    s.add_argument("--enforcement", choices=["enforce", "advisory"], help="advisory: report but always exit 0")
+    s.add_argument("--waivers", help="waiver file (JSON); see retiresafe/waivers.py")
+    s.add_argument("--sarif", help="also write SARIF 2.1.0 for GitHub code scanning")
+    s.add_argument("--sarif-anchor", help="repo file to attach DNS/infrastructure findings to (e.g. main.tf)")
     s.add_argument("--org-account", action="append")
     s.add_argument("--internal-domain", action="append")
     s.add_argument("--internal-cidr", action="append")

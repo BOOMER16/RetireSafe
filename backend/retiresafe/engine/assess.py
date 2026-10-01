@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .. import names, redact
+from .. import waivers as waivers_mod
 from ..analysis.traffic import Policy, summarise
 from ..collectors import access_logs, dns_zone, repo_scan, terraform_plan
 from ..collectors.dns_zone import DnsRecord
@@ -35,6 +36,8 @@ class AssessmentInput:
     policy: Policy = field(default_factory=Policy)
     as_of: datetime | None = None
     migrate_to: dict[str, str] = field(default_factory=dict)
+    waivers_file: str | None = None
+    waivers_inline: list[dict] = field(default_factory=list)
 
 
 @dataclass
@@ -47,6 +50,8 @@ class AssessmentResult:
     parse_stats: dict[str, dict]
     scan_stats: dict[str, dict]
     not_checked: list[str]
+    waivers_rejected: list[dict] = field(default_factory=list)
+    policy: Policy | None = None
 
 
 def sha256(path: Path) -> str:
@@ -114,6 +119,7 @@ def run(inp: AssessmentInput) -> AssessmentResult:
     policy = inp.policy
     as_of = inp.as_of or datetime.now(timezone.utc)
     plan = terraform_plan.load(inp.plan)
+    waivers, waivers_rejected = waivers_mod.load(inp.waivers_file, inp.waivers_inline, as_of, policy.max_waiver_days)
     inputs = [_input_record("terraform_plan", Path(inp.plan))]
     evidence = [Evidence("ev:plan", "terraform_plan", f"Terraform {plan.terraform_version} plan, format "
                          f"{plan.format_version}", Path(inp.plan).name)]
@@ -256,7 +262,20 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                                   res.name or "", False, None,
                                   [f"ev:traffic:{t.source}" for t in traffic[res.address]]))
         paths = [decide.evaluate_path(r, c1, c2, c4) for r in refs]
+        applied = []
+        for r, p in zip(refs, paths):
+            if p.status in ("hijackable", "unknown"):
+                w = next((w for w in waivers if w.resource == res.address and w.kind == "accept_reference"
+                          and w.matches_ref(r.location)), None)
+                if w:
+                    p.status = "waived"
+                    applied.append({**waivers_mod.as_dict(w), "reference_id": r.id})
         verd, reasons = decide.verdict(c2, paths, c4, policy)
+        rel = next((w for w in waivers if w.resource == res.address and w.kind == "allow_release"), None)
+        if rel and verd == Verdict.TOMBSTONE and not any(p.status in ("hijackable", "unknown") for p in paths):
+            verd = Verdict.RELEASE
+            reasons = [f"released under waiver approved by {rel.approved_by} until {rel.expires}: {rel.reason}"]
+            applied.append(waivers_mod.as_dict(rel))
         not_checked = []
         if not inp.dns:
             not_checked.append("DNS inventory not supplied")
@@ -268,8 +287,10 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                            "can only be observed through logs")
         a = ResourceAssessment(res, c2, refs, traffic[res.address], paths, verd, reasons,
                                decide.risk_interval(paths, traffic[res.address], policy), [], not_checked)
+        a.waivers_applied = applied
         a.patches = remediate.build(res, verd, refs, paths, v["dns_by_ref"], repo_roots, policy, inp.migrate_to)
         assessments.append(a)
 
     global_nc = [f"deleted resource outside pilot coverage: {u}" for u in plan.unsupported_deletions]
-    return AssessmentResult(as_of, plan, assessments, evidence, inputs, parse_stats, scan_stats, global_nc)
+    return AssessmentResult(as_of, plan, assessments, evidence, inputs, parse_stats, scan_stats, global_nc,
+                            waivers_rejected, policy)

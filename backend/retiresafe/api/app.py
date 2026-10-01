@@ -170,7 +170,7 @@ async def create_assessment(plan: UploadFile = File(...), dns: list[UploadFile] 
             repos[cfg.get("repo_label", Path(repo.filename or "repo").stem)] = str(root)
         policy = policy_from(cfg.get("policy"))
         inp = AssessmentInput(str(plan_p), dns_paths, repos, log_inputs, policy, parse_as_of(cfg.get("as_of")),
-                              cfg.get("migrate_to", {}))
+                              cfg.get("migrate_to", {}), None, cfg.get("waivers", []))
         result = run(inp)
         rec = evidence.record(result, policy_dict(policy))
         store().put_assessment(rec)

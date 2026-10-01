@@ -131,6 +131,7 @@ class ResourceAssessment:
     risk_interval: tuple[float, float]
     patches: list[Patch] = field(default_factory=list)
     not_checked: list[str] = field(default_factory=list)
+    waivers_applied: list[dict] = field(default_factory=list)
 
 
 def to_dict(obj: Any) -> Any:

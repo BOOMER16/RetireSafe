@@ -20,10 +20,16 @@ def gate(result: AssessmentResult) -> dict:
     counts: dict[str, int] = {}
     for a in result.resources:
         counts[a.verdict.value] = counts.get(a.verdict.value, 0) + 1
-    passed = all(a.verdict in GATE_PASS for a in result.resources)
-    return {"passed": passed, "verdict_counts": counts,
-            "summary": ("all retiring resources may be released" if passed else
-                        "deletion must not proceed as planned; see blocked / tombstone / review resources")}
+    would_pass = all(a.verdict in GATE_PASS for a in result.resources)
+    advisory = bool(result.policy and result.policy.enforcement == "advisory")
+    waived = sum(len(a.waivers_applied) for a in result.resources)
+    summary = ("all retiring resources may be released" if would_pass else
+               "deletion must not proceed as planned; see blocked / tombstone / review resources")
+    if advisory and not would_pass:
+        summary = "ADVISORY MODE: the gate would fail; not enforced. " + summary
+    return {"passed": would_pass or advisory, "would_pass": would_pass, "enforcement": "advisory" if advisory
+            else "enforce", "verdict_counts": counts, "waivers_applied": waived,
+            "waivers_rejected": len(result.waivers_rejected), "summary": summary}
 
 
 def record(result: AssessmentResult, policy_dict: dict, assessment_id: str | None = None) -> dict:
@@ -55,6 +61,7 @@ def record(result: AssessmentResult, policy_dict: dict, assessment_id: str | Non
         "parse_stats": result.parse_stats,
         "scan_stats": result.scan_stats,
         "not_checked": result.not_checked,
+        "waivers_rejected": result.waivers_rejected,
         "sources": {k: SOURCES[k] for k in sorted(cited) if k in SOURCES},
     }
 
@@ -84,6 +91,8 @@ def markdown(rec: dict) -> str:
                        f"{t['silence_days'] if t['silence_days'] is not None else 'n/a'} d, conservative quarantine "
                        f"{('%.1f d' % q) if q else 'n/a'}")
         out.append(f"- Risk interval: {r['risk_interval'][0]:.3f} to {r['risk_interval'][1]:.3f}")
+        for w in r.get("waivers_applied", []):
+            out.append(f"- **Waiver** ({w['kind']}) by {w['approved_by']}, expires {w['expires']}: {w['reason']}")
         for p in r["patches"]:
             out += ["", f"### Patch: {p['title']}", "```", p["content"].rstrip(), "```"]
         out += ["", "Not checked: " + "; ".join(r["not_checked"]), ""]

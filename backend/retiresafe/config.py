@@ -21,6 +21,10 @@ def policy_from(d: dict | None) -> Policy:
         raise ValueError("policy.alpha must be in (0,1) and policy.beta in (0,0.5)")
     if p.mode not in ("strict", "balanced"):
         raise ValueError("policy.mode must be 'strict' or 'balanced'")
+    if p.enforcement not in ("enforce", "advisory"):
+        raise ValueError("policy.enforcement must be 'enforce' or 'advisory'")
+    if not 1 <= p.max_waiver_days <= 365:
+        raise ValueError("policy.max_waiver_days must be between 1 and 365")
     if p.min_window_days <= 0 or p.max_staleness_days < 0:
         raise ValueError("policy windows must be positive")
     return p
