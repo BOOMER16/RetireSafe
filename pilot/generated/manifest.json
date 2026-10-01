@@ -12,6 +12,14 @@
     "plan_before.json": "de26f628ba9da2b46e1bc0a86ae86794ca9dbdf19d0d892212b08c48e2986bed",
     "route53_after.json": "53126c21294833c9db8c3843741d65bf472fd55df4f21b22f9252dbdcb17eef9",
     "route53_before.json": "90d554d7109e6427a7a81ebe757caf7e63050348c83ce84d0e57a11d7a2eaa5d",
-    "zone_before.db": "3270d2d3bfa187a9d9add8dcc3d25742a880349724dfae5de3a20b35a6ae1f3b"
+    "zone_before.db": "3270d2d3bfa187a9d9add8dcc3d25742a880349724dfae5de3a20b35a6ae1f3b",
+    "ip_route53.json": "50e1860899c5a2324c316c3b99d659bb9174f81d6c8e96c52523f88917222661",
+    "ip_plan_before.json": "d059a5f15e25399b38ac93d524a250b8bfbeac0afc01b273542f69b139c30089",
+    "ip_plan_after.json": "d55d147dbb73324d36dc97e86d71168d1d16bda9b129ceed0b97a918868600d9"
+  },
+  "ip_scenario": {
+    "elastic_ip": "127.162.122.147",
+    "instance_public_ip": "54.214.34.200",
+    "note": "IPs are allocated by the moto emulator, not by AWS"
   }
 }

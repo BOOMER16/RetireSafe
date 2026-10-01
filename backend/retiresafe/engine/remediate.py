@@ -12,7 +12,8 @@ from pathlib import Path
 from .. import redact
 from ..analysis.traffic import Policy
 from ..collectors.dns_zone import DnsRecord
-from ..knowledge.providers import ACCOUNT_REGIONAL_NAME, AZURE_WEBAPP_TYPES, EB_TYPES, S3_TYPES
+from ..knowledge.providers import (ACCOUNT_REGIONAL_NAME, AZURE_LABELLED, AZURE_NAMED, AZURE_WEBAPP_TYPES,
+                                   EB_TYPES, S3_TYPES)
 from ..models import Patch, PathAssessment, Reference, RefKind, RetiringResource, Verdict
 
 
@@ -102,6 +103,24 @@ resource "aws_s3_bucket_public_access_block" "{label}" {{
         if ACCOUNT_REGIONAL_NAME.match(new_name) is None:
             body += "#   (fill in ACCOUNT_ID and REGION to obtain a valid account-regional name)\n"
         return Patch("terraform_hcl", f"Tombstone {res.address}: keep the name, drop the content", body, [res.address])
+    if res.type == "aws_eip":
+        label = _hcl_label(res.address.split(".")[-1])
+        return Patch("terraform_hcl", f"Keep {res.address} allocated", f'''# Keep the Elastic IP allocated (unassociated) so no other account can be given {res.name}
+# while DNS records still point at it. Release it after the records are gone.
+resource "aws_eip" "{label}" {{
+  domain = "vpc"
+  lifecycle {{
+    prevent_destroy = true
+  }}
+}}
+''', [res.address])
+    if res.type in AZURE_NAMED or res.type in AZURE_LABELLED:
+        return Patch("advice", f"Tombstone {res.address}",
+                     f"Keep {res.address} (name {res.name!r}) in place with an azurerm_management_lock "
+                     "(CanNotDelete) and no content until every reference is gone. For container groups and "
+                     "public IPs, recreate replacements with a reuse scope (dns_name_label_reuse_policy / "
+                     "domain_name_label_scope = \"NoReuse\") so their hostnames cannot be claimed by others.",
+                     [res.address])
     if res.type in AZURE_WEBAPP_TYPES:
         return Patch("advice", f"Tombstone {res.address}",
                      f"Keep the app name {res.name!r} allocated (stop the app or move it to a free plan) instead "

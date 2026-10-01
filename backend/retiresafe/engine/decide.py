@@ -127,13 +127,25 @@ def risk_interval(paths: list[PathAssessment], traffic: list[TrafficSummary], po
 
 
 def verdict(c2: ConditionResult, paths: list[PathAssessment], c4: ConditionResult,
-            policy: Policy) -> tuple[Verdict, list[str]]:
+            policy: Policy, holdable: bool = True, dns_supplied: bool = True) -> tuple[Verdict, list[str]]:
     hijackable = [p for p in paths if p.status == "hijackable"]
     unknown = [p for p in paths if p.status == "unknown"]
     if c2.value == Tri.FALSE:
         return Verdict.RELEASE, ["the name cannot be obtained by another party (" + c2.reason + ")"]
     if c2.value == Tri.UNKNOWN:
         return Verdict.REVIEW, ["cannot tell whether the released name is reclaimable: " + c2.reason]
+    if not holdable:
+        # The address cannot be kept (e.g. an instance's auto-assigned public IP), so a tombstone is
+        # impossible: every surviving reference must go first, and DNS must have been checked.
+        live = [p for p in paths if p.status in ("hijackable", "unknown")]
+        if live:
+            return Verdict.BLOCK, [f"{len(live)} reference(s) still point at an address that cannot be held "
+                                   "after deletion; remove them first"]
+        if not dns_supplied:
+            return Verdict.REVIEW, ["the address cannot be held after deletion and no DNS inventory was supplied "
+                                    "to show that no record points at it"]
+        return Verdict.RELEASE, ["the address cannot be held; no surviving reference was found in the supplied "
+                                 "DNS, code and infrastructure inventories"]
     if hijackable:
         return Verdict.BLOCK, [f"{len(hijackable)} surviving reference(s) would hand traffic to whoever reclaims "
                                "the name; remove or migrate them before deleting"]

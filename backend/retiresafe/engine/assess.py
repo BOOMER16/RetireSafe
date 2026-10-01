@@ -252,7 +252,8 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                 [], [f"takeover rules for {res.type}"]))
             continue
         v = per_res[res.address]
-        c2 = providers.view(res.type, plan.raw_before.get(res.address, {}), res.region).reclaimable
+        pview = providers.view(res.type, plan.raw_before.get(res.address, {}), res.region)
+        c2 = pview.reclaimable
         c1 = decide.c1_released(res)
         c4 = decide.c4_consumers(traffic[res.address])
         refs = list(v["refs"])
@@ -270,7 +271,7 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                 if w:
                     p.status = "waived"
                     applied.append({**waivers_mod.as_dict(w), "reference_id": r.id})
-        verd, reasons = decide.verdict(c2, paths, c4, policy)
+        verd, reasons = decide.verdict(c2, paths, c4, policy, pview.holdable, bool(inp.dns))
         rel = next((w for w in waivers if w.resource == res.address and w.kind == "allow_release"), None)
         if rel and verd == Verdict.TOMBSTONE and not any(p.status in ("hijackable", "unknown") for p in paths):
             verd = Verdict.RELEASE

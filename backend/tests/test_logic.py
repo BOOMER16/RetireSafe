@@ -69,7 +69,9 @@ def test_azure_and_eb_rules_from_plan_fragment():
     assert scoped.reclaimable.value == Tri.FALSE
     assert eb.reclaimable.value == Tri.TRUE
     assert {e.name for e in eb.endpoints} == {"contoso-old-env.eu-west-1.elasticbeanstalk.com"}
-    assert pv.unsupported_deletions == ["aws_instance.worker (aws_instance)"]
+    assert pv.unsupported_deletions == []
+    worker = providers.view("aws_instance", by["aws_instance.worker"].attributes, "eu-west-1")
+    assert worker.reclaimable.value == Tri.FALSE and not worker.holdable      # no public IP to release
 
 
 # ---------- statistics ----------

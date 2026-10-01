@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from ..models import ConditionResult, Endpoint, Tri
 
-RULES_VERSION = "2026-10-01.1"
+RULES_VERSION = "2026-10-01.2"
 
 ACCOUNT_REGIONAL_NAME = re.compile(r"^(?P<prefix>.+)-(?P<account>\d{12})-(?P<region>[a-z]{2}(?:-[a-z]+)+-\d)-an$")
 AZURE_WEBAPP_TYPES = {
@@ -26,7 +26,19 @@ AZURE_WEBAPP_TYPES = {
 }
 S3_TYPES = {"aws_s3_bucket"}
 EB_TYPES = {"aws_elastic_beanstalk_environment"}
-NAME_BEARING = S3_TYPES | EB_TYPES | AZURE_WEBAPP_TYPES
+IP_TYPES = {"aws_eip", "aws_instance"}
+# Azure resources whose public hostname embeds a globally unique, reusable name.
+# (type, hostname attribute in azurerm 5.7.0, fallback suffix) - Microsoft's dangling-DNS article table
+# (MicrosoftDocs/azure-docs subdomain-takeover.md) unless marked; container registry from can-i-take-over-xyz.
+AZURE_NAMED = {
+    "azurerm_storage_account": ("primary_blob_host", "blob.core.windows.net", ["src:ms-learn-dangling-dns"]),
+    "azurerm_cdn_endpoint": ("fqdn", "azureedge.net", ["src:ms-learn-dangling-dns"]),
+    "azurerm_api_management": ("gateway_url", "azure-api.net", ["src:ms-learn-dangling-dns"]),
+    "azurerm_traffic_manager_profile": ("fqdn", "trafficmanager.net", ["src:ms-learn-dangling-dns"]),
+    "azurerm_container_registry": ("login_server", "azurecr.io", ["src:cito-fingerprints"]),
+}
+AZURE_LABELLED = {"azurerm_container_group", "azurerm_public_ip"}
+NAME_BEARING = S3_TYPES | EB_TYPES | AZURE_WEBAPP_TYPES | IP_TYPES | set(AZURE_NAMED) | AZURE_LABELLED
 
 
 @dataclass
@@ -35,6 +47,7 @@ class ProviderView:
     region: str | None
     endpoints: list[Endpoint]
     reclaimable: ConditionResult
+    holdable: bool = True       # can the organisation keep the name/address instead of releasing it?
 
 
 def s3_endpoints(bucket: str, region: str | None) -> list[Endpoint]:
@@ -107,7 +120,78 @@ def _azure(attrs: dict, provider_region: str | None) -> ProviderView:
     return ProviderView(name, attrs.get("location") or provider_region, eps, rec)
 
 
+def _host_of(v: str | None) -> str | None:
+    if not v:
+        return None
+    v = v.split("://", 1)[-1].split("/", 1)[0].split(":", 1)[0]
+    return v.lower().rstrip(".") or None
+
+
+def _azure_named(rtype: str, attrs: dict, provider_region: str | None) -> ProviderView:
+    attr, suffix, srcs = AZURE_NAMED[rtype]
+    name = attrs.get("name")
+    host = _host_of(attrs.get(attr)) or (f"{name}.{suffix}" if name else None)
+    eps = [Endpoint(host, "azure_named")] if host else []
+    if host:
+        rec = ConditionResult(Tri.TRUE, f"{host} embeds the resource name in the shared {suffix} namespace; "
+                              "after deletion another tenant can create a resource with the same name", srcs)
+    else:
+        rec = ConditionResult(Tri.UNKNOWN, "no name or hostname in the plan", [])
+    return ProviderView(name, attrs.get("location") or provider_region, eps, rec)
+
+
+def _azure_labelled(rtype: str, attrs: dict, provider_region: str | None) -> ProviderView:
+    """Container groups and public IPs: an optional DNS label in <label>.<region>.<suffix>."""
+    if rtype == "azurerm_container_group":
+        label, scope_attr, unsafe = attrs.get("dns_name_label"), "dns_name_label_reuse_policy", {"", "unsecure"}
+        src = "src:azure-sdk-aci-reuse-policy"
+    else:
+        label, scope_attr, unsafe = attrs.get("domain_name_label"), "domain_name_label_scope", {""}
+        src = "src:azure-sdk-publicip-label-scope"
+    scope = (attrs.get(scope_attr) or "").strip()
+    fqdn = _host_of(attrs.get("fqdn"))
+    eps = [Endpoint(fqdn, "azure_label")] if fqdn else []
+    ip = attrs.get("ip_address") if rtype == "azurerm_public_ip" else None
+    if ip:
+        eps.append(Endpoint(ip, "ip"))
+    if label and scope.lower() in unsafe:
+        rec = ConditionResult(Tri.TRUE, f"DNS label {label!r} has no reuse scope ({scope_attr} "
+                              f"{'unset' if not scope else scope}); another tenant can claim it after deletion",
+                              ["src:ms-learn-dangling-dns", src])
+    elif label:
+        rec = ConditionResult(Tri.FALSE, f"DNS label uses {scope_attr}={scope}: the FQDN carries a hash and the "
+                              "label cannot be reused outside that scope", [src])
+    elif ip:
+        rec = ConditionResult(Tri.UNKNOWN, "no DNS label; whether Azure re-assigns this released IP address to "
+                              "another customer was not verified from a primary source", [])
+    else:
+        rec = ConditionResult(Tri.FALSE, "no public DNS label or address", [])
+    return ProviderView(label, attrs.get("location") or provider_region, eps, rec,
+                        holdable=rtype == "azurerm_public_ip")
+
+
+def _aws_ip(rtype: str, attrs: dict, provider_region: str | None) -> ProviderView:
+    ip = attrs.get("public_ip")
+    eps = [Endpoint(ip, "ip")] if ip else []
+    if attrs.get("public_dns"):
+        eps.append(Endpoint(attrs["public_dns"].lower(), "ip_dns"))
+    if not ip:
+        return ProviderView(None, provider_region, [], ConditionResult(Tri.FALSE, "no public IP address"),
+                            holdable=False)
+    rec = ConditionResult(Tri.TRUE, f"public IP {ip} returns to AWS's shared pool and can be allocated to another "
+                          "account; attackers repeatedly allocate addresses to land on ones still referenced by DNS",
+                          ["src:assetnote-ghostbuster"])
+    # an Elastic IP can be kept allocated; an instance's auto-assigned address cannot
+    return ProviderView(ip, attrs.get("region") or provider_region, eps, rec, holdable=rtype == "aws_eip")
+
+
 def view(resource_type: str, attrs: dict, provider_region: str | None) -> ProviderView | None:
+    if resource_type in AZURE_NAMED:
+        return _azure_named(resource_type, attrs, provider_region)
+    if resource_type in AZURE_LABELLED:
+        return _azure_labelled(resource_type, attrs, provider_region)
+    if resource_type in IP_TYPES:
+        return _aws_ip(resource_type, attrs, provider_region)
     if resource_type in S3_TYPES:
         return _s3(attrs, provider_region)
     if resource_type in EB_TYPES:
