@@ -3,12 +3,16 @@
     "exit_code": 2,
     "gate": {
       "passed": false,
+      "would_pass": false,
+      "enforcement": "enforce",
       "verdict_counts": {
         "release": 1,
         "block": 2,
         "tombstone": 1,
         "not_name_bearing": 2
       },
+      "waivers_applied": 0,
+      "waivers_rejected": 0,
       "summary": "deletion must not proceed as planned; see blocked / tombstone / review resources"
     },
     "verdicts": {
@@ -24,11 +28,15 @@
     "exit_code": 2,
     "gate": {
       "passed": false,
+      "would_pass": false,
+      "enforcement": "enforce",
       "verdict_counts": {
         "release": 2,
         "block": 2,
         "not_name_bearing": 2
       },
+      "waivers_applied": 0,
+      "waivers_rejected": 0,
       "summary": "deletion must not proceed as planned; see blocked / tombstone / review resources"
     },
     "verdicts": {
@@ -44,10 +52,14 @@
     "exit_code": 0,
     "gate": {
       "passed": true,
+      "would_pass": true,
+      "enforcement": "enforce",
       "verdict_counts": {
         "release": 1,
         "not_name_bearing": 2
       },
+      "waivers_applied": 0,
+      "waivers_rejected": 0,
       "summary": "all retiring resources may be released"
     },
     "verdicts": {

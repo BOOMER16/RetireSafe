@@ -1,12 +1,12 @@
 {
   "schema": "retiresafe.evidence/v1",
-  "assessment_id": "4f20b023-c716-460e-a96d-1fcb29d6b50a",
-  "created_at": "2026-10-01T20:15:20.935346+00:00",
+  "assessment_id": "c529fb9b-45bf-4a7f-a452-915c6300b25f",
+  "created_at": "2026-10-01T20:38:04.634890+00:00",
   "as_of": "1995-09-01T03:59:53+00:00",
   "tool": {
     "name": "retiresafe",
     "version": "0.1.0",
-    "rules_version": "2026-10-01.1",
+    "rules_version": "2026-10-01.2",
     "fingerprint_catalogue_commit": "5bd4e12837911c8475486f1da922c9b9c706e632",
     "python": "3.11.15",
     "redaction": {
@@ -33,6 +33,8 @@
     "max_staleness_days": 2.0,
     "horizon_days": 90.0,
     "mode": "strict",
+    "enforcement": "enforce",
+    "max_waiver_days": 90,
     "internal_domains": [
       "nasa.gov"
     ],
@@ -94,10 +96,14 @@
   },
   "gate": {
     "passed": true,
+    "would_pass": true,
+    "enforcement": "enforce",
     "verdict_counts": {
       "release": 1,
       "not_name_bearing": 2
     },
+    "waivers_applied": 0,
+    "waivers_rejected": 0,
     "summary": "all retiring resources may be released"
   },
   "resources": [
@@ -167,7 +173,9 @@
       "not_checked": [
         "no access logs cover this resource",
         "consumers outside the supplied inventories (third-party sites, offline clients) can only be observed through logs"
-      ]
+      ],
+      "waivers_applied": [],
+      "tombstone": null
     },
     {
       "resource": {
@@ -206,7 +214,9 @@
       "patches": [],
       "not_checked": [
         "takeover rules for aws_s3_bucket_website_configuration"
-      ]
+      ],
+      "waivers_applied": [],
+      "tombstone": null
     },
     {
       "resource": {
@@ -244,7 +254,9 @@
       "patches": [],
       "not_checked": [
         "takeover rules for aws_ssm_parameter"
-      ]
+      ],
+      "waivers_applied": [],
+      "tombstone": null
     }
   ],
   "evidence": [
@@ -275,6 +287,7 @@
     "deleted resource outside pilot coverage: aws_s3_bucket_website_configuration.event_site (aws_s3_bucket_website_configuration)",
     "deleted resource outside pilot coverage: aws_ssm_parameter.legacy_db_password (aws_ssm_parameter)"
   ],
+  "waivers_rejected": [],
   "sources": {
     "aws-sdk-s3-account-regional": {
       "title": "AWS SDK service model, S3 CreateBucket BucketNamespace member (x-amz-bucket-namespace)",

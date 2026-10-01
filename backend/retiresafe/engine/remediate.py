@@ -77,9 +77,16 @@ def tombstone(res: RetiringResource, policy: Policy, chosen: str | None = None) 
         region = res.region or "<REGION>"
         prefix = re.sub(r"[^a-z0-9-]", "-", (res.name or "bucket").lower())[:40].strip("-")
         new_name = chosen or f"{prefix}-{acct}-{region}-an"
-        body = f'''# Keep owning the bucket name instead of releasing it.
-# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,
-# 3. keep the resource below in your configuration.
+        body = f'''# Tombstone: keep owning the bucket name, serve nothing, and record who still asks for it.
+# 1. empty the bucket (objects and versions) and remove website/CORS configuration;
+# 2. keep these resources until a balanced-mode RetireSafe run, fed by the tombstone's own
+#    access logs, shows no remaining consumers. Requests now get 403 (a "brownout" that makes
+#    hidden consumers visible) and land in the access logs.
+variable "{label}_log_bucket" {{
+  description = "Existing bucket that receives S3 server access logs"
+  type        = string
+}}
+
 resource "aws_s3_bucket" "{label}" {{
   bucket = "{res.name}"
   lifecycle {{
@@ -93,6 +100,26 @@ resource "aws_s3_bucket_public_access_block" "{label}" {{
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}}
+
+resource "aws_s3_bucket_policy" "{label}" {{
+  bucket = aws_s3_bucket.{label}.id
+  policy = jsonencode({{
+    Version = "2012-10-17"
+    Statement = [{{
+      Sid       = "TombstoneNoObjects"
+      Effect    = "Deny"
+      Principal = "*"
+      Action    = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+      Resource  = "${{aws_s3_bucket.{label}.arn}}/*"
+    }}]
+  }})
+}}
+
+resource "aws_s3_bucket_logging" "{label}" {{
+  bucket        = aws_s3_bucket.{label}.id
+  target_bucket = var.{label}_log_bucket
+  target_prefix = "retiresafe-tombstone/{res.name}/"
 }}
 
 # If the content must move, create its replacement in your account regional namespace,
@@ -143,6 +170,37 @@ def owner_check_advice(refs: list[Reference], policy: Policy) -> Patch | None:
                  f"Pass ExpectedBucketOwner='{acct}' on these S3 API calls; S3 then refuses a bucket owned by any "
                  "other account (HTTP 403):\n" + "\n".join(f"  {r.location}: {r.text}" for r in sdk),
                  [r.location for r in sdk])
+
+
+HOLDING_COST = {
+    "s3": ("No storage charge once the bucket is empty. It still counts toward the account's bucket quota "
+           "(default 10,000) and buckets beyond the first 2,000 per account carry a per-bucket monthly fee.",
+           ["src:aws-s3-bucket-quota-2024"]),
+    "eip": ("An idle Elastic IP is billed as a public IPv4 address: USD 0.005 per hour (about USD 3.65 per "
+            "30-day month) since 1 February 2024.", ["src:aws-ipv4-charge-2024"]),
+    "eb": ("Holding the CNAME prefix needs a running environment and its instance costs; prefer removing the "
+           "references and then releasing.", []),
+    "azure": ("Resource-specific; keep the lowest tier with no content and a CanNotDelete lock.", []),
+}
+
+
+def tombstone_plan(res: RetiringResource, traffic: list, policy: Policy, as_of) -> dict:
+    from datetime import timedelta
+    days = policy.min_window_days
+    for t in traffic:
+        if t.requests and t.quarantine_days_conservative:
+            days = max(days, t.quarantine_days_conservative)
+    kind = ("s3" if res.type in S3_TYPES else "eip" if res.type == "aws_eip" else "eb" if res.type in EB_TYPES
+            else "azure")
+    cost, srcs = HOLDING_COST[kind]
+    return {
+        "review_after": (as_of + timedelta(days=days)).date().isoformat(),
+        "review_basis_days": round(days, 1),
+        "holding_cost": cost, "sources": srcs,
+        "release_path": ("Keep the tombstone's access logging on. After the review date, run RetireSafe in "
+                         "balanced mode with those logs: if no surviving reference is hijackable and the logs "
+                         "are silent past the quarantine, the name can be released."),
+    }
 
 
 def build(res: RetiringResource, verdict: Verdict, refs: list[Reference], paths: list[PathAssessment],

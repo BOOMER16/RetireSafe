@@ -1,6 +1,6 @@
-# RetireSafe assessment c269842c-5c15-44ca-a988-508d05a0e68f
+# RetireSafe assessment 6af571e0-8c8e-4500-8bfc-728a1d261ef8
 
-*As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy balanced*
+*As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.2 · policy balanced*
 
 **Gate: FAIL**: deletion must not proceed as planned; see blocked / tombstone / review resources
 
@@ -31,6 +31,7 @@ Name `rs-pilot-event-assets-2025` · reclaimable: **true** (bucket is in the sha
 
 - Traffic `nasa_jul_aug_1995.log[/images/]`: 1206043 requests, 116125 clients (112710 external), window 62.0 d, silent 0.0 d, conservative quarantine 0.0 d
 - Risk interval: 1.000 to 1.000
+- Tombstone review after **1995-10-02** (31.0 d). Holding cost: No storage charge once the bucket is empty. It still counts toward the account's bucket quota (default 10,000) and buckets beyond the first 2,000 per account carry a per-bucket monthly fee.
 
 ### Patch: Delete the surviving DNS records (Route 53 change batch)
 ```
@@ -86,9 +87,16 @@ Name `rs-pilot-event-assets-2025` · reclaimable: **true** (bucket is in the sha
 
 ### Patch: Tombstone aws_s3_bucket.event_assets: keep the name, drop the content
 ```
-# Keep owning the bucket name instead of releasing it.
-# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,
-# 3. keep the resource below in your configuration.
+# Tombstone: keep owning the bucket name, serve nothing, and record who still asks for it.
+# 1. empty the bucket (objects and versions) and remove website/CORS configuration;
+# 2. keep these resources until a balanced-mode RetireSafe run, fed by the tombstone's own
+#    access logs, shows no remaining consumers. Requests now get 403 (a "brownout" that makes
+#    hidden consumers visible) and land in the access logs.
+variable "event_assets_log_bucket" {
+  description = "Existing bucket that receives S3 server access logs"
+  type        = string
+}
+
 resource "aws_s3_bucket" "event_assets" {
   bucket = "rs-pilot-event-assets-2025"
   lifecycle {
@@ -102,6 +110,26 @@ resource "aws_s3_bucket_public_access_block" "event_assets" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_policy" "event_assets" {
+  bucket = aws_s3_bucket.event_assets.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "TombstoneNoObjects"
+      Effect    = "Deny"
+      Principal = "*"
+      Action    = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+      Resource  = "${aws_s3_bucket.event_assets.arn}/*"
+    }]
+  })
+}
+
+resource "aws_s3_bucket_logging" "event_assets" {
+  bucket        = aws_s3_bucket.event_assets.id
+  target_bucket = var.event_assets_log_bucket
+  target_prefix = "retiresafe-tombstone/rs-pilot-event-assets-2025/"
 }
 
 # If the content must move, create its replacement in your account regional namespace,
@@ -127,6 +155,7 @@ Name `event.retiresafe-pilot.example` · reclaimable: **true** (bucket is in the
 
 - Traffic `nasa_jul_aug_1995.log[/shuttle/countdown/]`: 246995 requests, 46924 clients (45628 external), window 62.0 d, silent 0.0001 d, conservative quarantine 0.0 d
 - Risk interval: 1.000 to 1.000
+- Tombstone review after **1995-10-02** (31.0 d). Holding cost: No storage charge once the bucket is empty. It still counts toward the account's bucket quota (default 10,000) and buckets beyond the first 2,000 per account carry a per-bucket monthly fee.
 
 ### Patch: Delete the surviving DNS records (Route 53 change batch)
 ```
@@ -160,9 +189,16 @@ Name `event.retiresafe-pilot.example` · reclaimable: **true** (bucket is in the
 
 ### Patch: Tombstone aws_s3_bucket.event_site: keep the name, drop the content
 ```
-# Keep owning the bucket name instead of releasing it.
-# 1. empty the bucket (objects and versions), 2. remove website/CORS configuration,
-# 3. keep the resource below in your configuration.
+# Tombstone: keep owning the bucket name, serve nothing, and record who still asks for it.
+# 1. empty the bucket (objects and versions) and remove website/CORS configuration;
+# 2. keep these resources until a balanced-mode RetireSafe run, fed by the tombstone's own
+#    access logs, shows no remaining consumers. Requests now get 403 (a "brownout" that makes
+#    hidden consumers visible) and land in the access logs.
+variable "event_site_log_bucket" {
+  description = "Existing bucket that receives S3 server access logs"
+  type        = string
+}
+
 resource "aws_s3_bucket" "event_site" {
   bucket = "event.retiresafe-pilot.example"
   lifecycle {
@@ -176,6 +212,26 @@ resource "aws_s3_bucket_public_access_block" "event_site" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_policy" "event_site" {
+  bucket = aws_s3_bucket.event_site.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "TombstoneNoObjects"
+      Effect    = "Deny"
+      Principal = "*"
+      Action    = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+      Resource  = "${aws_s3_bucket.event_site.arn}/*"
+    }]
+  })
+}
+
+resource "aws_s3_bucket_logging" "event_site" {
+  bucket        = aws_s3_bucket.event_site.id
+  target_bucket = var.event_site_log_bucket
+  target_prefix = "retiresafe-tombstone/event.retiresafe-pilot.example/"
 }
 
 # If the content must move, create its replacement in your account regional namespace,

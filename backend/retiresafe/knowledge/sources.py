@@ -95,6 +95,18 @@ SOURCES = {
         "verified_via": "vendored at commit 5bd4e12837911c8475486f1da922c9b9c706e632 (2025-02-08), "
                         "sha256 a108bf6e6d10d4e4861c4293eef8c224a0fd243ec4f3a39de321de69f284c64f",
     },
+    "aws-s3-bucket-quota-2024": {
+        "title": "AWS What's New, 14 Nov 2024: Amazon S3 now supports up to 1 million buckets per AWS account",
+        "url": "https://aws.amazon.com/about-aws/whats-new/2024/11/amazon-s3-up-1-million-buckets-per-aws-account/",
+        "quote": "default bucket quota of 10,000 ... not billed for the first 2,000 general purpose buckets",
+        "verified_via": "AWS announcement (via search results; aws.amazon.com blocked in the build sandbox)",
+    },
+    "aws-ipv4-charge-2024": {
+        "title": "AWS: public IPv4 address charge from 1 February 2024",
+        "url": "https://aws.amazon.com/blogs/networking-and-content-delivery/identify-and-optimize-public-ipv4-address-usage-on-aws/",
+        "quote": "$0.005 per IP per hour for all public IPv4 addresses, whether attached to a service or not",
+        "verified_via": "AWS networking blog and re:Post articles (via search results)",
+    },
     "w3c-sri": {
         "title": "W3C Subresource Integrity",
         "url": "https://www.w3.org/TR/SRI/",

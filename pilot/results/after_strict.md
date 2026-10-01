@@ -1,6 +1,6 @@
-# RetireSafe assessment 4f20b023-c716-460e-a96d-1fcb29d6b50a
+# RetireSafe assessment c529fb9b-45bf-4a7f-a452-915c6300b25f
 
-*As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy strict*
+*As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.2 · policy strict*
 
 **Gate: PASS**: all retiring resources may be released
 

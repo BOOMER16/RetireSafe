@@ -6,14 +6,23 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
       - name: Install
         run: pip install -e "backend[dev]"
-      - name: Test (tests marked realdata skip without the NASA logs)
+      - name: Download the real traffic data (checksum-verified)
+        run: python scripts/get_data.py
+      - name: Test (warnings about implicit text encodings are errors)
         working-directory: backend
-        run: python -m pytest -q
+        run: python -X warn_default_encoding -W error::EncodingWarning -m pytest -q
+      - name: Guided demo runs end to end
+        run: python demo.py --mode strict

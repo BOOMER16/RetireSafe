@@ -91,6 +91,10 @@ def markdown(rec: dict) -> str:
                        f"{t['silence_days'] if t['silence_days'] is not None else 'n/a'} d, conservative quarantine "
                        f"{('%.1f d' % q) if q else 'n/a'}")
         out.append(f"- Risk interval: {r['risk_interval'][0]:.3f} to {r['risk_interval'][1]:.3f}")
+        tb = r.get("tombstone")
+        if tb:
+            out.append(f"- Tombstone review after **{tb['review_after']}** ({tb['review_basis_days']} d). "
+                       f"Holding cost: {tb['holding_cost']}")
         for w in r.get("waivers_applied", []):
             out.append(f"- **Waiver** ({w['kind']}) by {w['approved_by']}, expires {w['expires']}: {w['reason']}")
         for p in r["patches"]:

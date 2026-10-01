@@ -289,6 +289,8 @@ def run(inp: AssessmentInput) -> AssessmentResult:
         a = ResourceAssessment(res, c2, refs, traffic[res.address], paths, verd, reasons,
                                decide.risk_interval(paths, traffic[res.address], policy), [], not_checked)
         a.waivers_applied = applied
+        if verd in (Verdict.TOMBSTONE, Verdict.BLOCK, Verdict.REVIEW) and pview.holdable:
+            a.tombstone = remediate.tombstone_plan(res, traffic[res.address], policy, as_of)
         a.patches = remediate.build(res, verd, refs, paths, v["dns_by_ref"], repo_roots, policy, inp.migrate_to)
         assessments.append(a)
 
