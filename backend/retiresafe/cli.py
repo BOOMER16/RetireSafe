@@ -108,9 +108,29 @@ def cmd_scan(a: argparse.Namespace) -> int:
         print(f"skipped {len(refused)} name(s) outside the owned domains {domains}", file=sys.stderr)
     findings = live.scan(hosts)
     out = [asdict(f) for f in findings]
+    extra = {}
+    if a.spf or a.expiry:
+        from .probes import email_domains
+        apexes = sorted(set(domains))
+        if a.spf:
+            extra["spf"] = []
+            for d in apexes:
+                f = email_domains.check_spf(d)
+                extra["spf"].append({**asdict(f), "classification": f.classification})
+                print(f"spf {f.classification:38} {d}  lookups={f.lookups} unregistered={f.unregistered}")
+        if a.expiry:
+            extra["expiry"] = []
+            for d in apexes:
+                try:
+                    e = email_domains.domain_expiry(d)
+                except Exception as ex:  # noqa: BLE001
+                    e = {"domain": d, "status": "error", "error": type(ex).__name__}
+                extra["expiry"].append(e)
+                print(f"expiry {d}: {e.get('status')} {e.get('expires', '')} days_left={e.get('days_left')}")
     if a.out:
-        Path(a.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
+        Path(a.out).write_text(json.dumps({"hosts": out, **extra} if extra else out, indent=2), encoding="utf-8")
     bad = [f for f in findings if f.classification in ("reclaimable_candidate", "dangling_unregistered_domain")]
+    bad += [s for s in extra.get("spf", []) if s["classification"] == "spf_delegates_to_unregistered_domain"]
     for f in findings:
         if f.classification not in ("no_cname", "cname_resolves"):
             print(f"{f.classification:28} {f.hostname} -> {' -> '.join(f.chain)}  {f.detail}")
@@ -198,6 +218,8 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("scan", help="live drift scan of DNS names you own")
     s.add_argument("--hosts")
     s.add_argument("--owned-domain", action="append", help="domain your organisation owns (repeatable)")
+    s.add_argument("--spf", action="store_true", help="also walk SPF delegations of the owned domains")
+    s.add_argument("--expiry", action="store_true", help="also look up registration expiry via RDAP")
     s.add_argument("--dns", action="append")
     s.add_argument("--out")
     s.set_defaults(fn=cmd_scan)

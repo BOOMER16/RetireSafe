@@ -24,12 +24,15 @@ _ext = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)  # bundled lis
 
 def registrable(host: str) -> str | None:
     r = _ext(host.rstrip("."))
-    return getattr(r, "top_domain_under_public_suffix", None) or r.registered_domain or None
+    if hasattr(r, "top_domain_under_public_suffix"):
+        return r.top_domain_under_public_suffix or None
+    return r.registered_domain or None
 
 
 def _resolver() -> dns.resolver.Resolver:
     r = dns.resolver.Resolver()
     r.lifetime, r.timeout = 6, 3
+    r.use_edns(0, 0, 4096)          # large TXT/SPF answers without needing TCP
     return r
 
 

@@ -21,8 +21,10 @@ jobs:
         run: pip install -e "backend[dev]"
       - name: Download the real traffic data (checksum-verified)
         run: python scripts/get_data.py
-      - name: Test (warnings about implicit text encodings are errors)
+      - name: Test (warnings about implicit text encodings are errors; live DNS/RDAP tests enabled)
         working-directory: backend
+        env:
+          RETIRESAFE_NETWORK_TESTS: "1"
         run: python -X warn_default_encoding -W error::EncodingWarning -m pytest -q
       - name: Guided demo runs end to end
         run: python demo.py --mode strict
