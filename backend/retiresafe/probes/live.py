@@ -19,7 +19,7 @@ import tldextract
 from .. import names
 from ..knowledge import fingerprints
 
-_ext = tldextract.TLDExtract(suffix_list_urls=())
+_ext = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)  # bundled list, no disk cache
 
 
 def registrable(host: str) -> str | None:

@@ -13,7 +13,7 @@ S3_HOST = re.compile(r"(^|\.)s3[.-]([a-z0-9-]+\.)*amazonaws\.com$|s3-website")
 
 @lru_cache(maxsize=1)
 def entries() -> list[dict]:
-    return json.loads(CATALOGUE.read_text())
+    return json.loads(CATALOGUE.read_text(encoding="utf-8"))
 
 
 @lru_cache(maxsize=1)

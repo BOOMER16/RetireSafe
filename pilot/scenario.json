@@ -4,15 +4,27 @@
   "internal_domain": "nasa.gov",
   "as_of": "1995-09-01T03:59:53Z",
   "as_of_note": "end of the combined NASA log, so the logs count as fresh; a live pilot uses the current time",
-  "traffic_log_default": "/home/user/data/nasa-http/nasa_jul_aug_1995.log",
-  "traffic_log_build": "cat NASA_access_log_Jul95 NASA_access_log_Aug95 > nasa_jul_aug_1995.log (sha256 of the .gz sources: Jul 199109ed0f273e095da6ccd5fc9dc4cd8bb58daa06d62135e62090fea9d27488, Aug 14995aed0ba4558ab832613ebea9a3ef2d87cb4297fc67f5694e0032bbb6b788)",
+  "traffic_log_default": "data/nasa-http/nasa_jul_aug_1995.log",
+  "traffic_log_build": "python scripts/get_data.py (downloads both months, verifies SHA-256, joins them with the July file's truncated last record kept on its own line). Source .gz sha256: Jul 199109ed0f273e095da6ccd5fc9dc4cd8bb58daa06d62135e62090fea9d27488, Aug 14995aed0ba4558ab832613ebea9a3ef2d87cb4297fc67f5694e0032bbb6b788",
   "traffic": [
-    {"resource": "aws_s3_bucket.event_site", "host": "event.retiresafe-pilot.example", "path_prefix": "/shuttle/countdown/",
-     "rule": "the event's live countdown pages"},
-    {"resource": "aws_s3_bucket.event_assets", "host": "rs-pilot-event-assets-2025.s3.amazonaws.com", "path_prefix": "/images/",
-     "rule": "shared static images"},
-    {"resource": "aws_s3_bucket.legacy_downloads", "host": "rs-pilot-legacy-downloads.s3.amazonaws.com", "path_prefix": "/payloads/level4/",
-     "rule": "the busiest two-level prefix whose last request is >= 14 days before log end (pilot/scripts/select_traffic.py)"}
+    {
+      "resource": "aws_s3_bucket.event_site",
+      "host": "event.retiresafe-pilot.example",
+      "path_prefix": "/shuttle/countdown/",
+      "rule": "the event's live countdown pages"
+    },
+    {
+      "resource": "aws_s3_bucket.event_assets",
+      "host": "rs-pilot-event-assets-2025.s3.amazonaws.com",
+      "path_prefix": "/images/",
+      "rule": "shared static images"
+    },
+    {
+      "resource": "aws_s3_bucket.legacy_downloads",
+      "host": "rs-pilot-legacy-downloads.s3.amazonaws.com",
+      "path_prefix": "/payloads/level4/",
+      "rule": "the busiest two-level prefix whose last request is >= 14 days before log end (pilot/scripts/select_traffic.py)"
+    }
   ],
   "migrate_to": {
     "rs-pilot-event-assets-2025": "rs-pilot-event-assets-123456789012-us-east-1-an"

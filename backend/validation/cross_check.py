@@ -26,11 +26,13 @@ from retiresafe.analysis.traffic import Policy, quarantine_days, summarise  # no
 from retiresafe.collectors.access_logs import ParseStats, read_clf  # noqa: E402
 
 OUT = HERE / "results"
-NASA_JUL = Path("/home/user/data/nasa-http/NASA_access_log_Jul95")
+from retiresafe.paths import nasa_log  # noqa: E402
+
+NASA_JUL = nasa_log("NASA_access_log_Jul95")
 
 
 def _load(p: Path) -> dict:
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 def _pct(qs: list[float], p: float) -> float:          # same percentile rule as the research test bed
@@ -96,7 +98,7 @@ MAP = {"no_cname": "no_cname", "cname_resolves": "cname_resolves",
 
 def check_tb1(raw: Path) -> dict:
     from retiresafe.probes import live
-    rows = [json.loads(line) for line in raw.read_text().splitlines()]
+    rows = [json.loads(line) for line in raw.read_text(encoding="utf-8").splitlines()]
     # every name that had a CNAME in TB1 (where all non-trivial classes live)
     sample = [r for r in rows if r["chain"]]
     t0 = time.time()
@@ -121,13 +123,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("checks", nargs="+", choices=["tb1", "tb2", "tb3"])
     ap.add_argument("--log", default=str(NASA_JUL))
-    ap.add_argument("--tb1-raw", default="/home/user/Wewere/testbeds/results/tb1_raw.private.jsonl")
+    ap.add_argument("--tb1-raw", default=str(ROOT / "testbeds/results/tb1_raw.private.jsonl"))
     a = ap.parse_args()
     OUT.mkdir(exist_ok=True)
     for c in a.checks:
         res = {"tb2": lambda: check_tb2(Path(a.log)), "tb3": lambda: check_tb3(Path(a.log)),
                "tb1": lambda: check_tb1(Path(a.tb1_raw))}[c]()
-        (OUT / f"{c}.json").write_text(json.dumps(res, indent=2) + "\n")
+        (OUT / f"{c}.json").write_text(json.dumps(res, indent=2) + "\n", encoding="utf-8")
         print(json.dumps({k: v for k, v in res.items() if k not in ("confusion",)}, indent=1))
 
 

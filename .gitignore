@@ -11,3 +11,4 @@ pilot/.work/
 *.egg-info/
 .pytest_cache/
 !pilot/generated/*.db
+demo_output/

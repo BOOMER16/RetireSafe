@@ -34,7 +34,7 @@ def _host(s: str) -> str:
 
 def load_route53(path: str | Path) -> list[DnsRecord]:
     path = Path(path)
-    data = json.loads(path.read_text())
+    data = json.loads(path.read_text(encoding="utf-8"))
     sets = data.get("ResourceRecordSets", data) if isinstance(data, dict) else data
     out = []
     for i, rs in enumerate(sets):
@@ -55,7 +55,7 @@ SOA_OWNER = re.compile(r"^(\S+)\s+(?:\d+\s+)?(?:IN\s+)?(?:\d+\s+)?SOA\b", re.M |
 
 def load_bind(path: str | Path, origin: str | None = None) -> list[DnsRecord]:
     path = Path(path)
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     if origin is None and "$ORIGIN" not in text.upper():
         m = SOA_OWNER.search(text)           # no $ORIGIN: the SOA owner is the zone apex
         if m and m.group(1).endswith("."):
@@ -78,7 +78,7 @@ def load_bind(path: str | Path, origin: str | None = None) -> list[DnsRecord]:
 
 def load_any(path: str | Path, origin: str | None = None) -> list[DnsRecord]:
     p = Path(path)
-    text = p.read_text().lstrip()
+    text = p.read_text(encoding="utf-8").lstrip()
     if text.startswith("{") or text.startswith("["):
         return load_route53(p)
     return load_bind(p, origin)

@@ -11,15 +11,16 @@ from __future__ import annotations
 
 import json
 import shutil
-import subprocess
 import sys
 from pathlib import Path
 
 PILOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PILOT.parent / "backend"))
 from retiresafe.cli import main as cli  # noqa: E402
+from retiresafe.engine import apply_patch  # noqa: E402
+from retiresafe.paths import nasa_log  # noqa: E402
 
-SCEN = json.loads((PILOT / "scenario.json").read_text())
+SCEN = json.loads((PILOT / "scenario.json").read_text(encoding="utf-8"))
 G, R = PILOT / "generated", PILOT / "results"
 
 
@@ -38,13 +39,15 @@ def assess(tag: str, plan: str, dns: str, repo: Path, mode: str, log_path: str) 
     for old, new in SCEN.get("migrate_to", {}).items():
         args += ["--migrate", f"{old}={new}"]
     code = cli(args)
-    rec = json.loads((R / f"{tag}.json").read_text())
+    rec = json.loads((R / f"{tag}.json").read_text(encoding="utf-8"))
     return {"exit_code": code, "gate": rec["gate"],
             "verdicts": {r["resource"]["address"]: r["verdict"] for r in rec["resources"]}}
 
 
 def main() -> None:
-    log_path = sys.argv[1] if len(sys.argv) > 1 else SCEN["traffic_log_default"]
+    log_path = sys.argv[1] if len(sys.argv) > 1 else str(nasa_log())
+    if not Path(log_path).exists():
+        sys.exit(f"traffic log not found: {log_path}\nrun: python scripts/get_data.py")
     R.mkdir(exist_ok=True)
     summary = {}
     summary["before_strict"] = assess("before_strict", "plan_before.json", "route53_before.json",
@@ -55,14 +58,13 @@ def main() -> None:
     after_app = PILOT / ".work" / "app_after"
     shutil.rmtree(after_app, ignore_errors=True)
     shutil.copytree(PILOT / "app", after_app)
-    rec = json.loads((R / "before_strict.json").read_text())
+    rec = json.loads((R / "before_strict.json").read_text(encoding="utf-8"))
     diffs = [p["content"] for r in rec["resources"] for p in r["patches"] if p["kind"] == "code_diff"]
-    (R / "applied_code.patch").write_text("".join(diffs))
-    subprocess.run(["git", "apply", "--unsafe-paths", "-p1", str(R / "applied_code.patch")], cwd=after_app,
-                   check=True)
+    (R / "applied_code.patch").write_text("".join(diffs), encoding="utf-8")
+    apply_patch.apply("".join(diffs), after_app)
     summary["after_strict"] = assess("after_strict", "plan_after.json", "route53_after.json", after_app,
                                      "strict", log_path)
-    (R / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    (R / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
 
 

@@ -35,7 +35,7 @@ def _kv(spec: str) -> tuple[str, dict]:
 
 
 def cmd_assess(a: argparse.Namespace) -> int:
-    pol = json.loads(Path(a.policy).read_text()) if a.policy else {}
+    pol = json.loads(Path(a.policy).read_text(encoding="utf-8")) if a.policy else {}
     for k in ("mode",):
         if getattr(a, k):
             pol[k] = getattr(a, k)
@@ -63,9 +63,9 @@ def cmd_assess(a: argparse.Namespace) -> int:
     inp = AssessmentInput(a.plan, dns, repos, logs, policy, parse_as_of(a.as_of), migrate)
     result = run(inp)
     rec = evidence.record(result, policy_dict(policy))
-    Path(a.out).write_text(json.dumps(rec, indent=2))
+    Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     if a.markdown:
-        Path(a.markdown).write_text(evidence.markdown(rec))
+        Path(a.markdown).write_text(evidence.markdown(rec), encoding="utf-8")
     g = rec["gate"]
     print(f"gate: {'PASS' if g['passed'] else 'FAIL'}  {g['verdict_counts']}")
     for r in rec["resources"]:
@@ -78,14 +78,14 @@ def cmd_scan(a: argparse.Namespace) -> int:
     from .probes import live
     hosts: list[str] = []
     if a.hosts:
-        hosts += Path(a.hosts).read_text().split()
+        hosts += Path(a.hosts).read_text(encoding="utf-8").split()
     for spec in a.dns or []:
         path, _, origin = spec.partition("@")
         hosts += [r.name for r in dns_zone.load_any(path, origin or None) if r.type == "CNAME" or r.alias_target]
     findings = live.scan(hosts)
     out = [asdict(f) for f in findings]
     if a.out:
-        Path(a.out).write_text(json.dumps(out, indent=2))
+        Path(a.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
     bad = [f for f in findings if f.classification in ("reclaimable_candidate", "dangling_unregistered_domain")]
     for f in findings:
         if f.classification not in ("no_cname", "cname_resolves"):
@@ -101,6 +101,9 @@ def cmd_serve(a: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    for stream in (sys.stdout, sys.stderr):      # Windows consoles default to legacy code pages
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(errors="replace")
     ap = argparse.ArgumentParser(prog="retiresafe", description="Pre-flight checks for retiring cloud resources")
     ap.add_argument("--version", action="version", version=f"retiresafe {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)

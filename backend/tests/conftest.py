@@ -7,8 +7,10 @@ REPO = BACKEND.parent
 FIX = BACKEND / "tests" / "fixtures"
 PILOT = REPO / "pilot"
 GEN = PILOT / "generated"
-NASA_JULAUG = Path("/home/user/data/nasa-http/nasa_jul_aug_1995.log")
-NASA_JUL = Path("/home/user/data/nasa-http/NASA_access_log_Jul95")
+from retiresafe.paths import nasa_log  # noqa: E402
+
+NASA_JULAUG = nasa_log()
+NASA_JUL = nasa_log("NASA_access_log_Jul95")
 
 
 @pytest.fixture

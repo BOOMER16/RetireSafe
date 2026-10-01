@@ -50,7 +50,7 @@ def _provider_regions(plan: dict) -> dict[str, str]:
 
 
 def load(path: str | Path) -> PlanView:
-    plan = json.loads(Path(path).read_text())
+    plan = json.loads(Path(path).read_text(encoding="utf-8"))
     if "resource_changes" not in plan and "prior_state" not in plan:
         raise ValueError(f"{path}: not a Terraform plan JSON (run `terraform show -json plan.out`)")
     regions = _provider_regions(plan)

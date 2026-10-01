@@ -15,7 +15,7 @@ from retiresafe.models import Verdict
 from retiresafe.probes import live
 from retiresafe.report import evidence
 
-SCEN = json.loads((PILOT / "scenario.json").read_text())
+SCEN = json.loads((PILOT / "scenario.json").read_text(encoding="utf-8"))
 AS_OF = datetime.fromisoformat(SCEN["as_of"].replace("Z", "+00:00"))
 
 
@@ -63,7 +63,7 @@ def test_cli_gate_exit_codes(tmp_path):
     out = tmp_path / "e.json"
     code = cli(["assess", "--plan", str(GEN / "plan_after.json"), "--dns", str(GEN / "route53_after.json"),
                 "--out", str(out), "--as-of", SCEN["as_of"]])
-    assert code == 0 and json.loads(out.read_text())["gate"]["passed"]
+    assert code == 0 and json.loads(out.read_text(encoding="utf-8"))["gate"]["passed"]
     code = cli(["assess", "--plan", str(GEN / "plan_before.json"), "--out", str(out)])
     assert code == 2
     assert cli(["assess", "--plan", str(BACKEND / "pyproject.toml"), "--out", str(out)]) == 1   # not a plan

@@ -1,7 +1,7 @@
 {
   "schema": "retiresafe.evidence/v1",
-  "assessment_id": "58112019-2ca3-4a86-9f3a-aa8f38a5920c",
-  "created_at": "2026-10-01T15:04:25.690655+00:00",
+  "assessment_id": "da3da398-802a-4756-a528-5c3a69a78dd4",
+  "created_at": "2026-10-01T18:42:26.350716+00:00",
   "as_of": "1995-09-01T03:59:53+00:00",
   "tool": {
     "name": "retiresafe",
@@ -48,22 +48,22 @@
     {
       "role": "access_log:clf",
       "name": "nasa_jul_aug_1995.log",
-      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
-      "bytes": 373056138,
+      "sha256": "e337f0e35508fdb7f13273c41f1764fd9030fbef32f72cac43a56fb2f8fe6415",
+      "bytes": 373056139,
       "host": "event.retiresafe-pilot.example"
     },
     {
       "role": "access_log:clf",
       "name": "nasa_jul_aug_1995.log",
-      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
-      "bytes": 373056138,
+      "sha256": "e337f0e35508fdb7f13273c41f1764fd9030fbef32f72cac43a56fb2f8fe6415",
+      "bytes": 373056139,
       "host": "rs-pilot-event-assets-2025.s3.amazonaws.com"
     },
     {
       "role": "access_log:clf",
       "name": "nasa_jul_aug_1995.log",
-      "sha256": "35c38d9465a8ed277f0c52650203f41bf14afd570a66485a9941a78db236c826",
-      "bytes": 373056138,
+      "sha256": "e337f0e35508fdb7f13273c41f1764fd9030fbef32f72cac43a56fb2f8fe6415",
+      "bytes": 373056139,
       "host": "rs-pilot-legacy-downloads.s3.amazonaws.com"
     }
   ],
@@ -1531,9 +1531,9 @@
   ],
   "parse_stats": {
     "nasa_jul_aug_1995.log": {
-      "lines": 3461612,
+      "lines": 3461613,
       "parsed": 3458009,
-      "failed": 3603
+      "failed": 3604
     }
   },
   "scan_stats": {

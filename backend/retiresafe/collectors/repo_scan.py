@@ -73,7 +73,7 @@ def scan(root: str | Path, buckets: set[str], hostnames: set[str]) -> tuple[list
             scanned += 1
             text = raw.decode("utf-8", errors="replace")
             owner_check = bool(EXPECTED_OWNER.search(text))
-            rel = str(p.relative_to(root))
+            rel = p.relative_to(root).as_posix()
             for i, line in enumerate(text.splitlines(), 1):
                 found = [(b, "s3_bucket") for b in names.s3_buckets_in(line) if b in buckets]
                 if lit_rx:      # bucket passed as a bare string literal, e.g. download_file("bucket", key)

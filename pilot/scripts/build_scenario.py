@@ -70,7 +70,7 @@ def export_route53(name: str) -> list[dict]:
                        aws_access_key_id="pilot", aws_secret_access_key="pilot")
     zone = next(z for z in r53.list_hosted_zones()["HostedZones"] if z["Name"] == "retiresafe-pilot.example.")
     sets = r53.list_resource_record_sets(HostedZoneId=zone["Id"])["ResourceRecordSets"]
-    (OUT / name).write_text(json.dumps({"ResourceRecordSets": sets}, indent=2) + "\n")
+    (OUT / name).write_text(json.dumps({"ResourceRecordSets": sets}, indent=2) + "\n", encoding="utf-8")
     return sets
 
 
@@ -89,7 +89,7 @@ def bind_zone(sets: list[dict], name: str) -> None:
             if rs["Type"] in ("CNAME", "NS") and not val.endswith("."):
                 val += "."
             rds.add(dns.rdata.from_text(dns.rdataclass.IN, rdtype, val))
-    (OUT / name).write_text(z.to_text(relativize=False) + "\n")
+    (OUT / name).write_text(z.to_text(relativize=False) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -123,7 +123,7 @@ def main() -> None:
         sh([tf, "apply", "-auto-approve", *flags], a_dir, env)
         stage("app", "v2")
         sh([tf, "plan", "-out=before.tfplan", *flags], a_dir, env)
-        (OUT / "plan_before.json").write_text(sh([tf, "show", "-json", "before.tfplan"], a_dir, env))
+        (OUT / "plan_before.json").write_text(sh([tf, "show", "-json", "before.tfplan"], a_dir, env), encoding="utf-8")
 
         stage("dns", "v2")
         sh([tf, "apply", "-auto-approve", *flags], d, env)
@@ -131,7 +131,7 @@ def main() -> None:
 
         stage("app", "v3")
         sh([tf, "plan", "-out=after.tfplan", *flags], a_dir, env)
-        (OUT / "plan_after.json").write_text(sh([tf, "show", "-json", "after.tfplan"], a_dir, env))
+        (OUT / "plan_after.json").write_text(sh([tf, "show", "-json", "after.tfplan"], a_dir, env), encoding="utf-8")
 
         version = json.loads(sh([tf, "version", "-json"], a_dir, env))
         import moto as moto_pkg
@@ -147,7 +147,7 @@ def main() -> None:
             "files": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
                       for p in sorted(OUT.iterdir()) if p.name != "manifest.json"},
         }
-        (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(manifest, indent=2))
     finally:
         moto.terminate()

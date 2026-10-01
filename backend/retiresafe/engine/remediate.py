@@ -50,7 +50,7 @@ def code_patch(repo_root: Path, refs: list[Reference], old: str, new: str) -> Pa
     for rel in files:
         p = repo_root / rel
         try:
-            before = p.read_text()
+            before = p.read_text(encoding="utf-8")
         except OSError:
             continue
         after = re.sub(rf"(?<![a-z0-9.-]){re.escape(old)}(?![a-z0-9-])", new, before)

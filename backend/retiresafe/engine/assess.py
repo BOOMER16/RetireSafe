@@ -62,7 +62,7 @@ def _input_record(role: str, path: Path) -> dict:
         files = sorted(p for p in path.rglob("*") if p.is_file() and ".git" not in p.parts)
         h = hashlib.sha256()
         for p in files:
-            h.update(str(p.relative_to(path)).encode())
+            h.update(p.relative_to(path).as_posix().encode())
             h.update(sha256(p).encode())
         return {"role": role, "name": path.name, "sha256_tree": h.hexdigest(), "files": len(files)}
     return {"role": role, "name": path.name, "sha256": sha256(path), "bytes": path.stat().st_size}
