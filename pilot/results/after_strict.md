@@ -1,4 +1,4 @@
-# RetireSafe assessment 5f5b34c6-60ff-483a-9221-f445a777fdaa
+# RetireSafe assessment 4f20b023-c716-460e-a96d-1fcb29d6b50a
 
 *As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy strict*
 

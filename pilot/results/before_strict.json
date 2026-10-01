@@ -1,7 +1,7 @@
 {
   "schema": "retiresafe.evidence/v1",
-  "assessment_id": "7e736294-1479-4649-9ce9-a1bb1d198c15",
-  "created_at": "2026-10-01T19:31:49.618493+00:00",
+  "assessment_id": "3cd02cdd-7118-4b15-9e79-506cd9a94781",
+  "created_at": "2026-10-01T20:14:33.542765+00:00",
   "as_of": "1995-09-01T03:59:53+00:00",
   "tool": {
     "name": "retiresafe",
@@ -238,7 +238,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:dns:route53_before.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME"
-          ]
+          ],
+          "method": null,
+          "context": null
         },
         {
           "id": "ref:aws_s3_bucket.event_assets:iac:1",
@@ -250,7 +252,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:iac:aws_ssm_parameter.assets_base_url"
-          ]
+          ],
+          "method": null,
+          "context": null
         },
         {
           "id": "ref:aws_s3_bucket.event_assets:code:2",
@@ -262,7 +266,9 @@
           "integrity_control": "sri",
           "evidence_ids": [
             "ev:code:app::index.html:7"
-          ]
+          ],
+          "method": "url",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.event_assets:code:3",
@@ -274,7 +280,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::index.html:14"
-          ]
+          ],
+          "method": "url",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.event_assets:code:4",
@@ -286,7 +294,9 @@
           "integrity_control": "expected_bucket_owner",
           "evidence_ids": [
             "ev:code:app::tools/upload_assets.py:10"
-          ]
+          ],
+          "method": "sdk_argument",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.event_assets:traffic",
@@ -298,7 +308,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:traffic:nasa_jul_aug_1995.log[/images/]"
-          ]
+          ],
+          "method": null,
+          "context": null
         }
       ],
       "traffic": [
@@ -715,7 +727,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:dns:route53_before.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME"
-          ]
+          ],
+          "method": null,
+          "context": null
         },
         {
           "id": "ref:aws_s3_bucket.event_site:iac:1",
@@ -727,7 +741,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:iac:aws_s3_bucket_website_configuration.event_site"
-          ]
+          ],
+          "method": null,
+          "context": null
         },
         {
           "id": "ref:aws_s3_bucket.event_site:code:2",
@@ -739,7 +755,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::index.html:12"
-          ]
+          ],
+          "method": "hostname",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.event_site:traffic",
@@ -751,7 +769,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:traffic:nasa_jul_aug_1995.log[/shuttle/countdown/]"
-          ]
+          ],
+          "method": null,
+          "context": null
         }
       ],
       "traffic": [
@@ -1060,7 +1080,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::config/legacy.env:3"
-          ]
+          ],
+          "method": "url",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.legacy_downloads:code:1",
@@ -1072,7 +1094,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::tools/mirror_legacy.sh:3"
-          ]
+          ],
+          "method": "url",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.legacy_downloads:code:2",
@@ -1084,7 +1108,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::tools/sync_downloads.py:8"
-          ]
+          ],
+          "method": "sdk_argument",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.legacy_downloads:code:3",
@@ -1096,7 +1122,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:code:app::tools/sync_downloads.py:9"
-          ]
+          ],
+          "method": "sdk_argument",
+          "context": "code"
         },
         {
           "id": "ref:aws_s3_bucket.legacy_downloads:traffic",
@@ -1108,7 +1136,9 @@
           "integrity_control": null,
           "evidence_ids": [
             "ev:traffic:nasa_jul_aug_1995.log[/payloads/level4/]"
-          ]
+          ],
+          "method": null,
+          "context": null
         }
       ],
       "traffic": [
@@ -1507,7 +1537,9 @@
       "detail": "<link rel=\"stylesheet\" href=\"https://rs-pilot-event-assets-2025.s3.amazonaws.com/css/site.css\" integrity=\"sha384-3t7H6LVInKxmxEb88i+acpyiaE6jBt4F0zncfK1kvdZWQTQf5p7YFQDIXiBnWv3M\" crossorigin=\"anonymous\">",
       "location": "app::index.html:7",
       "data": {
-        "integrity_control": "sri"
+        "integrity_control": "sri",
+        "method": "url",
+        "context": "code"
       }
     },
     {
@@ -1516,7 +1548,9 @@
       "detail": "<p>Schedule: <a href=\"https://event.retiresafe-pilot.example/schedule.html\">event.retiresafe-pilot.example/schedule.html</a></p>",
       "location": "app::index.html:12",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "hostname",
+        "context": "code"
       }
     },
     {
@@ -1525,7 +1559,9 @@
       "detail": "<script src=\"https://rs-pilot-event-assets-2025.s3.amazonaws.com/js/countdown.js\"></script>",
       "location": "app::index.html:14",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "url",
+        "context": "code"
       }
     },
     {
@@ -1534,7 +1570,9 @@
       "detail": "DOWNLOADS_URL=https://rs-pilot-legacy-downloads.s3.amazonaws.com/",
       "location": "app::config/legacy.env:3",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "url",
+        "context": "code"
       }
     },
     {
@@ -1543,7 +1581,9 @@
       "detail": "s3.put_object(Bucket=\"rs-pilot-event-assets-2025\", Key=key, Body=f, ExpectedBucketOwner=ACCOUNT_ID)",
       "location": "app::tools/upload_assets.py:10",
       "data": {
-        "integrity_control": "expected_bucket_owner"
+        "integrity_control": "expected_bucket_owner",
+        "method": "sdk_argument",
+        "context": "code"
       }
     },
     {
@@ -1552,7 +1592,9 @@
       "detail": "AWS_SECRET_ACCESS_KEY=[REDACTED] aws s3 sync s3://rs-pilot-legacy-downloads ./mirror",
       "location": "app::tools/mirror_legacy.sh:3",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "url",
+        "context": "code"
       }
     },
     {
@@ -1561,7 +1603,9 @@
       "detail": "for obj in s3.list_objects_v2(Bucket=\"rs-pilot-legacy-downloads\", Prefix=prefix).get(\"Contents\", []):",
       "location": "app::tools/sync_downloads.py:8",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "sdk_argument",
+        "context": "code"
       }
     },
     {
@@ -1570,7 +1614,9 @@
       "detail": "s3.download_file(\"rs-pilot-legacy-downloads\", obj[\"Key\"], f\"{dest}/{obj['Key'].split('/')[-1]}\")",
       "location": "app::tools/sync_downloads.py:9",
       "data": {
-        "integrity_control": null
+        "integrity_control": null,
+        "method": "sdk_argument",
+        "context": "code"
       }
     },
     {
@@ -1606,7 +1652,8 @@
     "app": {
       "files_scanned": 8,
       "files_skipped_binary": 0,
-      "files_skipped_large": 0
+      "files_skipped_large": 0,
+      "literal_matches_discarded": 0
     }
   },
   "not_checked": [

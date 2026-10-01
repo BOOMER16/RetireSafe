@@ -183,10 +183,11 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                     rid = f"ref:{res.address}:code:{len(v['refs'])}"
                     loc = f"{label}::{h.file}:{h.line}"
                     ev = f"ev:code:{loc}"
-                    evidence.append(Evidence(ev, "repo_scan", h.text, loc, {"integrity_control": h.integrity_control}))
+                    evidence.append(Evidence(ev, "repo_scan", h.text, loc, {
+                        "integrity_control": h.integrity_control, "method": h.method, "context": h.context}))
                     removed = v["custom"].get(h.target, False)   # custom hostname whose DNS record is removed
                     v["refs"].append(Reference(rid, RefKind.CODE, loc, h.text, h.target, removed,
-                                               h.integrity_control, [ev]))
+                                               h.integrity_control, [ev], h.method, h.context))
 
     # ---------- traffic ----------
     parse_stats: dict[str, dict] = {}

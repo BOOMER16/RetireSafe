@@ -13,7 +13,13 @@ S3_PATH = re.compile(rf"(?<![a-z0-9.-])s3(?:[.-](?:dualstack\.)?[a-z0-9-]+)?\.am
                      re.I)
 S3_URI = re.compile(rf"\bs3a?://({_B})(?=[/\"'\s)]|$)", re.I)
 S3_ARN = re.compile(rf"\barn:aws[a-z-]*:s3:::({_B})(?=[/\"'\s)*]|$)", re.I)
-SDK_BUCKET = re.compile(rf"\b[Bb]ucket(?:_?[Nn]ame)?[\"']?\s*[:=]\s*[\"']({_B})[\"']")
+# A name in bucket position: assigned to an identifier / key containing "bucket"
+# (Bucket=, bucket_name=, s3_bucket=, BUCKET = , "bucket": , bucket: ), or the bucket argument
+# of a well-known S3 SDK call. Bucket names are lower case, so these are case-sensitive.
+SDK_BUCKET = re.compile(rf"(?i:\b\w*bucket\w*)[\"']?\s*(?:=|:|=>)\s*[\"']?({_B})(?=[\"'\s,;)}}]|$)")
+SDK_CALL = re.compile(rf"\.(?:download_file|upload_file|download_fileobj|upload_fileobj|copy_object|Bucket|Object|"
+                      rf"ObjectSummary|BucketPolicy|BucketWebsite|create_bucket|delete_bucket|head_bucket|"
+                      rf"bucket|get_bucket|lookup)\(\s*[\"']({_B})[\"']")
 # An S3 endpoint with no bucket label (website or REST, any region). S3 then takes the bucket name
 # from the HTTP Host header, i.e. the hostname the client asked for.
 S3_BARE = re.compile(r"^s3(?:[.-](?:website[.-])?(?:dualstack\.)?[a-z0-9-]+)?\.amazonaws\.com(?:\.cn)?$", re.I)

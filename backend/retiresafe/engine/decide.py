@@ -67,7 +67,20 @@ def c5_controls(ref: Reference) -> ConditionResult:
     return ConditionResult(Tri.TRUE, "no integrity or owner check detected for this reference", ref.evidence_ids)
 
 
+def informational(ref: Reference) -> str | None:
+    """Why a code hit cannot carry traffic (None if it can)."""
+    if ref.context == "comment":
+        return "the reference is inside a code comment; nothing executes or follows it"
+    if ref.method == "mention":
+        return ("the name appears as a quoted string near S3 code but not in bucket position; listed for "
+                "review, not treated as a consumer")
+    return None
+
+
 def evaluate_path(ref: Reference, c1: ConditionResult, c2: ConditionResult, c4: ConditionResult) -> PathAssessment:
+    why = informational(ref)
+    if why:
+        c4 = ConditionResult(Tri.FALSE, why, ref.evidence_ids)
     c3 = (ConditionResult(Tri.FALSE, "the same change removes this reference", ref.evidence_ids)
           if ref.removed_in_change else
           ConditionResult(Tri.TRUE, "the reference is not removed by this change", ref.evidence_ids))

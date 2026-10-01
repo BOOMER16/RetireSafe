@@ -1,4 +1,4 @@
-# RetireSafe assessment 7e736294-1479-4649-9ce9-a1bb1d198c15
+# RetireSafe assessment 3cd02cdd-7118-4b15-9e79-506cd9a94781
 
 *As of 1995-09-01T03:59:53+00:00 · rules 2026-10-01.1 · policy strict*
 

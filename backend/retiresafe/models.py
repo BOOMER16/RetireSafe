@@ -70,6 +70,8 @@ class Reference:
     removed_in_change: bool = False
     integrity_control: str | None = None   # e.g. "sri", "expected_bucket_owner"
     evidence_ids: list[str] = field(default_factory=list)
+    method: str | None = None              # code refs: url | sdk_argument | hostname | mention
+    context: str | None = None             # code refs: code | comment | docs | test
 
 
 @dataclass

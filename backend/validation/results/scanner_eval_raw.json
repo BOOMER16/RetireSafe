@@ -1,0 +1,1617 @@
+{
+  "corpus_commits": {
+    "allennlp": "80fb6061e568cb9d6ab5d45b661e86eb61b92c82",
+    "keras": "6e63486d624dff7d8b7b5f8dd5eea5bd571191b3",
+    "datasets": "ff9ea5fdcba7cc4d25bac833ecb6659397694c12",
+    "mlflow": "c233876f76ff86ff461544ac2b77a6e01a4a308e",
+    "airflow": "e4d397f021e1ed571a0464f06afcab4ab1c9d122",
+    "transformers": "a005fc82babfe8871d87746decad2dbee100a125"
+  },
+  "generic_names": [
+    "data",
+    "logs",
+    "assets",
+    "backup",
+    "images",
+    "static",
+    "uploads",
+    "models",
+    "files",
+    "archive",
+    "artifacts",
+    "cache",
+    "output",
+    "test"
+  ],
+  "phase_a": {
+    "any": {
+      "total": 18525,
+      "by_method": {
+        "literal": 18290,
+        "mention": 50,
+        "url": 176,
+        "sdk_argument": 9
+      },
+      "by_context": {
+        "code": 3438,
+        "test": 11969,
+        "comment": 150,
+        "docs": 2968
+      }
+    },
+    "bucket_position": {
+      "total": 585,
+      "by_method": {
+        "mention": 400,
+        "url": 176,
+        "sdk_argument": 9
+      },
+      "by_context": {
+        "test": 494,
+        "code": 76,
+        "docs": 12,
+        "comment": 3
+      }
+    },
+    "old_literal_sample": [
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/question_answering/coqa/coqa.py",
+        "line": 85,
+        "target": "test",
+        "text": "\"filepath\": downloaded_files[\"test\"],"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/math_dataset/arithmetic__mul/1.0.0/dataset_info.json",
+        "line": 26,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/operators/test_agent.py",
+        "line": 286,
+        "target": "test",
+        "text": "task_id=\"test\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/mongo/tests/unit/mongo/hooks/test_mongo.py",
+        "line": 239,
+        "target": "test",
+        "text": "self.hook.replace_one(\"test_collection\", obj, upsert=True, mongo_db=\"test\")"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/civil_comments/CivilComments/1.0.0/dataset_info.json",
+        "line": 13,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/tracking/test_client.py",
+        "line": 954,
+        "target": "output",
+        "text": "\"mlflow.spanOutputs\": {\"output\": 25},"
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/shared/web-shared/genai-traces-table/hooks/useMlflowTraces.test.tsx",
+        "line": 312,
+        "target": "output",
+        "text": "response: '{\"output\": \"value\"}',"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/compat/tests/unit/common/compat/lineage/test_hook.py",
+        "line": 727,
+        "target": "data",
+        "text": "collector.add_extra(mock_context, \"key_with_underscores\", {\"data\": \"value\"})"
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/vendor/design-system/dist-types/design-system/Icon/__generated/icons/LayerIcon.d.ts",
+        "line": 3,
+        "target": "data",
+        "text": "declare const LayerIcon: React.ForwardRefExoticComponent<Pick<IconProps, \"about\" | \"accept\" | \"acceptCharset\" | \"accessKey\" | \"action\" | \"allowFullScreen\" | \"al"
+      },
+      {
+        "repo": "datasets",
+        "file": "docs/catalog/gem.md",
+        "line": 4992,
+        "target": "test",
+        "text": "`'test'`       | 900"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/universal_dependencies/et_edt/1.0.1/dataset_info.json",
+        "line": 38,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/star_cfq/overweighting_0.1x_unique_0.3x_b_cfq_0.3x_half_l_cfq/1.1.0/dataset_info.json",
+        "line": 25,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "docs/format_specific_dataset_builders.md",
+        "line": 125,
+        "target": "test",
+        "text": "\"test\": my_ds_test_v2,"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/tracking/test_file_store.py",
+        "line": 4059,
+        "target": "artifacts",
+        "text": "\"run_id\": \"artifacts\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/utils/model_catalog/volcengine.json",
+        "line": 3,
+        "target": "models",
+        "text": "\"models\": {"
+      },
+      {
+        "repo": "mlflow",
+        "file": "libs/typescript/integrations/gemini/package.json",
+        "line": 52,
+        "target": "files",
+        "text": "\"files\": ["
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/operators/test_emr_create_job_flow.py",
+        "line": 172,
+        "target": "test",
+        "text": "ti = create_task_instance(task=self.operator, run_id=\"test\", dag_version_id=dag_version.id)"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/edge3/tests/unit/edge3/cli/test_worker.py",
+        "line": 694,
+        "target": "test",
+        "text": "run_id=\"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/image_classification/i_naturalist2021/i_naturalist2021_test.py",
+        "line": 28,
+        "target": "test",
+        "text": "\"test\": 3,  # Number of fake test examples"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/kitti/3.1.0/dataset_info.json",
+        "line": 1,
+        "target": "test",
+        "text": "{\"name\":\"kitti\",\"description\":\"Kitti contains a suite of vision tasks built using an autonomous driving\\nplatform. The full benchmark contains many tasks such a"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/tracking/sqlalchemy_store/test_sqlalchemy_store_scorers.py",
+        "line": 446,
+        "target": "data",
+        "text": "assert accuracy_v2._serialized_scorer == '{\"data\": \"accuracy_scorer2\"}'"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/bundles/test_s3.py",
+        "line": 169,
+        "target": "test",
+        "text": "name=\"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "docs/catalog/star_cfq.md",
+        "line": 6771,
+        "target": "test",
+        "text": "`'test'`  | 95,742"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/universal_dependencies/universal_dependencies_utils.py",
+        "line": 1757,
+        "target": "test",
+        "text": "\"test\": \"UD_Mbya_Guarani-Dooley/r2.10/gun_dooley-ud-test.conllu\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/star_cfq/single_pool_30x_x_cfq/1.1.0/dataset_info.json",
+        "line": 56,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/universal_dependencies/qhe_hiencs/1.0.1/dataset_info.json",
+        "line": 38,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/tracking/test_rest_store.py",
+        "line": 2396,
+        "target": "test",
+        "text": "inputs={\"q\": \"test\"},"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/genai/test_agent_server.py",
+        "line": 132,
+        "target": "data",
+        "text": "assert test_result == {\"test\": \"data\"}"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/gpt3/three_digit_addition/1.1.0/dataset_info.json",
+        "line": 20,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/cnn_dailymail/subwords32k/2.0.0/highlights.text.subwords",
+        "line": 7610,
+        "target": "models",
+        "text": "'models'"
+      },
+      {
+        "repo": "mlflow",
+        "file": "docs/docs/genai/serving/custom-apps.mdx",
+        "line": 171,
+        "target": "models",
+        "text": "if \"anthropic\" in self.config[\"models\"]:"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/operators/test_llamaindex_embedding.py",
+        "line": 142,
+        "target": "test",
+        "text": "task_id=\"test\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/experiment-tracking/reducers/ImageReducer.test.ts",
+        "line": 183,
+        "target": "images",
+        "text": "compressed_filepath: 'images/image1%step%0%timestamp%1%UUID%compressed.webp',"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/big_patent/g/1.0.0/dataset_info.json",
+        "line": 186,
+        "target": "output",
+        "text": "\"output\": \"abstract\""
+      },
+      {
+        "repo": "airflow",
+        "file": "chart/tests/helm_tests/security/test_security_context.py",
+        "line": 664,
+        "target": "test",
+        "text": "{\"name\": \"test\", \"securityContexts\": {\"pod\": {\"runAsUser\": 9000, \"fsGroup\": 90}}}"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/text/gem/dummy_data/challenge_sets/web_nlg_ru/test_web_nlg_ru_ScrambleInputStructure500.json",
+        "line": 2,
+        "target": "test",
+        "text": "\"test\": ["
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/image_classification/mnist_test.py",
+        "line": 66,
+        "target": "test",
+        "text": "\"test\": 2,"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/structured/wiki_table_questions/wiki_table_questions_test.py",
+        "line": 38,
+        "target": "test",
+        "text": "'test': 2,"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/open_images_v4/original/2.0.0/dataset_info.json",
+        "line": 1052,
+        "target": "test",
+        "text": "\"name\": \"test\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/operators/test_llm_sql.py",
+        "line": 255,
+        "target": "test",
+        "text": "task_id=\"test\","
+      }
+    ],
+    "blocking_hits": 185,
+    "blocking_sample": [
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 434,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert config.config.location == \"s3://archive/default\""
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/hooks/test_s3.py",
+        "line": 197,
+        "target": "test",
+        "method": "url",
+        "context": "test",
+        "text": "bucket, key = S3Hook.get_s3_bucket_key(None, \"s3://test/test.txt\", \"\", \"\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 365,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "trace_archival_config: { location: 's3://archive/new-team' },"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_rest_store.py",
+        "line": 63,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert workspace.trace_archival_location == \"s3://archive/team-b\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/entities/test_workspace.py",
+        "line": 16,
+        "target": "artifacts",
+        "method": "url",
+        "context": "test",
+        "text": "\"default_artifact_root\": \"s3://artifacts/team-a\","
+      },
+      {
+        "repo": "airflow",
+        "file": "task-sdk/tests/task_sdk/test_lineage.py",
+        "line": 311,
+        "target": "output",
+        "method": "url",
+        "context": "test",
+        "text": "assert lineage.outputs[1].asset.uri == \"s3://output/file2\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/server/test_workspace_endpoints.py",
+        "line": 239,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "json={\"trace_archival_config\": {\"location\": \"s3://archive/team-only\"}},"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 467,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert initial.config.location == \"s3://archive/default\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/server/jobs/test_trace_archival_jobs.py",
+        "line": 340,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "resolved_trace_archival_location=\"s3://archive/default\","
+      },
+      {
+        "repo": "airflow",
+        "file": "airflow-core/src/airflow/example_dags/example_outlet_event_extra.py",
+        "line": 31,
+        "target": "output",
+        "method": "url",
+        "context": "code",
+        "text": "asset = Asset(uri=\"s3://output/1.txt\", name=\"test-asset\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/tracking/sqlalchemy_store/test_sqlalchemy_store_traces.py",
+        "line": 8377,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "default_trace_archival_location=\"s3://archive/default\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/server/jobs/test_trace_archival_jobs.py",
+        "line": 219,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "== f\"s3://archive/default/workspaces/{workspace}\""
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/compat/tests/unit/common/compat/lineage/test_hook.py",
+        "line": 432,
+        "target": "output",
+        "method": "url",
+        "context": "test",
+        "text": "collector.add_output_asset(mock_context, uri=\"s3://output/file2\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/server/test_workspace_endpoints.py",
+        "line": 251,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert args[0].trace_archival_location == \"s3://archive/team-only\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 315,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "await userEvent.clear(screen.getByDisplayValue('s3://archive/ml-research'));"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 412,
+        "target": "cache",
+        "method": "url",
+        "context": "test",
+        "text": "Workspace(name=\"team-cache\", description=None, default_artifact_root=\"s3://cache/a\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/tracking/sqlalchemy_store/test_sqlalchemy_store_traces.py",
+        "line": 10281,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "location: str = \"s3://archive/default\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/compat/tests/unit/common/compat/lineage/test_hook.py",
+        "line": 431,
+        "target": "output",
+        "method": "url",
+        "context": "test",
+        "text": "collector.add_output_asset(mock_context, uri=\"s3://output/file1\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 207,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert updated.trace_archival_location == \"s3://archive/team-a\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 316,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "await userEvent.type(screen.getByPlaceholderText('Enter trace archival location URI'), 's3://archive/new-team');"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/transfers/test_google_api_to_s3.py",
+        "line": 156,
+        "target": "test",
+        "method": "sdk_argument",
+        "context": "test",
+        "text": "bucket_name=\"test\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 221,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "expect(screen.getByDisplayValue('s3://archive/ml-research')).toBeInTheDocument();"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/hooks/test_s3.py",
+        "line": 132,
+        "target": "test",
+        "method": "url",
+        "context": "test",
+        "text": "\"s3a://test/this/is/not/a-real-key.txt\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/artifact/test_dbfs_rest_artifact_repo.py",
+        "line": 83,
+        "target": "test",
+        "method": "url",
+        "context": "test",
+        "text": "DbfsRestArtifactRepository(\"s3://test\")"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/server/jobs/test_trace_archival_jobs.py",
+        "line": 193,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "config=TraceArchivalConfig(location=\"s3://archive/default\", retention=\"30d\"),"
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 397,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "await userEvent.clear(screen.getByDisplayValue('s3://archive/ml-research'));"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/tracking/test_client_workspace.py",
+        "line": 164,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "location=\"s3://archive/team-b\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 209,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert fetched.trace_archival_location == \"s3://archive/team-a\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 274,
+        "target": "artifacts",
+        "method": "url",
+        "context": "test",
+        "text": "await userEvent.type(screen.getByPlaceholderText('Enter default artifact root URI'), 's3://artifacts/new-team');"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/tracking/test_client_workspace.py",
+        "line": 196,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "location=\"s3://archive/team-a\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 214,
+        "target": "artifacts",
+        "method": "url",
+        "context": "test",
+        "text": "expect(screen.queryByText('s3://artifacts/ml-research')).not.toBeInTheDocument();"
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/workspaces/hooks/useUpdateWorkspace.test.tsx",
+        "line": 51,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "location: 's3://archive/team-a',"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/compat/tests/unit/common/compat/lineage/test_hook.py",
+        "line": 563,
+        "target": "output",
+        "method": "url",
+        "context": "test",
+        "text": "assert lineage.outputs[1].asset.uri == \"s3://output/file\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 357,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "await userEvent.clear(screen.getByDisplayValue('s3://archive/ml-research'));"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 450,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "default_trace_archival_root=\"s3://archive/default\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "mlflow/server/js/src/home/components/WorkspacesHomeView.test.tsx",
+        "line": 304,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "trace_archival_config: { location: 's3://archive/ml-research', retention: '30d' },"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/operators/test_comprehend.py",
+        "line": 205,
+        "target": "test",
+        "method": "url",
+        "context": "test",
+        "text": "\"Documents\": {\"S3Uri\": \"s3://test/input-docs/\"},"
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 484,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "assert updated.config.location == \"s3://archive/team-cache\""
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_rest_store.py",
+        "line": 153,
+        "target": "archive",
+        "method": "url",
+        "context": "test",
+        "text": "\"location\": \"s3://archive/team-e\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/amazon/tests/unit/amazon/aws/hooks/test_s3.py",
+        "line": 193,
+        "target": "test",
+        "method": "url",
+        "context": "test",
+        "text": "parsed = S3Hook.parse_s3_url(\"s3://test/this/is/not/a-real-s3-directory/\")"
+      }
+    ]
+  },
+  "independent_names_found": 172,
+  "phase_b": {
+    "names": [
+      "abc",
+      "acme-reports",
+      "ai2-public-datasets",
+      "ai2-website",
+      "airflow-docs",
+      "airflow-logs",
+      "allennlp",
+      "amazon-reviews-pds",
+      "apache-airflow-docs",
+      "avg-kitti",
+      "commensenseqa",
+      "complete-failure",
+      "data-lake",
+      "data-proc-public",
+      "datasets.huggingface.co",
+      "demo-data",
+      "fashion-mnist",
+      "fast-ai-imageclas",
+      "legacy-a",
+      "legacy-b",
+      "live-docs-airflow-apache-org",
+      "metastore",
+      "ml-inat-competition-datasets",
+      "models.huggingface.co",
+      "mrqa",
+      "only-complete",
+      "only-start",
+      "open-images-dataset",
+      "ref",
+      "reports",
+      "root",
+      "scrolls-tau",
+      "si-score-dataset",
+      "staging-docs-airflow-apache-org",
+      "tilde-model",
+      "unrelated",
+      "upstream",
+      "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+      "watched",
+      "web-language-models"
+    ],
+    "hits": 586,
+    "hits_by_method": {
+      "url": 484,
+      "mention": 94,
+      "sdk_argument": 8
+    },
+    "hits_by_context": {
+      "code": 301,
+      "test": 243,
+      "docs": 41,
+      "comment": 1
+    },
+    "unreported_whole_word_occurrences_distinctive": 67,
+    "distinctive_names": [
+      "acme-reports",
+      "ai2-public-datasets",
+      "ai2-website",
+      "airflow-docs",
+      "airflow-logs",
+      "amazon-reviews-pds",
+      "apache-airflow-docs",
+      "avg-kitti",
+      "complete-failure",
+      "data-lake",
+      "data-proc-public",
+      "datasets.huggingface.co",
+      "demo-data",
+      "fashion-mnist",
+      "fast-ai-imageclas",
+      "legacy-a",
+      "legacy-b",
+      "live-docs-airflow-apache-org",
+      "ml-inat-competition-datasets",
+      "models.huggingface.co",
+      "only-complete",
+      "only-start",
+      "open-images-dataset",
+      "scrolls-tau",
+      "si-score-dataset",
+      "staging-docs-airflow-apache-org",
+      "tilde-model",
+      "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+      "web-language-models"
+    ],
+    "blocking_hits": 492,
+    "precision_sample": [
+      {
+        "repo": "transformers",
+        "file": "src/transformers/models/marian/convert_marian_to_pytorch.py",
+        "line": 218,
+        "target": "models.huggingface.co",
+        "method": "url",
+        "context": "code",
+        "text": "s3://models.huggingface.co/bert/Helsinki-NLP/ --dryrun"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/docs/toolsets/object_storage.rst",
+        "line": 79,
+        "target": "acme-reports",
+        "method": "url",
+        "context": "docs",
+        "text": "The root, for example ``\"s3://acme-reports/finance/\"``. Templated when the toolset"
+      },
+      {
+        "repo": "airflow",
+        "file": "docs/README.md",
+        "line": 107,
+        "target": "staging-docs-airflow-apache-org",
+        "method": "url",
+        "context": "docs",
+        "text": "* The staging bucket is `s3://staging-docs-airflow-apache-org/docs/`"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/toolsets/test_hook.py",
+        "line": 462,
+        "target": "reports",
+        "method": "sdk_argument",
+        "context": "test",
+        "text": "ts = HookToolset(hook, allowed_methods=[\"list_keys\"], pinned_arguments={\"bucket\": \"reports\"})"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/text/scrolls/checksums.tsv",
+        "line": 4,
+        "target": "scrolls-tau",
+        "method": "url",
+        "context": "code",
+        "text": "https://scrolls-tau.s3.us-east-2.amazonaws.com/qasper.zip\t20136770\tf5b6a3dda9eaeab13d14c3aa6ee8f2c1a87b1db2690a361a729e13ba74809377\tqasper.zip"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/image_classification/i_naturalist2018/checksums.tsv",
+        "line": 5,
+        "target": "ml-inat-competition-datasets",
+        "method": "url",
+        "context": "code",
+        "text": "https://ml-inat-competition-datasets.s3.amazonaws.com/2018/val2018.json.tar.gz\t1276686\te23c47d61d3aa2a9095090dbc49de861445d9a8144884a78222873f11f7ef43e\tval2018.json.tar.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/image_classification/i_naturalist2018/checksums.tsv",
+        "line": 2,
+        "target": "ml-inat-competition-datasets",
+        "method": "url",
+        "context": "code",
+        "text": "https://ml-inat-competition-datasets.s3.amazonaws.com/2018/test2018.tar.gz\t42093877810\tcb19d5b2d755e4dc2a2396a5371a847c95b08678aa00369e61365d7f1e486706\ttest2018.tar.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/definite_pronoun_resolution.txt",
+        "line": 2,
+        "target": "datasets.huggingface.co",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/datasets.huggingface.co/definite_pronoun_resolution/train.c.txt\t160408\tc310158d0cbac1a556e3284e6c167f4478271d8d50b0b9d15dfe428c905a0867\ttrain.c.txt"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/sql/tests/unit/common/sql/datafusion/test_object_storage_provider.py",
+        "line": 62,
+        "target": "demo-data",
+        "method": "url",
+        "context": "test",
+        "text": "provider.create_object_store(\"s3://demo-data/path\", connection_config)"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 25,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Lawn_and_Garden_v1_00.tsv.gz\t486772662\t46c6f5cc2dce3d5a90c3511f48ad9b3d02fa19750629c938c32651ea8295ea1c\tamazon_reviews_us_Lawn_and_Gar"
+      },
+      {
+        "repo": "airflow",
+        "file": "airflow-core/docs/core-concepts/multi-team.rst",
+        "line": 1057,
+        "target": "data-lake",
+        "method": "url",
+        "context": "docs",
+        "text": "uri=\"s3://data-lake/clickstream/hourly.parquet\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/yandex/tests/system/yandex/example_yandexcloud_dataproc.py",
+        "line": 119,
+        "target": "data-proc-public",
+        "method": "url",
+        "context": "test",
+        "text": "\"s3a://data-proc-public/jobs/sources/java/opencsv-4.1.jar\","
+      },
+      {
+        "repo": "mlflow",
+        "file": "tests/store/workspace/test_sqlalchemy_store.py",
+        "line": 80,
+        "target": "root",
+        "method": "url",
+        "context": "test",
+        "text": "default_artifact_root=\"s3://root/team-a\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/operators/test_agent.py",
+        "line": 428,
+        "target": "reports",
+        "method": "url",
+        "context": "test",
+        "text": "exports={\"out/report.csv\": \"s3://reports/{{ params.customer }}/report.csv\"},"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/open_images_v4/open_images_v4_dataset_builder.py",
+        "line": 49,
+        "target": "open-images-dataset",
+        "method": "url",
+        "context": "code",
+        "text": "url='http://open-images-dataset.s3.amazonaws.com/tar/test.tar.gz',"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/para_crawl/checksums.tsv",
+        "line": 18,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release4/en-pl.bicleaner07.txt.gz\t270427885\t1b95dbe22d242104c3ecbe67ec2ee44de268c56f3ecf34890ee768857413f373\ten-pl.bicleaner07.txt.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/amazon_us_reviews/Outdoors_v1_00/0.1.0/dataset_info.json",
+        "line": 9,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/amazon-reviews-pds/readme.html\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/amazon_us_reviews_dataset_builder.py",
+        "line": 87,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "name: f\"https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_{name}.tsv.gz\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/text/mrqa/checksums.tsv",
+        "line": 13,
+        "target": "mrqa",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.us-east-2.amazonaws.com/mrqa/release/v2/train/HotpotQA.jsonl.gz\t107394872\t3a94712c073dc9f29d88ac149faa01ef9c7c089f97ee25d9cbac39387550825d\tHotpotQA.jsonl.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/amazon_us_reviews/Baby_v1_00/0.1.0/dataset_info.json",
+        "line": 9,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/amazon-reviews-pds/readme.html\""
+      },
+      {
+        "repo": "airflow",
+        "file": "airflow-core/src/airflow/example_dags/example_asset_allow_teams.py",
+        "line": 43,
+        "target": "data-lake",
+        "method": "url",
+        "context": "code",
+        "text": "uri=\"s3://data-lake/shared/output.csv\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 20,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Home_Entertainment_v1_00.tsv.gz\t193168458\t9e06ca2386751f3bca8dbc33da5fa4a276caac683a00524051e9c6683e73d52a\tamazon_reviews_us_Home_Ente"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 16,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/et.tar.gz\t767174465\t50a861393e4e7013ab71f1b63bca8c42c26dca1519c15a3b9cdb3cb5b6c561a2\thttps"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/para_crawl/enpl_plain_text/1.0.0/dataset_info.json",
+        "line": 7,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/web-language-models/paracrawl/release4/en-pl.bicleaner07.txt.gz\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/wmt18_translate.txt",
+        "line": 10,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release1/paracrawl-release1.en-de.zipporah0-dedup-clean.tgz\t1918708277\t435ce65e26ed2d44dd0d627f0b558d25bfe31d9ccb35caef050938745c23ea8c\tparacrawl"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/yandex/tests/system/yandex/example_yandexcloud_dataproc.py",
+        "line": 114,
+        "target": "data-proc-public",
+        "method": "url",
+        "context": "test",
+        "text": "\"s3a://data-proc-public/jobs/sources/data/country-codes.csv.zip\","
+      },
+      {
+        "repo": "airflow",
+        "file": "airflow-core/tests/unit/timetables/test_partitioned_timetable.py",
+        "line": 188,
+        "target": "ref",
+        "method": "url",
+        "context": "test",
+        "text": "{\"uri\": \"s3://ref\", \"is_rollup\": False},"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/ai/tests/unit/common/ai/tools/test__from_toolset.py",
+        "line": 342,
+        "target": "reports",
+        "method": "sdk_argument",
+        "context": "test",
+        "text": "calls = (tool.call({\"bucket\": \"reports\"}) for _ in range(6))"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 56,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/vi.tar.gz\t51929480\t704bce8031932377cc21c017923ff1e96ebd2be9bd520adcf839f7a0f5f03b6e\thttps:"
+      },
+      {
+        "repo": "airflow",
+        "file": "docs/README.md",
+        "line": 284,
+        "target": "staging-docs-airflow-apache-org",
+        "method": "url",
+        "context": "docs",
+        "text": "the `s3://staging-docs-airflow-apache-org/docs/` bucket to test the publishing using staging site."
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/wmt19_translate.txt",
+        "line": 35,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release1/paracrawl-release1.en-ru.zipporah0-dedup-clean.tgz\t667981874\td4902407ef462034e88fbf5d8712a11c4b32a6e0e82d3a1b4f42a6f33d94f3c0\tparacrawl-"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/amazon_us_reviews/Tools_v1_00/0.1.0/dataset_info.json",
+        "line": 9,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/amazon-reviews-pds/readme.html\""
+      },
+      {
+        "repo": "airflow",
+        "file": "devel-common/src/sphinx_exts/docs_build/fetch_inventories.py",
+        "line": 43,
+        "target": "apache-airflow-docs",
+        "method": "url",
+        "context": "code",
+        "text": "S3_DOC_URL = \"http://apache-airflow-docs.s3-website.eu-central-1.amazonaws.com\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 23,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/hi.tar.gz\t21424045\t5492393b04dd1307a52d93525a7db08fc392c8ba0df553668945152e434f58c9\thttps:"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 53,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/tr.tar.gz\t620848700\tb3f266c868b1fe9f76270ba76226b1cdc17f33b3e387e6b44a64d5419f8b9768\thttps"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/ai2dcaption/ai2dcaption_dataset_builder.py",
+        "line": 66,
+        "target": "ai2-website",
+        "method": "url",
+        "context": "code",
+        "text": "IMAGES_URL = 'http://ai2-website.s3.amazonaws.com/data/ai2d-all.zip'"
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/breeze/doc/09_release_management_tasks.rst",
+        "line": 1035,
+        "target": "airflow-docs",
+        "method": "url",
+        "context": "docs",
+        "text": "--destination-location s3://airflow-docs/docs --dry-run"
+      },
+      {
+        "repo": "airflow",
+        "file": ".github/workflows/publish-docs-to-s3.yml",
+        "line": 222,
+        "target": "staging-docs-airflow-apache-org",
+        "method": "url",
+        "context": "code",
+        "text": "echo \"destination-location=s3://staging-docs-airflow-apache-org/docs/\" >> ${GITHUB_OUTPUT}"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/text/mrqa/checksums.tsv",
+        "line": 9,
+        "target": "mrqa",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.us-east-2.amazonaws.com/mrqa/release/v2/dev/SQuAD.jsonl.gz\t3474262\t5afa4b088adf297fc29374ddf2d44d974b8837380e2554e62edf258fee5c32ee\tSQuAD.jsonl.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/fashion_mnist.txt",
+        "line": 2,
+        "target": "fashion-mnist",
+        "method": "url",
+        "context": "code",
+        "text": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz\t5148\t67da17c76eaffca5446c3361aaab5c3cd6d1c2608764d35dfb1850b086bf8dd5\tt10k-labels-idx1-ubyte.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 34,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/lt.tar.gz\t135299706\t5ad3d93bc308f58a70e6685f71ae035237ef9caa0922232ac76846f7587bb8aa\thttps"
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/registry/extract_metadata.py",
+        "line": 62,
+        "target": "apache-airflow-docs",
+        "method": "url",
+        "context": "code",
+        "text": "S3_DOC_URL = \"http://apache-airflow-docs.s3-website.eu-central-1.amazonaws.com\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/ai2_arc/ai2_arc_dataset_builder.py",
+        "line": 25,
+        "target": "ai2-public-datasets",
+        "method": "url",
+        "context": "code",
+        "text": "_URL = \"https://ai2-public-datasets.s3-us-west-2.amazonaws.com/arc/ARC-V1-Feb2018.zip\""
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/breeze/doc/11_registry_tasks.rst",
+        "line": 129,
+        "target": "live-docs-airflow-apache-org",
+        "method": "url",
+        "context": "docs",
+        "text": "breeze registry publish-versions --s3-bucket s3://live-docs-airflow-apache-org/registry/"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/wmt19_translate.txt",
+        "line": 39,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release3/en-lt.bicleaner07.tmx.gz\t286088883\t8943d6770a4d0ac152436a42105052fb18cba0e8a6df401daa18390b9439693c\ten-lt.bicleaner07.tmx.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 12,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/el.tar.gz\t381570611\t86c67e7bda7658a7087b5a1997d140d57957a05bb413a188610db61807c53ee4\thttps"
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/breeze/src/airflow_breeze/commands/registry_commands.py",
+        "line": 143,
+        "target": "staging-docs-airflow-apache-org",
+        "method": "url",
+        "context": "code",
+        "text": "help=\"S3 bucket URL, e.g. s3://staging-docs-airflow-apache-org/registry/\","
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/breeze/src/airflow_breeze/global_constants.py",
+        "line": 325,
+        "target": "live-docs-airflow-apache-org",
+        "method": "url",
+        "context": "code",
+        "text": "\"s3://live-docs-airflow-apache-org/schemas/\","
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/amazon_us_reviews/Books_v1_01/0.1.0/dataset_info.json",
+        "line": 9,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/amazon-reviews-pds/readme.html\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 23,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Jewelry_v1_00.tsv.gz\t247022254\t1fd5c952efe84e32511d93c3b4437ada15e4c17c1680456f7211a559414a5e5c\tamazon_reviews_us_Jewelry_v1_00.tsv.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/testing/metadata/amazon_us_reviews/Music_v1_00/0.1.0/dataset_info.json",
+        "line": 9,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "test",
+        "text": "\"https://s3.amazonaws.com/amazon-reviews-pds/readme.html\""
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 29,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Mobile_Electronics_v1_00.tsv.gz\t22870508\t3e4c82fe8e06ee393b7cb28a015a85303c136f373f9606ef890383eb4781fba0\tamazon_reviews_us_Mobile_Ele"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/para_crawl/checksums.tsv",
+        "line": 10,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release4/en-ga.bicleaner07.txt.gz\t29394367\t959688292e57cde5015f2fca01e94ef5e614f50a6f68c6c1e554000d5253fcd9\ten-ga.bicleaner07.txt.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/para_crawl/checksums.tsv",
+        "line": 8,
+        "target": "web-language-models",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/web-language-models/paracrawl/release4/en-fi.bicleaner07.txt.gz\t159209242\t5f9ab743fdffbe187c01346a240acdd5cfe26f251f570bf94a75fa20daf547ce\ten-fi.bicleaner07.txt.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/text/mrqa/checksums.tsv",
+        "line": 7,
+        "target": "mrqa",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.us-east-2.amazonaws.com/mrqa/release/v2/dev/RACE.jsonl.gz\t1563018\tc620ca043c78504ea02d1cef494207c6c76a5e5dedd7976f5fed5eb9724864b8\tRACE.jsonl.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/imagenette/checksums.tsv",
+        "line": 2,
+        "target": "fast-ai-imageclas",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette-320.tgz\t341289752\t0e3ac85d7f3fd0a63d5e27d85c68511be9ac4dae260345b6f7434a0d4fa24b3f\timagenette-320.tgz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 27,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Major_Appliances_v1_00.tsv.gz\t24359816\te58a7d2c33983daad5e09be2ed6c496233739765ae235f1fc877ed308432014f\tamazon_reviews_us_Major_Applia"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/datasets/amazon_us_reviews/checksums.tsv",
+        "line": 8,
+        "target": "amazon-reviews-pds",
+        "method": "url",
+        "context": "code",
+        "text": "https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Camera_v1_00.tsv.gz\t442653086\t42f3cc45c31fd3e79ede5c2fe34bda9f386fd1727c677ff75d94f37c1fd378d0\tamazon_reviews_us_Camera_v1_00.tsv.gz"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 57,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/vot.tar.gz\t7792602\t7fb07dd25b0575e8cd811bb8d1e5aebd17fdbca079a4ee50d81e0aaaff50f8b0\thttps:"
+      },
+      {
+        "repo": "datasets",
+        "file": "tensorflow_datasets/url_checksums/common_voice.txt",
+        "line": 59,
+        "target": "voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4",
+        "method": "url",
+        "context": "code",
+        "text": "https://voice-prod-bundler-ee1969a6ce8178826482b88e843c335139bd3fb4.s3.amazonaws.com/cv-corpus-6.1-2020-12-11/zh-HK.tar.gz\t2774145806\t8a525ce4664d6647701449d5e72f7d8658cc3a5fabc72e05c6883994fd3c0134\th"
+      }
+    ],
+    "recall_sample": [
+      {
+        "repo": "airflow",
+        "file": "providers/microsoft/azure/docs/transfer/local_to_adls.rst",
+        "line": 21,
+        "target": "data-lake",
+        "text": "The `Azure Data Lake <https://azure.microsoft.com/en-us/solutions/data-lake/>`__  (ADL)  make it easy to store data of"
+      },
+      {
+        "repo": "airflow",
+        "file": "devel-common/src/docs/README.rst",
+        "line": 28,
+        "target": "airflow-docs",
+        "text": "You can find documentation for the current development version at `s.apache.org/airflow-docs <https://s.apache.org/airflow-docs>`_, where it is automatically built and published."
+      },
+      {
+        "repo": "airflow",
+        "file": ".github/workflows/publish-docs-to-s3.yml",
+        "line": 432,
+        "target": "airflow-docs",
+        "text": "name: airflow-docs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/pod_template_file_examples/dags_in_image_template.yaml",
+        "line": 64,
+        "target": "airflow-logs",
+        "text": "name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/kubernetes_executor_templates/basic_template.yaml",
+        "line": 64,
+        "target": "airflow-logs",
+        "text": "- name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/src/airflow/providers/elasticsearch/get_provider_info.py",
+        "line": 109,
+        "target": "airflow-logs",
+        "text": "\"default\": \"airflow-logs\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/microsoft/azure/tests/unit/microsoft/azure/log/test_wasb_task_handler.py",
+        "line": 74,
+        "target": "airflow-logs",
+        "text": "assert subject.wasb_container == \"airflow-logs\""
+      },
+      {
+        "repo": "airflow",
+        "file": "kubernetes-tests/lang_sdk/pod_templates/lang_sdk_java.yaml",
+        "line": 96,
+        "target": "airflow-logs",
+        "text": "- name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": ".github/workflows/publish-docs-to-s3.yml",
+        "line": 605,
+        "target": "airflow-docs",
+        "text": "name: airflow-docs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/sql/tests/unit/common/sql/datafusion/test_object_storage_provider.py",
+        "line": 136,
+        "target": "demo-data",
+        "text": "provider.create_object_store(\"gs://demo-data/path\", connection_config)"
+      },
+      {
+        "repo": "datasets",
+        "file": "docs/catalog/fashion_mnist.md",
+        "line": 28,
+        "target": "fashion-mnist",
+        "text": "[https://github.com/zalandoresearch/fashion-mnist](https://github.com/zalandoresearch/fashion-mnist)"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/pod_template_file_examples/git_sync_template.yaml",
+        "line": 90,
+        "target": "airflow-logs",
+        "text": "- name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/sql/tests/unit/common/sql/datafusion/test_object_storage_provider.py",
+        "line": 90,
+        "target": "demo-data",
+        "text": "provider.create_object_store(\"gs://demo-data/path\", connection_config)"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/pod_template_file_examples/dags_in_image_template.yaml",
+        "line": 52,
+        "target": "airflow-logs",
+        "text": "name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/pod_template_file_examples/git_sync_template.yaml",
+        "line": 73,
+        "target": "airflow-logs",
+        "text": "name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/sql/tests/unit/common/sql/datafusion/test_object_storage_provider.py",
+        "line": 142,
+        "target": "demo-data",
+        "text": "provider.create_object_store(\"gs://demo-data/path\")"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/tests/unit/elasticsearch/test__compat.py",
+        "line": 216,
+        "target": "airflow-logs",
+        "text": "client.search(index=\"airflow-logs\", query={\"match_all\": {}})"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/opensearch/src/airflow/providers/opensearch/log/os_task_handler.py",
+        "line": 868,
+        "target": "airflow-logs",
+        "text": "target_index: str = \"airflow-logs\""
+      },
+      {
+        "repo": "airflow",
+        "file": "airflow-core/src/airflow/config_templates/provider_config_fallback_defaults.cfg",
+        "line": 78,
+        "target": "airflow-logs",
+        "text": "target_index = airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/opensearch/src/airflow/providers/opensearch/get_provider_info.py",
+        "line": 137,
+        "target": "airflow-logs",
+        "text": "\"default\": \"airflow-logs\","
+      },
+      {
+        "repo": "airflow",
+        "file": "generated/PYPI_README.md",
+        "line": 89,
+        "target": "airflow-docs",
+        "text": "> Note: If you're looking for documentation for the main branch (latest development branch): you can find it on [s.apache.org/airflow-docs](https://s.apache.org/airflow-docs/)."
+      },
+      {
+        "repo": "airflow",
+        "file": ".github/workflows/ci-image-checks.yml",
+        "line": 379,
+        "target": "airflow-docs",
+        "text": "name: airflow-docs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/opensearch/src/airflow/providers/opensearch/log/os_task_handler.py",
+        "line": 345,
+        "target": "airflow-logs",
+        "text": "target_index: str = \"airflow-logs\","
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/cncf/kubernetes/src/airflow/providers/cncf/kubernetes/pod_template_file_examples/dags_in_volume_template.yaml",
+        "line": 70,
+        "target": "airflow-logs",
+        "text": "name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "devel-common/src/docs/rtd-deprecation/index.rst",
+        "line": 21,
+        "target": "airflow-docs",
+        "text": "Documentation has been moved to the new address: `s.apache.org/airflow-docs <https://s.apache.org/airflow-docs>`__"
+      },
+      {
+        "repo": "airflow",
+        "file": ".github/workflows/ci-image-checks.yml",
+        "line": 337,
+        "target": "airflow-docs",
+        "text": "name: airflow-docs"
+      },
+      {
+        "repo": "airflow",
+        "file": "chart/README.md",
+        "line": 68,
+        "target": "airflow-docs",
+        "text": "> Note: If you're looking for documentation for main branch (latest development branch): you can find it on [s.apache.org/airflow-docs/](http://apache-airflow-docs.s3-website.eu-central-1.amazonaws.co"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/docs/logging/index.rst",
+        "line": 135,
+        "target": "airflow-logs",
+        "text": "target_index=conf.get(\"elasticsearch\", \"target_index\", fallback=\"airflow-logs\"),"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/provider.yaml",
+        "line": 181,
+        "target": "airflow-logs",
+        "text": "default: \"airflow-logs\""
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/opensearch/docs/logging/index.rst",
+        "line": 149,
+        "target": "airflow-logs",
+        "text": "target_index=conf.get(\"opensearch\", \"target_index\", fallback=\"airflow-logs\"),"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/tests/unit/elasticsearch/test__compat.py",
+        "line": 50,
+        "target": "airflow-logs",
+        "text": "lambda: client.search(index=\"airflow-logs\", query={\"match_all\": {}}),"
+      },
+      {
+        "repo": "airflow",
+        "file": "kubernetes-tests/lang_sdk/pod_templates/lang_sdk_golang.yaml",
+        "line": 98,
+        "target": "airflow-logs",
+        "text": "- name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "README.md",
+        "line": 138,
+        "target": "airflow-docs",
+        "text": "> Note: If you're looking for documentation for the main branch (latest development branch): you can find it on [s.apache.org/airflow-docs](https://s.apache.org/airflow-docs/)."
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/microsoft/azure/src/airflow/providers/microsoft/azure/get_provider_info.py",
+        "line": 1023,
+        "target": "airflow-logs",
+        "text": "\"default\": \"airflow-logs\","
+      },
+      {
+        "repo": "airflow",
+        "file": "devel-common/src/docs/README.rst",
+        "line": 28,
+        "target": "airflow-docs",
+        "text": "You can find documentation for the current development version at `s.apache.org/airflow-docs <https://s.apache.org/airflow-docs>`_, where it is automatically built and published."
+      },
+      {
+        "repo": "airflow",
+        "file": "kubernetes-tests/lang_sdk/pod_templates/lang_sdk_golang.yaml",
+        "line": 84,
+        "target": "airflow-logs",
+        "text": "- name: airflow-logs"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/common/sql/tests/unit/common/sql/datafusion/test_object_storage_provider.py",
+        "line": 74,
+        "target": "demo-data",
+        "text": "store = provider.create_object_store(\"gs://demo-data/path\", connection_config)"
+      },
+      {
+        "repo": "airflow",
+        "file": "providers/elasticsearch/src/airflow/providers/elasticsearch/log/es_task_handler.py",
+        "line": 277,
+        "target": "airflow-logs",
+        "text": "target_index: str = \"airflow-logs\","
+      },
+      {
+        "repo": "airflow",
+        "file": "dev/README.md",
+        "line": 97,
+        "target": "airflow-docs",
+        "text": "[Provider distributions reference](https://s.apache.org/airflow-docs)"
+      },
+      {
+        "repo": "datasets",
+        "file": "docs/catalog/fashion_mnist.md",
+        "line": 28,
+        "target": "fashion-mnist",
+        "text": "[https://github.com/zalandoresearch/fashion-mnist](https://github.com/zalandoresearch/fashion-mnist)"
+      }
+    ]
+  },
+  "seconds": 514
+}
