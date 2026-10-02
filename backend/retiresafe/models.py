@@ -93,6 +93,7 @@ class TrafficSummary:
     external_share: float | None
     fresh: bool
     window_sufficient: bool
+    daily_requests: list[int] = field(default_factory=list)   # UTC days from window_start; counts only
 
 
 @dataclass

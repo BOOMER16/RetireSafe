@@ -8,7 +8,8 @@ When a cloud resource (an S3 bucket, an Azure app, a temporary event site) is de
 This repository contains the **research, the proposed solution, and three test beds that were run on real public data**. The product itself has not been built yet; that is the hackathon's job. Every number in the dossier comes from a script and a committed output file in this repo.
 
 > 📄 **Main deliverable:** [`RetireSafe_Solution_Dossier.pdf`](RetireSafe_Solution_Dossier.pdf) (7 pages)
-> 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 43 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
+> 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 88 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
+> 🖥️ **Web console:** `retiresafe serve`, then open http://127.0.0.1:8080/ (see [the console section](#web-console) below)
 > 💻 **Run it yourself:** [`RUN_LOCALLY.md`](RUN_LOCALLY.md): Anaconda Prompt setup and `python demo.py`, a step-by-step walkthrough of what the system does.
 > 📘 **New to the topic?** Start with [`RetireSafe_Beginners_Guide.pdf`](RetireSafe_Beginners_Guide.pdf): DNS, cloud naming, takeovers, SPF, Terraform, logs, the statistics, our findings, FAQ and glossary (21 pages)
 > 📄 Original problem brief: [`docs/brief/RetireSafe_Research_Brief.pdf`](docs/brief/RetireSafe_Research_Brief.pdf)
@@ -24,6 +25,21 @@ This repository contains the **research, the proposed solution, and three test b
 | **TB3**: the coordination gap | Same NASA log | **108 of 108** resources that look idle on a 3-day dashboard had external clients in their history. `/shuttle/countdown/count.gif` had **0** recent hits and **15,054** distinct external clients |
 
 Full method, numbers and caveats for each: [`docs/02_testbeds.md`](docs/02_testbeds.md).
+
+---
+
+## Web console
+
+`retiresafe serve` also serves a browser console at **http://127.0.0.1:8080/**. It reads the API's evidence records, and everything on screen comes from the record; the only arithmetic it does is shown on screen. Click **Load the recorded pilot** to see the real pilot runs: a blocked deletion, the same change in balanced mode, and the corrected change that passes.
+
+| | |
+|---|---|
+| ![Deletion gate and resource verdicts](docs/img/console_assessment.png) | ![Takeover paths against the five conditions](docs/img/console_takeover_paths.png) |
+| **Gate.** The verdict for every resource the plan deletes | **Takeover paths.** Each surviving reference is checked against C1–C5. A green break shows the condition that stops the takeover; select a condition to see its evidence and the primary source behind it |
+| ![Consumers in access logs](docs/img/console_traffic.png) | ![Before and after](docs/img/console_compare.png) |
+| **Consumers.** Real NASA traffic per day, with the observed silence against the conservative quarantine D\* and the formula filled in with the numbers. Grey columns are days when the log recorded nothing, which are gaps in logging rather than silence | **Before / after.** The FAIL → PASS transition once RetireSafe's own patches are applied, with input fingerprints showing what changed |
+
+Other pages: upload your own plan, DNS export, repository and logs (**New assessment**); a scoped live **Drift scan**; and **Rules and sources**, the source register. The console is plain HTML, CSS and JavaScript with no build step and no third-party requests. It is served under a strict Content-Security-Policy (no inline script or style, `frame-ancestors 'none'`), and all record text is HTML-escaped before display.
 
 ---
 

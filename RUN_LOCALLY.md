@@ -125,13 +125,22 @@ retiresafe scan --hosts my_hostnames.txt --out drift.json
 * `retiresafe scan` runs a live, read-only DNS and S3 check of hostnames listed in a text file,
   one per line. **Only scan names your organisation owns.**
 
-## 6. Try the REST API in your browser (no UI needed)
+## 6. Open the web console
 
 ```bat
 retiresafe serve
 ```
 
-Leave that window open and go to **http://127.0.0.1:8080/docs**. FastAPI generates an
+Leave that window open and go to **http://127.0.0.1:8080/**:
+
+1. Click **Load the recorded pilot**. This imports the three recorded pilot runs from `pilot\results`; they are real engine output.
+2. Read the **FAIL** gate, then click a resource card. Click any **C1–C5** box in a takeover path to see the evidence and source behind it.
+3. Open **Before / after** in the sidebar to see FAIL turn into PASS.
+4. **New assessment** runs your own files: for example `pilot\generated\plan_before.json`, `pilot\generated\route53_before.json` and a zip of `pilot\app`, with *Assess as of* set to `1995-09-01T03:59:53Z`.
+
+### Or call the REST API directly
+
+With the server still running, go to **http://127.0.0.1:8080/docs**. FastAPI generates an
 interactive page where you can call every endpoint:
 
 1. Open **POST /v1/assessments**, click **Try it out**.

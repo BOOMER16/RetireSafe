@@ -99,6 +99,14 @@ def summarise(source: str, window_start: datetime | None, window_end: datetime |
     ext = {_pseudo(c) for c in raw if not is_internal(c, policy)}
     networks = {_pseudo(network_of(c)) for c in raw}
     del raw
+    daily: list[int] = []
+    if window_start and window_end:
+        day0 = window_start.date()
+        daily = [0] * ((window_end.date() - day0).days + 1)
+        for r in rows:
+            i = (r.ts.date() - day0).days
+            if 0 <= i < len(daily):
+                daily[i] += 1
     fresh = bool(window_end) and (as_of - window_end).total_seconds() / 86400.0 <= policy.max_staleness_days
     return TrafficSummary(
         source=source,
@@ -112,4 +120,4 @@ def summarise(source: str, window_start: datetime | None, window_end: datetime |
         quarantine_days_conservative=quarantine_days(lo, policy.alpha),
         distinct_clients=len(clients), distinct_networks_24=len(networks),
         external_clients=len(ext), external_share=(len(ext) / len(clients)) if clients else None,
-        fresh=fresh, window_sufficient=t_days >= policy.min_window_days)
+        fresh=fresh, window_sufficient=t_days >= policy.min_window_days, daily_requests=daily)

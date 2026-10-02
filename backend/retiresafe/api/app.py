@@ -7,7 +7,9 @@ GET  /v1/assessments/{id}/report.md
 POST /v1/drift-scans      {"hostnames": [...]}  live read-only DNS/S3 checks (names you own)
 GET  /v1/drift-scans/{id}
 GET  /v1/knowledge        rule set, coverage and source register
+POST /v1/demo/pilot       import the recorded pilot run (pilot/results) when running from a checkout
 GET  /healthz
+GET  /                    web console (static files in retiresafe/web, no third-party requests)
 
 Set RETIRESAFE_API_KEY to require an ``X-API-Key`` header on /v1 routes.
 """
@@ -25,10 +27,12 @@ from dataclasses import asdict
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .. import __version__, ownership
+from ..paths import REPO_ROOT
 from ..config import log_from, parse_as_of, policy_dict, policy_from
 from ..engine.assess import AssessmentInput, run
 from ..knowledge import providers
@@ -41,6 +45,13 @@ MAX_UPLOAD = int(os.environ.get("RETIRESAFE_MAX_UPLOAD_MB", "512")) * 1024 * 102
 MAX_EXTRACT = int(os.environ.get("RETIRESAFE_MAX_EXTRACT_MB", "2048")) * 1024 * 1024
 MAX_MEMBERS = int(os.environ.get("RETIRESAFE_MAX_ARCHIVE_FILES", "100000"))
 MAX_SCAN_NAMES = 2000
+WEB_DIR = Path(__file__).resolve().parents[1] / "web"
+PILOT_RESULTS = REPO_ROOT / "pilot" / "results"
+PILOT_RUNS = ("before_strict", "before_balanced", "after_strict")
+# The console loads nothing from third parties and runs no inline script or style.
+UI_CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
+          "connect-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; "
+          "form-action 'none'; frame-ancestors 'none'")
 
 app = FastAPI(title="RetireSafe", version=__version__,
               description="Evidence-driven pre-flight checks for retiring cloud resources")
@@ -67,6 +78,10 @@ async def security_headers(request, call_next):
     resp.headers.setdefault("Referrer-Policy", "no-referrer")
     if request.url.path.startswith("/v1"):
         resp.headers["Cache-Control"] = "no-store"        # evidence records should not sit in caches
+    if request.url.path == "/" or request.url.path.startswith("/ui"):
+        resp.headers["Content-Security-Policy"] = UI_CSP
+        resp.headers["X-Frame-Options"] = "DENY"
+        resp.headers["Cache-Control"] = "no-cache"
     return resp
 
 
@@ -136,7 +151,29 @@ def healthz() -> dict:
 @app.get("/v1/knowledge", dependencies=[Depends(auth)])
 def knowledge() -> dict:
     return {"rules_version": providers.RULES_VERSION, "fingerprint_catalogue_commit": CATALOGUE_COMMIT,
-            "name_bearing_resource_types": sorted(providers.NAME_BEARING), "sources": SOURCES}
+            "name_bearing_resource_types": sorted(providers.NAME_BEARING), "sources": SOURCES,
+            "owned_domains": ownership.owned_domains(),
+            "pilot_available": all((PILOT_RESULTS / f"{t}.json").is_file() for t in PILOT_RUNS)}
+
+
+@app.post("/v1/demo/pilot", dependencies=[Depends(auth)])
+def import_pilot() -> dict:
+    """Load the recorded pilot assessments (real engine output, see pilot/README.md) into the store.
+
+    Records are stored unchanged; importing twice is a no-op."""
+    out = {}
+    for tag in PILOT_RUNS:
+        f = PILOT_RESULTS / f"{tag}.json"
+        if not f.is_file():
+            raise HTTPException(404, f"pilot results not found ({f.name}); run pilot/scripts/run_pilot.py "
+                                     "from a repository checkout")
+        rec = json.loads(f.read_text(encoding="utf-8"))
+        if rec.get("schema") != "retiresafe.evidence/v1":
+            raise HTTPException(422, f"{f.name} is not a retiresafe.evidence/v1 record")
+        if not store().get_assessment(rec["assessment_id"]):
+            store().put_assessment(rec)
+        out[tag] = rec["assessment_id"]
+    return {"imported": out, "source": "pilot/results"}
 
 
 @app.post("/v1/assessments", dependencies=[Depends(auth)])
@@ -239,3 +276,12 @@ def get_scan(sid: str) -> dict:
     if not rec:
         raise HTTPException(404, "scan not found")
     return rec
+
+
+@app.get("/", include_in_schema=False)
+def console() -> RedirectResponse:
+    return RedirectResponse("/ui/")
+
+
+if WEB_DIR.is_dir():
+    app.mount("/ui", StaticFiles(directory=WEB_DIR, html=True), name="ui")

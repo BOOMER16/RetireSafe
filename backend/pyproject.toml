@@ -31,7 +31,8 @@ retiresafe = "retiresafe.cli:main"
 include = ["retiresafe*"]
 
 [tool.setuptools.package-data]
-"retiresafe.knowledge" = ["data/*.json"]
+"retiresafe" = ["web/*", "web/*/*"]
+"retiresafe.knowledge" = ["data/*.json", "data/*.toml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

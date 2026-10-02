@@ -145,6 +145,19 @@ Full quotes are in `retiresafe/knowledge/sources.py` (`retiresafe sources`). The
 | GET | `/v1/assessments` · `/v1/assessments/{id}` · `/v1/assessments/{id}/report.md` | list / record / Markdown report |
 | POST | `/v1/drift-scans` | `{"hostnames": [...]}` (max 2,000). Live read-only checks |
 | GET | `/v1/drift-scans/{id}` | stored scan |
+| POST | `/v1/demo/pilot` | import the recorded pilot assessments from `pilot/results` (repository checkout only; idempotent) |
+| GET | `/` → `/ui/` | web console (static files in `retiresafe/web`) |
+
+### Web console
+
+`retiresafe/web/` holds plain HTML, CSS and ES modules, with no build step and no dependencies. It is served under
+`Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; ... frame-ancestors 'none'`, so it
+loads nothing from third parties and runs no inline code. Every value taken from a record is HTML-escaped by the
+`html` template helper (`js/util.js`). Record text includes code lines and DNS data from the inputs, so this escaping matters.
+The traffic chart uses `traffic[].daily_requests` (requests per UTC day for each log view) and
+`parse_stats[log].daily_lines` (parsed lines per day for the whole file). A day with zero lines is a gap in logging,
+not silence. Both are counts only. `tests/test_web.py` checks the CSP, that the assets are self-contained, that there is
+no inline code, the pilot import, and that the daily counts add up to the totals they illustrate.
 
 `config` example:
 

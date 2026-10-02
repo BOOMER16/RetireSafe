@@ -10,6 +10,15 @@ from datetime import datetime, timedelta, timezone
 _lock = threading.Lock()
 
 
+def _summary(rec: dict) -> dict:
+    """Listing fields taken from the stored record (pilot scale: records are small)."""
+    plan = next((i["name"] for i in rec.get("inputs", []) if i.get("role") == "terraform_plan"), None)
+    pol = rec.get("policy", {})
+    return {"as_of": rec.get("as_of"), "plan_input": plan, "mode": pol.get("mode"),
+            "enforcement": pol.get("enforcement"), "would_pass": rec.get("gate", {}).get("would_pass"),
+            "retiring": len(rec.get("resources", [])), "rules_version": rec.get("tool", {}).get("rules_version")}
+
+
 class Store:
     def __init__(self, path: str | None = None):
         self.path = path or os.environ.get("RETIRESAFE_DB", "retiresafe.db")
@@ -56,10 +65,10 @@ class Store:
         return json.loads(row[0]) if row else None
 
     def list_assessments(self, limit: int = 50) -> list[dict]:
-        rows = self._db.execute("SELECT id, created_at, gate_passed, verdicts FROM assessments "
+        rows = self._db.execute("SELECT id, created_at, gate_passed, verdicts, record FROM assessments "
                                 "ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
         return [{"assessment_id": r[0], "created_at": r[1], "gate_passed": bool(r[2]),
-                 "verdict_counts": json.loads(r[3])} for r in rows]
+                 "verdict_counts": json.loads(r[3]), **_summary(json.loads(r[4]))} for r in rows]
 
     def put_scan(self, sid: str, findings: list[dict]) -> dict:
         now = datetime.now(timezone.utc).isoformat()

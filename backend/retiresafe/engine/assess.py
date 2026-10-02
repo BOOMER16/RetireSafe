@@ -205,6 +205,7 @@ def run(inp: AssessmentInput) -> AssessmentResult:
         stats = access_logs.ParseStats()
         wmin = wmax = None
         seen_buckets: set[str] = set()
+        per_day: dict[int, int] = {}              # parsed lines per UTC day: shows where the log itself has gaps
         rows: dict[tuple[int, str], list] = {(i, a): [] for i in range(len(lgs)) for a in per_res}
         targets = {a: v["buckets"] | v["hosts"] | {e.name for e in v["res"].endpoints} for a, v in per_res.items()}
         # for clf logs the host comes from the view (LogInput), not from the line
@@ -213,6 +214,8 @@ def run(inp: AssessmentInput) -> AssessmentResult:
         for r in access_logs.read(path, fmt, None, stats):
             wmin = r.ts if wmin is None or r.ts < wmin else wmin
             wmax = r.ts if wmax is None or r.ts > wmax else wmax
+            day = r.ts.toordinal()
+            per_day[day] = per_day.get(day, 0) + 1
             if r.bucket:
                 seen_buckets.add(r.bucket)
             for i, lg in enumerate(lgs):
@@ -226,7 +229,11 @@ def run(inp: AssessmentInput) -> AssessmentResult:
                             if (r.bucket and r.bucket in v["buckets"]) or (rhost and rhost in targets[a])]
                 for a in hits:
                     rows[(i, a)].append(r)
-        parse_stats[Path(path).name] = stats.__dict__
+        parse_stats[Path(path).name] = dict(stats.__dict__)
+        if wmin and wmax:
+            d0 = wmin.toordinal()
+            parse_stats[Path(path).name]["first_day"] = wmin.date().isoformat()
+            parse_stats[Path(path).name]["daily_lines"] = [per_day.get(d, 0) for d in range(d0, wmax.toordinal() + 1)]
         for i, lg in enumerate(lgs):
             for a, v in per_res.items():
                 names_ = targets[a]
