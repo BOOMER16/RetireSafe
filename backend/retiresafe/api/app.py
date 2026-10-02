@@ -21,6 +21,7 @@ import os
 import shutil
 import tarfile
 import tempfile
+import threading
 import uuid
 import zipfile
 from dataclasses import asdict
@@ -58,10 +59,17 @@ app = FastAPI(title="RetireSafe", version=__version__,
 _store: Store | None = None
 
 
+_store_lock = threading.Lock()
+
+
 def store() -> Store:
+    # Sync endpoints run in a thread pool: without the lock, concurrent first requests each open the
+    # database and race on PRAGMA journal_mode=WAL ("database is locked").
     global _store
     if _store is None:
-        _store = Store()
+        with _store_lock:
+            if _store is None:
+                _store = Store()
     return _store
 
 

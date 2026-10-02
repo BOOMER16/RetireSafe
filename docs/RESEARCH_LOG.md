@@ -95,3 +95,8 @@ Full scorecard: [08_negatives_and_mitigations.md](08_negatives_and_mitigations.m
   * Frosted panels (`backdrop-filter`, with a solid fallback where unsupported) over three slow-drifting colour auras fixed behind the page.
   * Applied to the masthead, the verdict ledger, the "What to do" card, the takeover matrix, the inspector, side cards, the form drop zones and submit bar, notices and code blocks.
   * The auras stop under `prefers-reduced-motion` and are hidden in print.
+* **Operator pass (requested: "something actual cybersecurity technicians will use"):**
+  * Black theme by default.
+  * The home page is now an operations view: KPIs plus a cross-assessment findings queue with filters, search and CSV export. Cells starting with `= + - @` are quote-prefixed to block formula injection.
+  * A command palette, keyboard shortcuts, a CLI reproduction block per assessment, raw JSON per path, and a status bar.
+* **Backend defect found by the new console:** the dashboard's parallel first requests raced to create the SQLite store, and one returned HTTP 500 "database is locked". Fixed with a lock around store creation and a 15 s SQLite busy timeout. The regression test slows `Store.__init__` and counts constructions, so it fails without the fix and passes with it.

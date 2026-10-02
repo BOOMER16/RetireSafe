@@ -77,3 +77,24 @@ def test_cli_scan_requires_owned_domain(tmp_path, monkeypatch, capsys):
     hosts = tmp_path / "h.txt"
     hosts.write_text("www.example.org\n", encoding="utf-8")
     assert cli(["scan", "--hosts", str(hosts)]) == 1
+
+
+def test_concurrent_first_requests_share_one_store(tmp_path, monkeypatch):
+    """Regression: parallel first requests each opened the database and raced ("database is locked")."""
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+    monkeypatch.setenv("RETIRESAFE_DB", str(tmp_path / "race.db"))
+    from retiresafe.api import app as appmod
+    from retiresafe.api import store as storemod
+    made = []
+    real_init = storemod.Store.__init__
+
+    def slow_init(self, *a, **k):
+        made.append(1)
+        time.sleep(0.2)                       # widen the window the race needs
+        real_init(self, *a, **k)
+    monkeypatch.setattr(storemod.Store, "__init__", slow_init)
+    appmod._store = None
+    with ThreadPoolExecutor(8) as ex:
+        stores = list(ex.map(lambda _: appmod.store(), range(8)))
+    assert len(made) == 1 and all(s is stores[0] for s in stores)

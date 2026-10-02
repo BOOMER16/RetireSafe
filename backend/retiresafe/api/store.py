@@ -22,7 +22,7 @@ def _summary(rec: dict) -> dict:
 class Store:
     def __init__(self, path: str | None = None):
         self.path = path or os.environ.get("RETIRESAFE_DB", "retiresafe.db")
-        self._db = sqlite3.connect(self.path, check_same_thread=False)
+        self._db = sqlite3.connect(self.path, check_same_thread=False, timeout=15)
         self._db.execute("PRAGMA journal_mode=WAL")
         self._db.executescript("""
             CREATE TABLE IF NOT EXISTS assessments (

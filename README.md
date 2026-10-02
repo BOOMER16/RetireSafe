@@ -39,6 +39,15 @@ Full method, numbers and caveats for each: [`docs/02_testbeds.md`](docs/02_testb
 | ![Consumers in access logs](docs/img/console_traffic.png) | ![Before and after](docs/img/console_compare.png) |
 | **Consumers.** Real NASA traffic per day, with the observed silence against the conservative quarantine D\* and the formula filled in with the numbers. Grey columns are days when the log recorded nothing, which are gaps in logging rather than silence | **Before / after.** The FAIL → PASS transition once RetireSafe's own patches are applied, with input fingerprints showing what changed |
 
+**For operators.**
+* **Findings queue:** every reference path across recent assessments, with filters (open / hijackable / unverified / broken), text search, and CSV export. The export guards against spreadsheet formula injection.
+* **Command palette (⌘K / Ctrl K):** jump to any assessment or resource, or run an action.
+* **Keyboard shortcuts:** `g r`, `g n`, `g c`, `g d`, `g s`, `g f`, `g e`; `j`/`k` to move between rows and Enter to open; `t` for theme; `?` for help.
+* **Reproduce:** each assessment rebuilds the `retiresafe assess` command from its evidence record, with `<…>` marking values the record does not store.
+* **Raw JSON** for any path, and a status bar showing the API, rule-set and fingerprint versions.
+
+![Findings queue](docs/img/console_findings_queue.png)
+
 Other pages: upload your own plan, DNS export, repository and logs (**New assessment**); a scoped live **Drift scan**; and **Rules and sources**, the source register. The console is plain HTML, CSS and JavaScript with no build step and no third-party requests; its fonts (Archivo, JetBrains Mono, SIL OFL) are served locally. It is served under a strict Content-Security-Policy (no inline script or style, `frame-ancestors 'none'`), and all record text is HTML-escaped before display.
 
 ---

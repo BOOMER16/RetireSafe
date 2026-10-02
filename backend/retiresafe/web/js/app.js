@@ -2,6 +2,7 @@
 // contains; the only arithmetic it does is shown on screen (the quarantine formula).
 import { api, ApiError, setApiKey } from "./api.js";
 import { trafficChart, coverageSpark } from "./charts.js";
+import { findingsOf, findingsTable, wireFindings, reproduce, initPalette, initKeys, openPalette } from "./ops.js";
 import {
   $, $$, html, raw, esc, mount, num, compact, days, rate, when, ago, shortId, bytes, download, copy, toast,
   VERDICT, VERDICT_ORDER, COND, verdictBadge, triLabel, icon,
@@ -35,6 +36,7 @@ function summaryOf(rec) {
 }
 const nameOf = (r) => r.resource.name || r.resource.address;
 const go = (href) => { location.hash = href; };
+let currentId = null;   // assessment on screen, for g f / g e and the palette
 
 // ---------- shell ----------
 function setCrumbs(items) {
@@ -62,54 +64,70 @@ function errorView(e, retry) {
   mount(view, html`<section class="sec"><div class="notice err">${icon("alert")}<div><b>Request failed.</b> ${e.message || String(e)}</div></div></section>`);
 }
 
-// ---------- home ----------
+// ---------- home: operations view ----------
 async function home() {
   markNav("home");
+  currentId = null;
   setCrumbs([{ t: "01 Reviews" }]);
-  setActions(html`<a class="btn primary" href="#/new">${icon("plus")}New check</a>`);
+  setActions(html`<button class="btn ghost" id="cmdk">Commands <kbd>⌘K</kbd></button><a class="btn primary" href="#/new">${icon("plus")}New check</a>`);
   loading();
   const [list, k] = await Promise.all([api.list(), api.knowledge()]);
   const pilotIds = Object.values(pilotTags());
   const pilotLoaded = pilotIds.length && pilotIds.every((id) => list.some((a) => a.assessment_id === id));
+  const recent = list.slice(0, 15);
+  const recs = await Promise.all(recent.map((a) => api.get(a.assessment_id)));
+  const findings = recs.flatMap((r) => findingsOf(r, labelOf(r.assessment_id, summaryOf(r))));
+  const failing = list.filter((a) => !a.gate_passed).length;
+  const hij = findings.filter((f) => f.status === "hijackable").length;
+  const unv = findings.filter((f) => f.status === "unknown").length;
+  const atRisk = list.reduce((s, a) => s + (a.verdict_counts.block || 0) + (a.verdict_counts.review || 0), 0);
   mount(view, html`
-    <section class="hero reveal">
-      <div>
-        <div class="label">Pre‑flight check for cloud deletions</div>
-        <h1 class="display">Retire it.<span class="sig">Don't hand it over.</span></h1>
-        <p class="lede">Deleting a bucket, app or address can free its name for anyone to claim, while DNS records, code and clients still point at it. RetireSafe reads the change before it runs and stops it while a takeover path exists.</p>
-        <div class="hero-actions">
-          ${k.pilot_available && !pilotLoaded ? html`<button class="btn primary lg" id="loadPilot">See the recorded pilot <span class="arrow">→</span></button>` : ""}
-          <a class="btn lg" href="#/new">Check your own change <span class="arrow">→</span></a>
-        </div>
-      </div>
-      <div>
-        <div class="label">A takeover needs all five. Break any one and it fails.</div>
-        <div class="conds">${CS.map((c) => html`<div class="cond"><b>${c.toUpperCase()}</b><span>${COND[c].q}<small>${COND[c].long.split("· ")[1]}</small></span></div>`)}</div>
+    <section class="opshead reveal">
+      <div><div class="label">Deletion gate · operations</div><h1 class="display sm">Takeover findings</h1></div>
+      <div class="kpis">
+        <div class="kpi"><span class="label">Assessments</span><b>${list.length}</b></div>
+        <div class="kpi ${failing ? "bad" : ""}"><span class="label">Gates failing</span><b>${failing}</b></div>
+        <div class="kpi ${hij ? "bad" : ""}"><span class="label">Hijackable paths</span><b>${hij}</b></div>
+        <div class="kpi ${unv ? "warn" : ""}"><span class="label">Unverified paths</span><b>${unv}</b></div>
+        <div class="kpi ${atRisk ? "bad" : ""}"><span class="label">Resources blocked / review</span><b>${atRisk}</b></div>
       </div>
     </section>
     ${list.length ? "" : html`
+      <section class="sec reveal"><div class="panel-g onboard">
+        <div><div class="label">No assessments stored</div><h2 class="h">Start with the recorded pilot or your own plan</h2>
+          <p class="dim small">The pilot is real engine output: Terraform 1.16.4 plans, Route 53 exports and 3.46 M lines of NASA HTTP traffic.</p>
+          <div class="row">${k.pilot_available && !pilotLoaded ? html`<button class="btn primary" id="loadPilot">Load recorded pilot</button>` : ""}<a class="btn" href="#/new">New check</a></div></div>
+        <div><div class="label">Or from a pipeline</div><pre class="code">retiresafe assess --plan plan.json \
+    --dns route53.json --repo app=./src \
+    --log access.log,format=s3 \
+    --out evidence.json --sarif findings.sarif
+# exit 0 = pass · 2 = fail · 1 = input error</pre></div>
+      </div></section>`}
+    ${list.length ? html`
       <section class="sec reveal">
-        ${secHd("02", "How it works")}
-        <div class="steps">
-          <div class="step"><b>01</b><span class="h">Upload the change</span><span class="dim">The Terraform plan, plus whatever might still point at the names: DNS export, code, access logs.</span></div>
-          <div class="step"><b>02</b><span class="h">Read the verdict</span><span class="dim">Every name the change gives up is checked against the five conditions, with the evidence behind each.</span></div>
-          <div class="step"><b>03</b><span class="h">Fix and re‑check</span><span class="dim">Apply the generated DNS change, code diff or tombstone, run again, and compare before and after.</span></div>
-        </div>
-      </section>`}
-    <section class="sec reveal">
-      ${secHd("02", "Assessments", list.length ? `${list.length} stored, newest first. Select one to open it.` : "Nothing yet. Load the recorded pilot or run your own check.",
-        list.length > 1 ? html`<a class="btn" href="#/compare">${icon("compare")}Compare two</a>` : "")}
-      ${list.length ? html`<div class="index">${list.map((a, i) => html`
-        <div class="irow alist" data-href="#/a/${a.assessment_id}" tabindex="0" role="link">
-          <span class="idx">${pad2(i)}</span>
-          <div><div class="ttl">${labelOf(a.assessment_id, a)}</div><div class="sub">${shortId(a.assessment_id)} · created ${ago(a.created_at)}</div></div>
-          <div><div class="label">Data as of</div><div class="small">${when(a.as_of)}</div><div class="label">${a.mode || ""} · ${a.enforcement || ""}</div></div>
-          <div class="row">${VERDICT_ORDER.filter((v) => a.verdict_counts[v]).map((v) => html`<span class="badge v-${v}">${a.verdict_counts[v]} ${VERDICT[v].label}</span>`)}</div>
-          <div class="gate-word ${a.gate_passed ? "pass" : "fail"}">${a.gate_passed ? (a.would_pass === false ? "Warn" : "Pass") : "Fail"}</div>
-          <button class="btn ghost iconbtn del" data-del="${a.assessment_id}" title="Delete this record" aria-label="Delete">${icon("trash")}</button>
-        </div>`)}</div>` : ""}
-    </section>`);
+        ${secHd("01", "Findings queue", `Reference paths from the ${recent.length} most recent assessment(s), most severe first. Open = hijackable or unverified.`,
+          k.pilot_available && !pilotLoaded ? html`<button class="btn" id="loadPilot">Load recorded pilot</button>` : "")}
+        ${findings.length ? findingsTable(findings, { id: "fq", showAssessment: true }) : html`<div class="notice">${icon("info")}<div>No reference paths in the stored assessments.</div></div>`}
+      </section>
+      <section class="sec reveal">
+        ${secHd("02", "Assessments", `${list.length} stored, newest first.`, list.length > 1 ? html`<a class="btn" href="#/compare">${icon("compare")}Compare</a>` : "")}
+        <table class="t dense">
+          <thead><tr><th>Gate</th><th>Assessment</th><th>Verdicts</th><th>Policy</th><th>Data as of</th><th>ID</th><th></th></tr></thead>
+          <tbody>${list.map((a) => html`
+            <tr class="click" tabindex="0" data-href="#/a/${a.assessment_id}">
+              <td><span class="sev ${a.gate_passed ? (a.would_pass === false ? "sev-unknown" : "sev-safe") : "sev-hijackable"}">${a.gate_passed ? (a.would_pass === false ? "Warn" : "Pass") : "Fail"}</span></td>
+              <td><b class="small">${labelOf(a.assessment_id, a)}</b><div class="hash">created ${ago(a.created_at)} · ${a.retiring ?? "?"} resources</div></td>
+              <td><div class="row">${VERDICT_ORDER.filter((v) => a.verdict_counts[v]).map((v) => html`<span class="badge v-${v}">${a.verdict_counts[v]} ${VERDICT[v].label}</span>`)}</div></td>
+              <td class="mono small">${a.mode || ""}<div class="hash">${a.enforcement || ""}</div></td>
+              <td class="mono small nowrap">${when(a.as_of)}</td>
+              <td class="hash">${shortId(a.assessment_id)}</td>
+              <td class="num"><button class="btn ghost iconbtn del" data-del="${a.assessment_id}" title="Delete this record" aria-label="Delete">${icon("trash")}</button></td>
+            </tr>`)}</tbody>
+        </table>
+      </section>` : ""}`);
   rowLinks();
+  if (findings.length) wireFindings("fq", findings);
+  $("#cmdk")?.addEventListener("click", openPalette);
   $$("[data-del]").forEach((b) => b.addEventListener("click", async (e) => {
     e.stopPropagation();
     if (!confirm("Delete this assessment record from the server? This cannot be undone.")) return;
@@ -117,8 +135,7 @@ async function home() {
     toast("Assessment deleted");
     route();
   }));
-  const lp = $("#loadPilot");
-  if (lp) lp.addEventListener("click", loadPilot);
+  $$("#loadPilot").forEach((b) => b.addEventListener("click", loadPilot));
 }
 
 async function loadPilot() {
@@ -197,20 +214,26 @@ async function assessment(id, tab = "resources") {
   markNav("home");
   loading();
   const rec = await api.get(id);
+  currentId = id;
   const label = labelOf(id, summaryOf(rec));
   setCrumbs([{ t: "01 Reviews", href: "#/" }, { t: label }]);
   setActions(assessmentActions());
   wireAssessmentActions(rec);
   const tabs = html`<nav class="tabs">
     <a href="#/a/${id}" class="${tab === "resources" ? "on" : ""}">Resources</a>
+    <a href="#/a/${id}/findings" class="${tab === "findings" ? "on" : ""}">Findings <span class="hash">${rec.resources.reduce((n, r) => n + r.paths.length, 0)}</span></a>
     <a href="#/a/${id}/evidence" class="${tab === "evidence" ? "on" : ""}">Evidence &amp; provenance</a>
     <a href="#/a/${id}/report" class="${tab === "report" ? "on" : ""}">Report</a></nav>`;
   let body;
+  const fRows = findingsOf(rec, label);
   if (tab === "evidence") body = evidenceTab(rec);
+  else if (tab === "findings") body = html`<section class="sec reveal">${secHd("02", "Findings", "Every reference path in this assessment. Filter, then export what you need.")}${fRows.length ? findingsTable(fRows, { id: "fa", initial: "all" }) : html`<div class="notice">${icon("info")}<div>No reference paths in this assessment.</div></div>`}</section>`;
   else if (tab === "report") body = html`<section class="sec">${secHd("02", "Markdown report", "The same report the CLI writes with --markdown.")}<pre class="code" id="md">Loading…</pre></section>`;
   else body = resourcesTab(rec);
   mount(view, html`${gateSection(rec)}${tab === "resources" ? nextSteps(rec) : ""}${tabs}${body}`);
   rowLinks();
+  if (tab === "findings" && fRows.length) wireFindings("fa", fRows);
+  if (tab === "evidence") $("#cpRepro")?.addEventListener("click", () => copy(reproduce(rec)));
   if (tab === "report") $("#md").textContent = await api.report(id);
 }
 
@@ -242,6 +265,12 @@ function evidenceTab(rec) {
   const logs = Object.entries(rec.parse_stats || {});
   const cited = Object.entries(rec.sources || {});
   return html`
+    <section class="sec reveal">
+      ${secHd("01", "Reproduce", "The same check from the command line or a pipeline. Values in <…> are not stored in the evidence record (local paths, log host names); migrations and waivers are not shown.",
+        html`<button class="btn" id="cpRepro">${icon("copy")}Copy</button>`)}
+      <pre class="code">${reproduce(rec)}</pre>
+      <div class="hash">exit 0 = gate passes · 2 = gate fails · 1 = input error · this record: gate ${rec.gate.passed ? "passed (exit 0)" : "failed (exit 2)"}</div>
+    </section>
     <section class="sec reveal">
       ${secHd("02", "Inputs", "Every input is fingerprinted when read, so the decision can be tied to exactly what was examined.")}
       <table class="t"><thead><tr><th>Role</th><th>Input</th><th>Fingerprint</th></tr></thead><tbody>
@@ -338,7 +367,8 @@ function inspector(rec, r, i, c) {
   return html`
     <div><div class="tri ${v === "true" ? "s-hijackable" : v === "false" ? "s-safe" : "s-unknown"}">${triLabel(v)}</div><div class="label">${COND[c].long}</div></div>
     <div class="stack"><div class="dim">${COND[c].q}</div><div class="h">${cond ? cond.reason : "not evaluated"}</div>
-      ${cond && cond.evidence_ids.length ? evidenceItems(rec, cond.evidence_ids) : ""}</div>`;
+      ${cond && cond.evidence_ids.length ? evidenceItems(rec, cond.evidence_ids) : ""}
+      <details class="fold"><summary>Raw path and reference JSON</summary><pre class="code fold-body">${JSON.stringify({ path: p, reference: r.references.find((x) => x.id === p.reference_id) || null }, null, 2)}</pre></details></div>`;
 }
 
 function trafficBlock(rec, t) {
@@ -393,6 +423,7 @@ async function resource(id, addr) {
   markNav("home");
   loading();
   const rec = await api.get(id);
+  currentId = id;
   const r = rec.resources.find((x) => x.resource.address === addr);
   if (!r) throw new ApiError(404, `resource ${addr} is not in this assessment`);
   setCrumbs([{ t: "01 Reviews", href: "#/" }, { t: labelOf(id, summaryOf(rec)), href: `#/a/${id}` }, { t: addr }]);
@@ -424,7 +455,8 @@ async function resource(id, addr) {
     <section class="sec reveal">
       ${secHd(sec(), "Takeover paths", "Each place that still points at this name, tested against the five conditions. A takeover needs every circle filled; a struck‑through circle breaks the chain. Select any circle to see why.")}
       ${r.paths.length ? html`
-        <div class="howto"><span class="key"><span class="cell true" aria-hidden="true"><span>✓</span></span>holds</span><span class="key"><span class="cell false" aria-hidden="true"><span>C</span></span>false: breaks the chain</span><span class="key"><span class="cell unknown" aria-hidden="true"><span>?</span></span>not verified</span></div>
+        <div class="spread"><div class="filters" id="mfil">${[["all", "All", r.paths.length], ["hijackable", "Hijackable", t.hijackable || 0], ["unknown", "Unverified", t.unknown || 0], ["safe", "Broken", t.safe || 0]].map(([k, l, c]) => html`<button class="fbtn ${k === "all" ? "on" : ""}" data-f="${k}">${l} <b>${c}</b></button>`)}</div>
+        <div class="howto"><span class="key"><span class="cell true" aria-hidden="true"><span>✓</span></span>holds</span><span class="key"><span class="cell false" aria-hidden="true"><span>C</span></span>false: breaks the chain</span><span class="key"><span class="cell unknown" aria-hidden="true"><span>?</span></span>not verified</span></div></div>
         <div class="matrix">
           <div class="mrow mhead"><div>Reference</div>${CS.map((c) => html`<div><b>${c.toUpperCase()}</b>${COND[c].short}</div>`)}<div>Result</div></div>
           ${r.paths.map((p, i) => matrixRow(r, p, i))}
@@ -464,6 +496,11 @@ async function resource(id, addr) {
     </div>`);
 
   const insp = $("#insp");
+  $$("#mfil .fbtn").forEach((b) => b.addEventListener("click", () => {
+    $$("#mfil .fbtn").forEach((x) => x.classList.toggle("on", x === b));
+    $$(".mrow:not(.mhead)").forEach((row) => row.classList.toggle("hidden", b.dataset.f !== "all" && !row.classList.contains(`st-${b.dataset.f}`)));
+    insp?.classList.add("hidden");
+  }));
   $$(".mrow:not(.mhead) .cell").forEach((cell) => cell.addEventListener("click", () => {
     const already = cell.classList.contains("sel");
     $$(".cell.sel").forEach((x) => x.classList.remove("sel"));
@@ -482,6 +519,7 @@ async function resource(id, addr) {
 
 // ---------- compare ----------
 async function compare(a, b) {
+  currentId = null;
   markNav("compare");
   setCrumbs([{ t: "03 Before / after" }]);
   setActions("");
@@ -550,6 +588,7 @@ function dropzone(name, title, hint, multiple, accept, required) {
 }
 
 async function newAssessment() {
+  currentId = null;
   markNav("new");
   setCrumbs([{ t: "02 New check" }]);
   setActions("");
@@ -668,6 +707,7 @@ const LADDER = {
 };
 
 async function scan() {
+  currentId = null;
   markNav("scan");
   setCrumbs([{ t: "04 Drift scan" }]);
   setActions("");
@@ -708,6 +748,7 @@ async function scan() {
 
 // ---------- knowledge ----------
 async function knowledge() {
+  currentId = null;
   markNav("knowledge");
   setCrumbs([{ t: "05 Sources" }]);
   setActions(html`<a class="btn ghost" href="/docs" target="_blank" rel="noopener">${icon("ext")}API reference</a>`);
@@ -734,6 +775,7 @@ const routes = [
   [/^#\/a\/([^/]+)$/, (m) => assessment(m[1])],
   [/^#\/a\/([^/]+)\/evidence$/, (m) => assessment(m[1], "evidence")],
   [/^#\/a\/([^/]+)\/report$/, (m) => assessment(m[1], "report")],
+  [/^#\/a\/([^/]+)\/findings$/, (m) => assessment(m[1], "findings")],
   [/^#\/a\/([^/]+)\/r\/(.+)$/, (m) => resource(m[1], decodeURIComponent(m[2]))],
   [/^#\/compare(?:\/([^/]+)\/([^/]+))?$/, (m) => compare(m[1], m[2])],
   [/^#\/new$/, () => newAssessment()],
@@ -748,6 +790,7 @@ async function route() {
   try {
     if (!hit) throw new ApiError(404, "page not found");
     await hit[1](h.match(hit[0]));
+    health();
   } catch (e) {
     console.error(e);
     errorView(e, route);
@@ -755,26 +798,51 @@ async function route() {
 }
 
 async function health() {
+  const sb = $("#statusbar");
   try {
-    const [h, k] = await Promise.all([api.health(), api.knowledge().catch(() => null)]);
+    const [h, k, list] = await Promise.all([api.health(), api.knowledge().catch(() => null), api.list(500).catch(() => [])]);
     mount($("#health"), html`<span class="dot ok"></span><span>API online · v${h.version}</span>`);
-    if (k) mount($("#foot-rules"), html`Rules ${k.rules_version} · fingerprints ${k.fingerprint_catalogue_commit.slice(0, 7)}`);
+    mount(sb, html`<span><span class="dot ok"></span> api ${location.host} · v${h.version}</span>
+      ${k ? html`<span>rules ${k.rules_version}</span><span>fingerprints ${k.fingerprint_catalogue_commit.slice(0, 7)}</span><span>types ${k.name_bearing_resource_types.length}</span><span>owned domains ${k.owned_domains.length || "none"}</span>` : ""}
+      <span>records ${list.length}</span><span class="grow"></span><span><kbd>⌘K</kbd> commands</span><span><kbd>?</kbd> shortcuts</span>`);
   } catch {
     mount($("#health"), html`<span class="dot bad"></span><span>API unreachable</span>`);
+    mount(sb, html`<span><span class="dot bad"></span> api unreachable</span>`);
   }
 }
 
+function toggleTheme() {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  store.set("retiresafe.theme", next);
+}
 function theme() {
-  const saved = store.get("retiresafe.theme", null);
-  const prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.dataset.theme = saved || (prefersDark ? "dark" : "light");
-  $("#theme").addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    store.set("retiresafe.theme", next);
-  });
+  document.documentElement.dataset.theme = store.get("retiresafe.theme", null) || "dark";
+  $("#theme").addEventListener("click", toggleTheme);
 }
 
+async function paletteItems() {
+  const pages = [["Reviews", "#/", "g r"], ["New check", "#/new", "g n"], ["Before / after", "#/compare", "g c"], ["Drift scan", "#/scan", "g d"], ["Sources", "#/knowledge", "g s"]]
+    .map(([t, h, k]) => ({ group: "Go to", title: t, sub: k, run: () => go(h) }));
+  const actions = [{ group: "Actions", title: "Toggle light / dark", sub: "t", run: toggleTheme },
+    { group: "Actions", title: "Load recorded pilot", sub: "imports pilot/results", run: loadPilot },
+    { group: "Actions", title: "Open API reference", sub: "/docs", run: () => window.open("/docs", "_blank", "noopener") }];
+  const list = await api.list(100);
+  const recs = list.map((a) => ({ group: "Assessments", title: labelOf(a.assessment_id, a), sub: `${a.gate_passed ? "pass" : "fail"} · ${shortId(a.assessment_id)}`, run: () => go(`#/a/${a.assessment_id}`) }));
+  let res = [];
+  if (currentId) {
+    const rec = await api.get(currentId);
+    actions.unshift({ group: "This assessment", title: "Findings", sub: "g f", run: () => go(`#/a/${currentId}/findings`) },
+      { group: "This assessment", title: "Evidence & reproduce", sub: "g e", run: () => go(`#/a/${currentId}/evidence`) },
+      { group: "This assessment", title: "Copy CLI command", sub: "retiresafe assess …", run: () => copy(reproduce(rec)) },
+      { group: "This assessment", title: "Download evidence JSON", sub: "retiresafe.evidence/v1", run: () => download(`retiresafe-${shortId(rec.assessment_id)}.json`, JSON.stringify(rec, null, 2)) });
+    res = rec.resources.map((r) => ({ group: "Resources", title: nameOf(r), sub: `${r.verdict} · ${r.resource.address}`, run: () => go(`#/a/${currentId}/r/${encodeURIComponent(r.resource.address)}`) }));
+  }
+  return [...actions.filter((x) => x.group === "This assessment"), ...res, ...pages, ...recs, ...actions.filter((x) => x.group === "Actions")];
+}
+
+initPalette(paletteItems);
+initKeys({ go, toggleTheme, current: () => currentId });
 theme();
 health();
 window.addEventListener("hashchange", route);
