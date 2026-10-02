@@ -133,10 +133,13 @@ retiresafe serve
 
 Leave that window open and go to **http://127.0.0.1:8080/**:
 
-1. Click **Load the recorded pilot**. This imports the three recorded pilot runs from `pilot\results`; they are real engine output.
-2. Read the **FAIL** gate, then click a resource card. Click any **C1–C5** box in a takeover path to see the evidence and source behind it.
-3. Open **Before / after** in the sidebar to see FAIL turn into PASS.
-4. **New assessment** runs your own files: for example `pilot\generated\plan_before.json`, `pilot\generated\route53_before.json` and a zip of `pilot\app`, with *Assess as of* set to `1995-09-01T03:59:53Z`.
+The console starts empty: everything it shows comes from checks you run.
+
+1. Go to **02 New check** and follow [`demo/DEMO_SCRIPT.md`](demo/DEMO_SCRIPT.md). It uses the ready-made inputs in `demo\kit`. Each step has a `settings.json` that fills in the form for you.
+2. Click a resource and click any **C1–C5** circle to see the evidence and source behind it.
+3. Open **Before / after** to see FAIL turn into PASS.
+
+To start over with an empty console, stop the server and delete `retiresafe.db` (plus `retiresafe.db-wal` and `retiresafe.db-shm` if present) in the folder you started it from.
 
 ### Or call the REST API directly
 

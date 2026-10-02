@@ -1,0 +1,38 @@
+{
+  "label": "04 \u00b7 Corrected change \u00b7 strict \u00b7 real traffic",
+  "repo_label": "app",
+  "as_of": "1995-09-01T03:59:53Z",
+  "policy": {
+    "mode": "strict",
+    "enforcement": "enforce",
+    "org_account_ids": [
+      "123456789012"
+    ],
+    "internal_domains": [
+      "nasa.gov"
+    ]
+  },
+  "migrate_to": {
+    "rs-pilot-event-assets-2025": "rs-pilot-event-assets-123456789012-us-east-1-an"
+  },
+  "logs": [
+    {
+      "filename": "nasa_jul_aug_1995.log",
+      "format": "clf",
+      "host": "event.retiresafe-pilot.example",
+      "path_prefix": "/shuttle/countdown/"
+    },
+    {
+      "filename": "nasa_jul_aug_1995.log",
+      "format": "clf",
+      "host": "rs-pilot-event-assets-2025.s3.amazonaws.com",
+      "path_prefix": "/images/"
+    },
+    {
+      "filename": "nasa_jul_aug_1995.log",
+      "format": "clf",
+      "host": "rs-pilot-legacy-downloads.s3.amazonaws.com",
+      "path_prefix": "/payloads/level4/"
+    }
+  ]
+}

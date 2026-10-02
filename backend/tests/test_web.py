@@ -8,6 +8,8 @@ from fastapi.testclient import TestClient
 
 from retiresafe.paths import REPO_ROOT
 
+from conftest import FIX, GEN
+
 WEB = Path(__file__).resolve().parents[1] / "retiresafe" / "web"
 PILOT = REPO_ROOT / "pilot" / "results"
 
@@ -63,21 +65,29 @@ def test_rendering_escapes_by_default():
     assert "export const esc" in js and "return esc(v);" in js
 
 
-@pytest.mark.skipif(not (PILOT / "before_strict.json").is_file(), reason="needs a repository checkout")
-def test_pilot_import_is_idempotent_and_listing_has_summary(api):
+def test_no_canned_data_endpoint(api):
+    """The console starts empty: there is no endpoint that loads pre-recorded results."""
     _, c = api
-    assert c.get("/v1/knowledge").json()["pilot_available"] is True
-    first = c.post("/v1/demo/pilot").json()["imported"]
-    again = c.post("/v1/demo/pilot").json()["imported"]
-    assert first == again and set(first) == {"before_strict", "before_balanced", "after_strict"}
-    rows = {r["assessment_id"]: r for r in c.get("/v1/assessments").json()}
-    assert len(rows) == 3
-    bs = rows[first["before_strict"]]
-    assert bs["gate_passed"] is False and bs["mode"] == "strict" and bs["plan_input"] == "plan_before.json"
-    assert rows[first["after_strict"]]["gate_passed"] is True
-    # stored unchanged
-    rec = c.get(f"/v1/assessments/{first['before_strict']}").json()
-    assert rec == json.loads((PILOT / "before_strict.json").read_text(encoding="utf-8"))
+    assert c.post("/v1/demo/pilot").status_code in (404, 405)
+    assert "pilot_available" not in c.get("/v1/knowledge").json()
+    assert c.get("/v1/assessments").json() == []
+
+
+def test_label_and_several_views_of_one_log(api):
+    """config.label names the run; one uploaded log can serve several (host, path prefix) views."""
+    _, c = api
+    log = (FIX / "nasa_jul95_first2000.log").read_bytes()
+    cfg = {"label": "CHG-1 demo", "as_of": "1995-07-01T05:00:00Z",
+           "logs": [{"filename": "nasa.log", "format": "clf", "host": "event.retiresafe-pilot.example", "path_prefix": "/shuttle/countdown/"},
+                    {"filename": "nasa.log", "format": "clf", "host": "rs-pilot-event-assets-2025.s3.amazonaws.com", "path_prefix": "/images/"}]}
+    r = c.post("/v1/assessments", files=[("plan", ("plan.json", (GEN / "plan_before.json").read_bytes())),
+                                          ("logs", ("nasa.log", log))], data={"config": json.dumps(cfg)})
+    assert r.status_code == 200, r.text
+    rec = r.json()
+    assert rec["label"] == "CHG-1 demo"
+    sources = {t["source"] for res in rec["resources"] for t in res["traffic"]}
+    assert sources == {"nasa.log[/shuttle/countdown/]", "nasa.log[/images/]"}
+    assert c.get("/v1/assessments").json()[0]["label"] == "CHG-1 demo"
 
 
 @pytest.mark.skipif(not (PILOT / "before_balanced.json").is_file(), reason="needs a repository checkout")

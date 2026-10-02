@@ -56,7 +56,6 @@ export const api = {
   },
   report: (id) => call("GET", `/v1/assessments/${encodeURIComponent(id)}/report.md`, null, "text"),
   remove: (id) => { cache.delete(id); return call("DELETE", `/v1/assessments/${encodeURIComponent(id)}`); },
-  importPilot: () => call("POST", "/v1/demo/pilot"),
   scan: (hostnames) => call("POST", "/v1/drift-scans", { hostnames }),
 
   // XHR rather than fetch so large access logs show upload progress.

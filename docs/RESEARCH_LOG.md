@@ -104,3 +104,21 @@ Full scorecard: [08_negatives_and_mitigations.md](08_negatives_and_mitigations.m
   * The dark theme is now near-pure black with neutral greys; colour is kept for severity only.
   * The auras are reduced to a faint hint, and white pills, buttons and row fills are replaced by dark surfaces with hairline borders.
   * KPI frames are neutral, so only the number carries colour, and the chart bars are grey.
+
+## 13. Demo kit and an empty console (2026-10-02)
+* **Removed pre-recorded data:** the `POST /v1/demo/pilot` endpoint, the "Load recorded pilot" button and the palette action are gone. The console starts empty, and every result comes from inputs uploaded during the session.
+* **API additions:**
+  * `config.label` (CLI `--label`) names a run.
+  * `config.logs` may list several views (host / path prefix) of one uploaded file.
+  * The form accepts a settings JSON that fills it in.
+* **`demo/kit`:** upload-ready inputs (real Terraform/AWS-provider plans and Route 53 exports, the pilot app, and the app corrected by RetireSafe's own patch), plus expert variants:
+  * SRI-pinned script
+  * owner check removed
+  * script commented out
+  * hostile markup
+  * zip-slip
+  * archive bomb
+* **Recorded results:** `demo/build_demo_kit.py --verify` ran all nine scenarios through the API with the real NASA log (4 min). `kit/EXPECTED.md` holds the actual results. A browser run of the presenter script reproduced FAIL → FAIL → FAIL → PASS. The hostile-markup app displayed as text with no dialog and no injected elements.
+* **Corrections made while writing the test cards against the recorded output:**
+  * A commented-out script is *broken at C4* ("the reference is inside a code comment"), not "listed but cannot block".
+  * The redaction card now states what the record holds: neither example key string appears, and the line carrying one is stored as `…=[REDACTED] …`.

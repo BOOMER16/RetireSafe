@@ -1,0 +1,15 @@
+{
+  "label": "01 \u00b7 Proposed deletion \u00b7 strict \u00b7 no logs",
+  "repo_label": "app",
+  "as_of": "1995-09-01T03:59:53Z",
+  "policy": {
+    "mode": "strict",
+    "enforcement": "enforce",
+    "org_account_ids": [
+      "123456789012"
+    ]
+  },
+  "migrate_to": {
+    "rs-pilot-event-assets-2025": "rs-pilot-event-assets-123456789012-us-east-1-an"
+  }
+}

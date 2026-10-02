@@ -417,7 +417,9 @@ textarea.input { font: 400 12.5px/1.5 var(--mono); min-height: 96px; resize: ver
 .seg label { padding: 8px 16px; cursor: pointer; font-weight: 650; font-stretch: 90%; font-size: 13px; text-transform: uppercase; letter-spacing: .03em; transition: background .2s; }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg label:has(input:checked) { background: var(--ink); color: var(--paper); }
-.logrow { display: grid; grid-template-columns: 1.2fr 130px 1.3fr 1fr; gap: 12px; align-items: end; }
+.logrow { display: grid; grid-template-columns: minmax(0, 1fr) 140px minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: end; }
+.logrow > .row { flex-wrap: nowrap; }
+.nocase { text-transform: none; letter-spacing: 0; font-family: var(--sans); }
 .submitbar { position: sticky; bottom: 0; background: var(--paper); border-top: 1px solid var(--rule-strong); padding: 18px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; z-index: 5; }
 
 /* ---------- misc ---------- */

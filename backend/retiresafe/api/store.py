@@ -14,7 +14,7 @@ def _summary(rec: dict) -> dict:
     """Listing fields taken from the stored record (pilot scale: records are small)."""
     plan = next((i["name"] for i in rec.get("inputs", []) if i.get("role") == "terraform_plan"), None)
     pol = rec.get("policy", {})
-    return {"as_of": rec.get("as_of"), "plan_input": plan, "mode": pol.get("mode"),
+    return {"label": rec.get("label"), "as_of": rec.get("as_of"), "plan_input": plan, "mode": pol.get("mode"),
             "enforcement": pol.get("enforcement"), "would_pass": rec.get("gate", {}).get("would_pass"),
             "retiring": len(rec.get("resources", [])), "rules_version": rec.get("tool", {}).get("rules_version")}
 

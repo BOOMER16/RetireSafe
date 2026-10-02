@@ -64,6 +64,8 @@ def cmd_assess(a: argparse.Namespace) -> int:
     inp = AssessmentInput(a.plan, dns, repos, logs, policy, parse_as_of(a.as_of), migrate, a.waivers)
     result = run(inp)
     rec = evidence.record(result, policy_dict(policy))
+    if a.label:
+        rec["label"] = a.label.strip()[:120]
     Path(a.out).write_text(json.dumps(rec, indent=2), encoding="utf-8")
     if a.markdown:
         Path(a.markdown).write_text(evidence.markdown(rec), encoding="utf-8")
@@ -213,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--as-of", help="assessment time (ISO 8601 with timezone); default now")
     s.add_argument("--migrate", action="append", help="old_name=new_name for code rewrite patches")
     s.add_argument("--out", required=True)
+    s.add_argument("--label", help="human-readable name for this run, shown in the console")
     s.add_argument("--markdown")
     s.set_defaults(fn=cmd_assess)
     s = sub.add_parser("scan", help="live drift scan of DNS names you own")

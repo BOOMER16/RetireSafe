@@ -145,7 +145,6 @@ Full quotes are in `retiresafe/knowledge/sources.py` (`retiresafe sources`). The
 | GET | `/v1/assessments` · `/v1/assessments/{id}` · `/v1/assessments/{id}/report.md` | list / record / Markdown report |
 | POST | `/v1/drift-scans` | `{"hostnames": [...]}` (max 2,000). Live read-only checks |
 | GET | `/v1/drift-scans/{id}` | stored scan |
-| POST | `/v1/demo/pilot` | import the recorded pilot assessments from `pilot/results` (repository checkout only; idempotent) |
 | GET | `/` → `/ui/` | web console (static files in `retiresafe/web`) |
 
 ### Web console
@@ -166,17 +165,20 @@ no inline code, the pilot import, and that the daily counts add up to the totals
   "policy": {"mode": "strict", "org_account_ids": ["111122223333"], "internal_domains": ["example.com"]},
   "logs": [{"filename": "access.log", "format": "clf", "host": "www.example.com", "path_prefix": "/assets/"}],
   "dns_origins": {"legacy.zone": "example.com."},
+  "label": "CHG-1042 retire event buckets",
   "repo_label": "web",
   "as_of": "2026-10-01T00:00:00Z",
   "migrate_to": {"old-bucket": "new-bucket-111122223333-us-east-1-an"}
 }
 ```
 
+`config.logs` may list the same `filename` several times, one entry per view (host or path prefix) of that file. `config.label` (or `--label` on the CLI) names the run; it is stored as `label` in the evidence record.
+
 Environment: `RETIRESAFE_DB` (SQLite path, default `retiresafe.db`), `RETIRESAFE_API_KEY` (require an `X-API-Key` header), `RETIRESAFE_MAX_UPLOAD_MB` (default 512). Uploaded archives are extracted with path-traversal checks; links and devices are rejected.
 
 ## Evidence record (`retiresafe.evidence/v1`)
 
-`assessment_id`, `created_at`, `as_of`, `tool` (version, rules version, catalogue commit), `policy`, `inputs` (SHA-256 of every file, a tree hash for repositories), `plan`, `gate` (`passed`, verdict counts), `resources[]` (resource, C2 result, references, traffic summaries, paths with all five conditions and their evidence ids, verdict, reasons, risk interval, patches, `not_checked`), `evidence[]`, `parse_stats`, `scan_stats`, `not_checked` (outside coverage), and `sources` (the exact quotes behind every rule that was cited).
+`assessment_id`, `label` (optional), `created_at`, `as_of`, `tool` (version, rules version, catalogue commit), `policy`, `inputs` (SHA-256 of every file, a tree hash for repositories), `plan`, `gate` (`passed`, verdict counts), `resources[]` (resource, C2 result, references, traffic summaries, paths with all five conditions and their evidence ids, verdict, reasons, risk interval, patches, `not_checked`), `evidence[]`, `parse_stats`, `scan_stats`, `not_checked` (outside coverage), and `sources` (the exact quotes behind every rule that was cited).
 
 ## Validation
 

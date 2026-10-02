@@ -19,20 +19,13 @@ const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* storage disabled */ } },
 };
-const PILOT_LABEL = {
-  before_strict: "Pilot · proposed deletion · strict",
-  before_balanced: "Pilot · proposed deletion · balanced",
-  after_strict: "Pilot · corrected change · strict",
-};
-const pilotTags = () => store.get("retiresafe.pilot", {});
 function labelOf(id, s) {
-  const tag = Object.entries(pilotTags()).find(([, v]) => v === id);
-  if (tag) return PILOT_LABEL[tag[0]] || tag[0];
+  if (s && s.label) return s.label;
   return s && s.plan_input ? `${s.plan_input} · ${s.mode || ""}` : `Assessment ${shortId(id)}`;
 }
 function summaryOf(rec) {
   const plan = (rec.inputs || []).find((i) => i.role === "terraform_plan");
-  return { plan_input: plan && plan.name, mode: rec.policy && rec.policy.mode };
+  return { label: rec.label, plan_input: plan && plan.name, mode: rec.policy && rec.policy.mode };
 }
 const nameOf = (r) => r.resource.name || r.resource.address;
 const go = (href) => { location.hash = href; };
@@ -72,8 +65,6 @@ async function home() {
   setActions(html`<button class="btn ghost" id="cmdk">Commands <kbd>⌘K</kbd></button><a class="btn primary" href="#/new">${icon("plus")}New check</a>`);
   loading();
   const [list, k] = await Promise.all([api.list(), api.knowledge()]);
-  const pilotIds = Object.values(pilotTags());
-  const pilotLoaded = pilotIds.length && pilotIds.every((id) => list.some((a) => a.assessment_id === id));
   const recent = list.slice(0, 15);
   const recs = await Promise.all(recent.map((a) => api.get(a.assessment_id)));
   const findings = recs.flatMap((r) => findingsOf(r, labelOf(r.assessment_id, summaryOf(r))));
@@ -94,9 +85,9 @@ async function home() {
     </section>
     ${list.length ? "" : html`
       <section class="sec reveal"><div class="panel-g onboard">
-        <div><div class="label">No assessments stored</div><h2 class="h">Start with the recorded pilot or your own plan</h2>
-          <p class="dim small">The pilot is real engine output: Terraform 1.16.4 plans, Route 53 exports and 3.46 M lines of NASA HTTP traffic.</p>
-          <div class="row">${k.pilot_available && !pilotLoaded ? html`<button class="btn primary" id="loadPilot">Load recorded pilot</button>` : ""}<a class="btn" href="#/new">New check</a></div></div>
+        <div><div class="label">No assessments stored</div><h2 class="h">Run your first check</h2>
+          <p class="dim small">Upload a Terraform plan, plus whatever might still point at the names it deletes: a DNS export, code, access logs. A ready-made example with real inputs is in the repository's <span class="mono">demo/</span> folder.</p>
+          <div class="row"><a class="btn primary" href="#/new">New check</a></div></div>
         <div><div class="label">Or from a pipeline</div><pre class="code">retiresafe assess --plan plan.json \
     --dns route53.json --repo app=./src \
     --log access.log,format=s3 \
@@ -106,7 +97,7 @@ async function home() {
     ${list.length ? html`
       <section class="sec reveal">
         ${secHd("01", "Findings queue", `Reference paths from the ${recent.length} most recent assessment(s), most severe first. Open = hijackable or unverified.`,
-          k.pilot_available && !pilotLoaded ? html`<button class="btn" id="loadPilot">Load recorded pilot</button>` : "")}
+          "")}
         ${findings.length ? findingsTable(findings, { id: "fq", showAssessment: true }) : html`<div class="notice">${icon("info")}<div>No reference paths in the stored assessments.</div></div>`}
       </section>
       <section class="sec reveal">
@@ -135,15 +126,8 @@ async function home() {
     toast("Assessment deleted");
     route();
   }));
-  $$("#loadPilot").forEach((b) => b.addEventListener("click", loadPilot));
 }
 
-async function loadPilot() {
-  const r = await api.importPilot();
-  store.set("retiresafe.pilot", r.imported);
-  toast("Recorded pilot loaded");
-  go(`#/a/${r.imported.before_strict}`);
-}
 
 // ---------- assessment ----------
 function gateSection(rec) {
@@ -525,14 +509,12 @@ async function compare(a, b) {
   setActions("");
   loading();
   const list = await api.list(200);
-  const tags = pilotTags();
   if (list.length < 2) {
     mount(view, html`<section class="empty reveal"><h1 class="display md">Nothing to compare yet.</h1><p class="lede">Run the same change twice, before and after applying RetireSafe's fixes, and the difference shows up here.</p><a class="btn primary" href="#/">Back to reviews</a></section>`);
     return;
   }
   if (!a || !b) {
-    if (tags.before_strict && tags.after_strict && list.some((x) => x.assessment_id === tags.after_strict)) [a, b] = [tags.before_strict, tags.after_strict];
-    else [a, b] = [list[1].assessment_id, list[0].assessment_id];
+    [a, b] = [list[1].assessment_id, list[0].assessment_id];
   }
   const picker = (sel, idn) => html`<select class="input" id="${idn}">${list.map((x) => html`<option value="${x.assessment_id}" ${x.assessment_id === sel ? raw("selected") : ""}>${labelOf(x.assessment_id, x)} (${shortId(x.assessment_id)})</option>`)}</select>`;
   const [A, B] = await Promise.all([api.get(a), api.get(b)]);
@@ -596,6 +578,11 @@ async function newAssessment() {
     <section class="rhead reveal"><div><div class="label">New check</div><h1 class="display md">What are you about to delete?</h1>
       <p class="why">Only the Terraform plan is required. Every extra input lets RetireSafe prove more instead of marking it unverified.</p></div></section>
     <form id="nf" autocomplete="off">
+      <div class="form-sec reveal"><span class="idx">(00) Run</span>
+        <div class="grid g2">
+          <div class="field"><label for="label">Name this check</label><input class="input" id="label" maxlength="120" placeholder="e.g. CHG-1042 · retire event buckets"><span class="hint">shown in the review list and reports</span></div>
+          ${dropzone("settings", "Settings file", "optional · a JSON config (policy, log views, as-of, migrations) fills in the form below", false, ".json")}
+        </div></div>
       <div class="form-sec reveal"><span class="idx">(01) The change</span>
         <div class="grid g2">
           ${dropzone("plan", "Terraform plan", "terraform show -json plan.out > plan.json", false, ".json", true)}
@@ -609,19 +596,19 @@ async function newAssessment() {
           </div>
           <div class="grid g2">
             <div class="field"><label for="repoLabel">Repository label</label><input class="input" id="repoLabel" placeholder="app"><span class="hint">shown in file:line locations</span></div>
-            <div class="field"><span class="lab">Log settings</span><div id="logrows" class="stack"><span class="hint">add log files to configure them</span></div></div>
           </div>
+          <div class="field"><span class="lab">Log views · file · format · host · path prefix</span><div id="logrows" class="stack"><span class="hint">add log files to configure them; one file can serve several hosts / path prefixes</span></div></div>
         </div></div>
       <div class="form-sec reveal"><span class="idx">(03) Policy</span>
         <div class="stack"><div class="grid g3">
           <div class="field"><span class="lab">Mode</span><div class="seg"><label><input type="radio" name="mode" value="strict" checked>Strict</label><label><input type="radio" name="mode" value="balanced">Balanced</label></div><span class="hint">strict never releases a name someone else could claim; balanced releases on evidence</span></div>
           <div class="field"><span class="lab">Enforcement</span><div class="seg"><label><input type="radio" name="enf" value="enforce" checked>Enforce</label><label><input type="radio" name="enf" value="advisory">Advisory</label></div><span class="hint">advisory reports but never fails the gate</span></div>
-          <div class="field"><label for="alpha">α · tolerated miss probability</label><input class="input" id="alpha" type="number" step="any" min="0.0001" max="0.5" value="0.01"></div>
+          <div class="field"><label for="alpha">Tolerated miss probability <span class="nocase">α</span></label><input class="input" id="alpha" type="number" step="any" min="0.0001" max="0.5" value="0.01"></div>
           <div class="field"><label for="accts">Organisation account IDs</label><input class="input" id="accts" placeholder="123456789012, 210987654321"></div>
           <div class="field"><label for="idom">Internal domains / CIDRs</label><input class="input" id="idom" placeholder="corp.example, 10.0.0.0/8"><span class="hint">these clients are not counted as external</span></div>
           <div class="field"><label for="asof">Assess as of</label><input class="input" id="asof" placeholder="now (e.g. 2026-10-01T00:00:00Z)"></div>
         </div>
-        <details class="fold"><summary>Advanced: migrations and waivers</summary>
+        <details class="fold" id="adv"><summary>Advanced: migrations and waivers</summary>
           <div class="grid g2 fold-body">
             <div class="field"><label for="mig">Migrations</label><textarea class="input" id="mig" placeholder="old-bucket=new-bucket-123456789012-us-east-1-an"></textarea><span class="hint">one old=new per line; used to write code patches</span></div>
             <div class="field"><label for="waivers">Waivers (JSON list)</label><textarea class="input" id="waivers" placeholder='[{"resource": "...", "type": "accept_reference", ...}]'></textarea></div>
@@ -629,32 +616,77 @@ async function newAssessment() {
       </div>
       <div class="submitbar"><div id="nmsg" class="small dim">Files are processed on this server and deleted after the run.</div><button class="btn primary lg" id="go">Run the check <span class="arrow">→</span></button></div>
     </form>`);
-  const files = { plan: [], dns: [], repo: [], logs: [] };
+  const files = { plan: [], dns: [], repo: [], logs: [], settings: [] };
+  let views = [];                 // [{filename, format, host, path_prefix}]
+  let preset = null;              // log views from a settings file, applied when the matching log is added
+  const csv = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
+  const msg = $("#nmsg");
+
+  function syncViews() {
+    const names = files.logs.map((f) => f.name);
+    views = views.filter((v) => names.includes(v.filename));
+    names.forEach((n) => {
+      if (views.some((v) => v.filename === n)) return;
+      const fromPreset = (preset || []).filter((v) => v.filename === n);
+      views.push(...(fromPreset.length ? fromPreset.map((v) => ({ ...v })) : [{ filename: n, format: "s3", host: "", path_prefix: "" }]));
+    });
+    renderLogRows();
+  }
+  function renderLogRows() {
+    const box = $("#logrows");
+    if (!views.length) { mount(box, html`<span class="hint">add log files to configure them; one file can serve several hosts / path prefixes</span>`); return; }
+    mount(box, html`${views.map((v, i) => html`<div class="logrow" data-v="${i}">
+      <span class="mono tiny break">${v.filename}</span>
+      <select class="input" data-k="format" aria-label="format">${[["s3", "S3 access"], ["cloudfront", "CloudFront"], ["clf", "CLF"]].map(([k, t]) => html`<option value="${k}" ${v.format === k ? raw("selected") : ""}>${t}</option>`)}</select>
+      <input class="input" data-k="host" placeholder="host (CLF: required)" aria-label="host" value="${v.host || ""}">
+      <div class="row nowrap"><input class="input" data-k="path_prefix" placeholder="path prefix" aria-label="path prefix" value="${v.path_prefix || ""}">
+        <button type="button" class="btn ghost iconbtn" data-add="${i}" title="Add another view of this file" aria-label="Add view">${icon("plus")}</button>
+        ${views.filter((x) => x.filename === v.filename).length > 1 ? html`<button type="button" class="btn ghost iconbtn" data-rm="${i}" title="Remove this view" aria-label="Remove view">${icon("trash")}</button>` : ""}</div></div>`)}`);
+    $$(".logrow [data-k]", box).forEach((el) => el.addEventListener("input", () => { views[Number(el.closest(".logrow").dataset.v)][el.dataset.k] = el.value.trim(); }));
+    $$("[data-add]", box).forEach((b) => b.addEventListener("click", () => { const v = views[Number(b.dataset.add)]; views.splice(Number(b.dataset.add) + 1, 0, { ...v, host: "", path_prefix: "" }); renderLogRows(); }));
+    $$("[data-rm]", box).forEach((b) => b.addEventListener("click", () => { views.splice(Number(b.dataset.rm), 1); renderLogRows(); }));
+  }
+  function applySettings(cfg) {
+    const pol = cfg.policy || {};
+    if (cfg.label) $("#label").value = cfg.label;
+    if (pol.mode) $(`input[name=mode][value=${pol.mode === "balanced" ? "balanced" : "strict"}]`).checked = true;
+    if (pol.enforcement) $(`input[name=enf][value=${pol.enforcement === "advisory" ? "advisory" : "enforce"}]`).checked = true;
+    if (pol.alpha) $("#alpha").value = pol.alpha;
+    if (pol.org_account_ids) $("#accts").value = pol.org_account_ids.join(", ");
+    if (pol.internal_domains || pol.internal_cidrs) $("#idom").value = [...(pol.internal_domains || []), ...(pol.internal_cidrs || [])].join(", ");
+    if (cfg.as_of) $("#asof").value = cfg.as_of;
+    if (cfg.repo_label) $("#repoLabel").value = cfg.repo_label;
+    if (cfg.migrate_to) { $("#mig").value = Object.entries(cfg.migrate_to).map(([o, n]) => `${o}=${n}`).join("\n"); $("#adv").open = true; }
+    if (cfg.waivers) { $("#waivers").value = JSON.stringify(cfg.waivers, null, 2); $("#adv").open = true; }
+    preset = (cfg.logs || []).map((l) => ({ filename: l.filename, format: l.format || "s3", host: l.host || "", path_prefix: l.path_prefix || "" }));
+    views = [];
+    syncViews();
+  }
+
   $$(".drop input[type=file]").forEach((inp) => {
     const zone = inp.closest(".drop");
-    inp.addEventListener("change", () => {
+    inp.addEventListener("change", async () => {
       files[inp.name] = [...inp.files];
       zone.classList.toggle("has", files[inp.name].length > 0);
       mount($(".files", zone), files[inp.name].map((f) => html`<div>${f.name} <span class="muted">${bytes(f.size)}</span></div>`));
-      if (inp.name === "logs") renderLogRows();
+      if (inp.name === "logs") {
+        syncViews();
+        if (views.length) mount(msg, html`${views.length} log view(s) configured for ${files.logs.length} file(s).`);
+      }
+      if (inp.name === "settings" && files.settings.length) {
+        try {
+          applySettings(JSON.parse(await files.settings[0].text()));
+          mount(msg, html`Settings loaded from <b>${files.settings[0].name}</b>${preset.length ? ` · ${preset.length} log view(s) waiting for their log file` : ""}.`);
+        } catch (e) { mount(msg, html`<span class="sig">Settings file is not valid JSON: ${e.message}</span>`); }
+      }
     });
     ["dragenter", "dragover"].forEach((e) => zone.addEventListener(e, () => zone.classList.add("over")));
     ["dragleave", "drop"].forEach((e) => zone.addEventListener(e, () => zone.classList.remove("over")));
   });
-  function renderLogRows() {
-    const box = $("#logrows");
-    if (!files.logs.length) { mount(box, html`<span class="hint">add log files to configure them</span>`); return; }
-    mount(box, files.logs.map((f, i) => html`<div class="logrow" data-i="${i}">
-      <span class="mono tiny break">${f.name}</span>
-      <select class="input" data-k="format" aria-label="format"><option value="s3">S3 access</option><option value="cloudfront">CloudFront</option><option value="clf">CLF</option></select>
-      <input class="input" data-k="host" placeholder="host (CLF: required)" aria-label="host">
-      <input class="input" data-k="path_prefix" placeholder="path prefix" aria-label="path prefix"></div>`));
-  }
-  const csv = (s) => s.split(",").map((x) => x.trim()).filter(Boolean);
+
   $("#nf").addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    const msg = $("#nmsg");
-    if (!files.plan.length) { mount(msg, html`<span class="sig">Add a Terraform plan first.</span>`); $(".drop").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    if (!files.plan.length) { mount(msg, html`<span class="sig">Add a Terraform plan first.</span>`); $(".drop input[name=plan]").closest(".drop").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
     const internal = csv($("#idom").value);
     const isNet = (x) => /[/:]|^\d+\.\d+/.test(x);
     const cfg = { policy: {
@@ -662,6 +694,7 @@ async function newAssessment() {
       alpha: Number($("#alpha").value), org_account_ids: csv($("#accts").value),
       internal_domains: internal.filter((x) => !isNet(x)), internal_cidrs: internal.filter(isNet),
     } };
+    if ($("#label").value.trim()) cfg.label = $("#label").value.trim();
     if ($("#asof").value.trim()) cfg.as_of = $("#asof").value.trim();
     if ($("#repoLabel").value.trim()) cfg.repo_label = $("#repoLabel").value.trim();
     const mig = $("#mig").value.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -669,11 +702,7 @@ async function newAssessment() {
     if ($("#waivers").value.trim()) {
       try { cfg.waivers = JSON.parse($("#waivers").value); } catch (e) { mount(msg, html`<span class="sig">Waivers are not valid JSON: ${e.message}</span>`); return; }
     }
-    cfg.logs = $$(".logrow").map((row) => {
-      const o = { filename: files.logs[Number(row.dataset.i)].name };
-      $$("[data-k]", row).forEach((el) => { if (el.value.trim()) o[el.dataset.k] = el.value.trim(); });
-      return o;
-    });
+    cfg.logs = views.map((v) => Object.fromEntries(Object.entries(v).filter(([, x]) => x)));
     const fd = new FormData();
     fd.append("plan", files.plan[0]);
     files.dns.forEach((f) => fd.append("dns", f));
@@ -825,7 +854,6 @@ async function paletteItems() {
   const pages = [["Reviews", "#/", "g r"], ["New check", "#/new", "g n"], ["Before / after", "#/compare", "g c"], ["Drift scan", "#/scan", "g d"], ["Sources", "#/knowledge", "g s"]]
     .map(([t, h, k]) => ({ group: "Go to", title: t, sub: k, run: () => go(h) }));
   const actions = [{ group: "Actions", title: "Toggle light / dark", sub: "t", run: toggleTheme },
-    { group: "Actions", title: "Load recorded pilot", sub: "imports pilot/results", run: loadPilot },
     { group: "Actions", title: "Open API reference", sub: "/docs", run: () => window.open("/docs", "_blank", "noopener") }];
   const list = await api.list(100);
   const recs = list.map((a) => ({ group: "Assessments", title: labelOf(a.assessment_id, a), sub: `${a.gate_passed ? "pass" : "fail"} · ${shortId(a.assessment_id)}`, run: () => go(`#/a/${a.assessment_id}`) }));

@@ -1,0 +1,419 @@
+{
+  "01_proposed_change": {
+    "label": "01 \u00b7 Proposed deletion \u00b7 strict \u00b7 no logs",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "tombstone": 3,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "tombstone",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "unknown",
+          "aws_ssm_parameter.assets_base_url.value": "unknown",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "unknown",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "tombstone",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "unknown",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "unknown",
+          "app::tools/mirror_legacy.sh:3": "unknown",
+          "app::tools/sync_downloads.py:8": "unknown",
+          "app::tools/sync_downloads.py:9": "unknown"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 0.1
+  },
+  "02_add_real_traffic": {
+    "label": "02 \u00b7 Proposed deletion \u00b7 strict \u00b7 real traffic",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "block": 2,
+      "tombstone": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "hijackable",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 41.6
+  },
+  "03_balanced_policy": {
+    "label": "03 \u00b7 Proposed deletion \u00b7 balanced \u00b7 real traffic",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 2,
+      "block": 2,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "hijackable",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "release",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 37.9
+  },
+  "04_corrected_change": {
+    "label": "04 \u00b7 Corrected change \u00b7 strict \u00b7 real traffic",
+    "gate_passed": true,
+    "cli_exit_code": 0,
+    "verdict_counts": {
+      "release": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 24.8
+  },
+  "expert/A_pin_script_with_sri": {
+    "label": "expert \u00b7 A_pin_script_with_sri",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "block": 2,
+      "tombstone": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "safe (breaks at c5)",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 34.3
+  },
+  "expert/B_drop_owner_check": {
+    "label": "expert \u00b7 B_drop_owner_check",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "block": 2,
+      "tombstone": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "hijackable",
+          "app::tools/upload_assets.py:10": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 34.4
+  },
+  "expert/C_comment_out_script": {
+    "label": "expert \u00b7 C_comment_out_script",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "block": 2,
+      "tombstone": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "safe (breaks at c4)",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 37.4
+  },
+  "expert/D_hostile_markup": {
+    "label": "expert \u00b7 D_hostile_markup",
+    "gate_passed": false,
+    "cli_exit_code": 2,
+    "verdict_counts": {
+      "release": 1,
+      "block": 2,
+      "tombstone": 1,
+      "not_name_bearing": 2
+    },
+    "resources": {
+      "aws_s3_bucket.archive": {
+        "verdict": "release",
+        "paths": {}
+      },
+      "aws_s3_bucket.event_assets": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[3] cdn.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_ssm_parameter.assets_base_url.value": "hijackable",
+          "app::index.html:7": "safe (breaks at c5)",
+          "app::index.html:14": "hijackable",
+          "app::tools/upload_assets.py:10": "safe (breaks at c5)",
+          "app::docs/notes.html:1": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.event_site": {
+        "verdict": "block",
+        "paths": {
+          "route53.json#ResourceRecordSets[4] event.retiresafe-pilot.example CNAME": "hijackable",
+          "aws_s3_bucket_website_configuration.event_site.bucket": "safe (breaks at c3)",
+          "app::index.html:12": "hijackable",
+          "access logs": "unknown"
+        }
+      },
+      "aws_s3_bucket.legacy_downloads": {
+        "verdict": "tombstone",
+        "paths": {
+          "app::config/legacy.env:3": "safe (breaks at c4)",
+          "app::tools/mirror_legacy.sh:3": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:8": "safe (breaks at c4)",
+          "app::tools/sync_downloads.py:9": "safe (breaks at c4)",
+          "access logs": "safe (breaks at c4)"
+        }
+      },
+      "aws_s3_bucket_website_configuration.event_site": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      },
+      "aws_ssm_parameter.legacy_db_password": {
+        "verdict": "not_name_bearing",
+        "paths": {}
+      }
+    },
+    "seconds": 36.1
+  },
+  "expert/E_zip_slip": {
+    "http_status": 400,
+    "detail": "archive member escapes the extraction directory: ../../outside.txt",
+    "seconds": 0.0
+  }
+}

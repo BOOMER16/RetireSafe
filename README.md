@@ -10,6 +10,7 @@ This repository contains the **research, the proposed solution, and three test b
 > 📄 **Main deliverable:** [`RetireSafe_Solution_Dossier.pdf`](RetireSafe_Solution_Dossier.pdf) (7 pages)
 > 🛠️ **Pilot backend:** [`backend/`](backend/README.md) (engine, CLI gate, REST API, drift scanner, 88 tests, validated against the research data) and an end-to-end [`pilot/`](pilot/README.md) scenario built with real Terraform output and real traffic.
 > 🖥️ **Web console:** `retiresafe serve`, then open http://127.0.0.1:8080/ (see [the console section](#web-console) below)
+> 🎤 **Demo kit:** [`demo/`](demo/README.md): upload-ready inputs, a presenter script, and test cards for a security expert, with every expected result recorded from a real run.
 > 💻 **Run it yourself:** [`RUN_LOCALLY.md`](RUN_LOCALLY.md): Anaconda Prompt setup and `python demo.py`, a step-by-step walkthrough of what the system does.
 > 📘 **New to the topic?** Start with [`RetireSafe_Beginners_Guide.pdf`](RetireSafe_Beginners_Guide.pdf): DNS, cloud naming, takeovers, SPF, Terraform, logs, the statistics, our findings, FAQ and glossary (21 pages)
 > 📄 Original problem brief: [`docs/brief/RetireSafe_Research_Brief.pdf`](docs/brief/RetireSafe_Research_Brief.pdf)
@@ -30,7 +31,7 @@ Full method, numbers and caveats for each: [`docs/02_testbeds.md`](docs/02_testb
 
 ## Web console
 
-`retiresafe serve` also serves a browser console at **http://127.0.0.1:8080/**. It reads the API's evidence records, and everything on screen comes from the record; the only arithmetic it does is shown on screen. Click **Load the recorded pilot** to see the real pilot runs: a blocked deletion, the same change in balanced mode, and the corrected change that passes.
+`retiresafe serve` also serves a browser console at **http://127.0.0.1:8080/**. It reads the API's evidence records, and everything on screen comes from the record; the only arithmetic it does is shown on screen. It starts empty. For a guided demonstration with real inputs (a blocked deletion, the same change under the balanced policy, and the corrected change that passes), use the demo kit in [`demo/`](demo/README.md).
 
 | | |
 |---|---|

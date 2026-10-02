@@ -1,0 +1,22 @@
+{
+  "note": "sha256 of every kit file; inputs come from pilot/ (real tool output)",
+  "sri_of_js_countdown": "sha384-/EpxqJjP03lA1sr8R+UsnmBc25fY+kx8k5yiYh131WjI6VbAVo1CoXO4Esmreuxp",
+  "files": {
+    "01_proposed_change/app.zip": "cf731f238d2fa22701fd113a6098fff3dcbf645e22cbcce1a7fa716fa4081337",
+    "01_proposed_change/plan.json": "de26f628ba9da2b46e1bc0a86ae86794ca9dbdf19d0d892212b08c48e2986bed",
+    "01_proposed_change/route53.json": "90d554d7109e6427a7a81ebe757caf7e63050348c83ce84d0e57a11d7a2eaa5d",
+    "01_proposed_change/settings.json": "3043eca9344d34481583644faaae70394c2663129d0d4e795b50550b7cb9c9ea",
+    "02_add_real_traffic/settings.json": "8162fa01bc9d42ebd42e77639167efe6955efa78787e0768106d6ebc553ebaba",
+    "03_balanced_policy/settings.json": "bdd3cbbef45d2966a7fd4ec8f193fc36955079c7086e7b026a26478e65621649",
+    "04_corrected_change/app.zip": "5280f7ac51af08dd05b871314ad6537ec123501fae35b75cb8417a5629503c7b",
+    "04_corrected_change/plan.json": "683ff9645d0cd77a0151c310c6d038e2b77f311bd67c5f0f94a62f3880224b5a",
+    "04_corrected_change/route53.json": "53126c21294833c9db8c3843741d65bf472fd55df4f21b22f9252dbdcb17eef9",
+    "04_corrected_change/settings.json": "97c1bafb9546847e50078ad0c28664e29fc344504ed8d2bb0d8c1ed5147a240d",
+    "expert/A_pin_script_with_sri/app.zip": "8d7676f3f401f058677aa9853cad5a8a8ed7db3b475b921f66b6ad560b681ce9",
+    "expert/B_drop_owner_check/app.zip": "47df311f86bd04f36ed17a9cd5c6a9e13a169c990bcbc29793a2fae21bfb3f8d",
+    "expert/C_comment_out_script/app.zip": "fbfd84de947ce00d22f8fde8393d381523fd8742a92d804a825a8e48192eba3c",
+    "expert/D_hostile_markup/app.zip": "e02705fdb0eba4ad41519943ace9a58f123370bccfab6be0657549180f19af31",
+    "expert/E_zip_slip/app.zip": "4e3f7119a3da7025882cf6791ead595ede6b753df5ef634780f8637f5d97676b",
+    "expert/F_archive_bomb/app.zip": "b43caee8e75a523470f633a7c1efd6ed4d3c4c32ba9323d6287c4cae2490261f"
+  }
+}

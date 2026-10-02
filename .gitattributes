@@ -2,3 +2,5 @@
 *.pdf binary
 *.png binary
 *.gz binary
+# demo kit files are hashed in MANIFEST.json: never convert line endings
+demo/kit/** -text

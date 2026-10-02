@@ -1,13 +1,13 @@
 """REST API (FastAPI).
 
-POST /v1/assessments      multipart: plan, dns[], logs[], repo (zip / tar.gz), config (JSON string)
+POST /v1/assessments      multipart: plan, dns[], logs[], repo (zip / tar.gz), config (JSON string;
+                          config.logs may list several views of one file; config.label names the run)
 GET  /v1/assessments      recent assessments
 GET  /v1/assessments/{id} full evidence record
 GET  /v1/assessments/{id}/report.md
 POST /v1/drift-scans      {"hostnames": [...]}  live read-only DNS/S3 checks (names you own)
 GET  /v1/drift-scans/{id}
 GET  /v1/knowledge        rule set, coverage and source register
-POST /v1/demo/pilot       import the recorded pilot run (pilot/results) when running from a checkout
 GET  /healthz
 GET  /                    web console (static files in retiresafe/web, no third-party requests)
 
@@ -33,7 +33,6 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .. import __version__, ownership
-from ..paths import REPO_ROOT
 from ..config import log_from, parse_as_of, policy_dict, policy_from
 from ..engine.assess import AssessmentInput, run
 from ..knowledge import providers
@@ -47,8 +46,6 @@ MAX_EXTRACT = int(os.environ.get("RETIRESAFE_MAX_EXTRACT_MB", "2048")) * 1024 * 
 MAX_MEMBERS = int(os.environ.get("RETIRESAFE_MAX_ARCHIVE_FILES", "100000"))
 MAX_SCAN_NAMES = 2000
 WEB_DIR = Path(__file__).resolve().parents[1] / "web"
-PILOT_RESULTS = REPO_ROOT / "pilot" / "results"
-PILOT_RUNS = ("before_strict", "before_balanced", "after_strict")
 # The console loads nothing from third parties and runs no inline script or style.
 UI_CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; "
           "connect-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; "
@@ -160,28 +157,7 @@ def healthz() -> dict:
 def knowledge() -> dict:
     return {"rules_version": providers.RULES_VERSION, "fingerprint_catalogue_commit": CATALOGUE_COMMIT,
             "name_bearing_resource_types": sorted(providers.NAME_BEARING), "sources": SOURCES,
-            "owned_domains": ownership.owned_domains(),
-            "pilot_available": all((PILOT_RESULTS / f"{t}.json").is_file() for t in PILOT_RUNS)}
-
-
-@app.post("/v1/demo/pilot", dependencies=[Depends(auth)])
-def import_pilot() -> dict:
-    """Load the recorded pilot assessments (real engine output, see pilot/README.md) into the store.
-
-    Records are stored unchanged; importing twice is a no-op."""
-    out = {}
-    for tag in PILOT_RUNS:
-        f = PILOT_RESULTS / f"{tag}.json"
-        if not f.is_file():
-            raise HTTPException(404, f"pilot results not found ({f.name}); run pilot/scripts/run_pilot.py "
-                                     "from a repository checkout")
-        rec = json.loads(f.read_text(encoding="utf-8"))
-        if rec.get("schema") != "retiresafe.evidence/v1":
-            raise HTTPException(422, f"{f.name} is not a retiresafe.evidence/v1 record")
-        if not store().get_assessment(rec["assessment_id"]):
-            store().put_assessment(rec)
-        out[tag] = rec["assessment_id"]
-    return {"imported": out, "source": "pilot/results"}
+            "owned_domains": ownership.owned_domains()}
 
 
 @app.post("/v1/assessments", dependencies=[Depends(auth)])
@@ -199,13 +175,15 @@ async def create_assessment(plan: UploadFile = File(...), dns: list[UploadFile] 
         for d in dns:
             p = await _save(d, work)
             dns_paths.append((str(p), cfg.get("dns_origins", {}).get(p.name)))
-        log_cfg = {c["filename"]: c for c in cfg.get("logs", [])}
+        log_cfg: dict[str, list[dict]] = {}
+        for c in cfg.get("logs", []):          # one file may have several views (host / path prefix)
+            log_cfg.setdefault(c.get("filename"), []).append(c)
         log_inputs = []
         for lg in logs:
             p = await _save(lg, work)
             if p.name not in log_cfg:
                 raise HTTPException(400, f"config.logs has no entry for uploaded log {p.name}")
-            log_inputs.append(log_from(log_cfg[p.name], str(p)))
+            log_inputs += [log_from(c, str(p)) for c in log_cfg[p.name]]
         repos = {}
         if repo is not None:
             arc = await _save(repo, work)
@@ -218,6 +196,9 @@ async def create_assessment(plan: UploadFile = File(...), dns: list[UploadFile] 
                               cfg.get("migrate_to", {}), None, cfg.get("waivers", []))
         result = run(inp)
         rec = evidence.record(result, policy_dict(policy))
+        label = str(cfg.get("label") or "").strip()[:120]
+        if label:
+            rec["label"] = label
         store().put_assessment(rec)
         return rec
     except ValueError as e:
