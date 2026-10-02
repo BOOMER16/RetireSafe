@@ -29,7 +29,8 @@ def test_console_is_served_with_strict_csp(api):
     csp = r.headers["content-security-policy"]
     assert "script-src 'self'" in csp and "frame-ancestors 'none'" in csp and "unsafe" not in csp
     assert r.headers["x-frame-options"] == "DENY"
-    for asset in ("js/app.js", "js/api.js", "js/util.js", "js/charts.js", "css/app.css", "icon.svg"):
+    for asset in ("js/app.js", "js/api.js", "js/util.js", "js/charts.js", "css/app.css", "icon.svg",
+                  "fonts/archivo-var.woff2", "fonts/jetbrains-mono-400.woff2", "fonts/jetbrains-mono-700.woff2"):
         assert c.get(f"/ui/{asset}").status_code == 200, asset
 
 
@@ -46,6 +47,15 @@ def test_assets_make_no_third_party_requests_and_use_no_inline_code():
             assert 'style="' not in text, f"inline style attribute (blocked by CSP) in {f.name}"
     html = (WEB / "index.html").read_text(encoding="utf-8")
     assert not re.search(r"<script(?![^>]*\bsrc=)[^>]*>", html), "inline <script> would be blocked by CSP"
+
+
+def test_fonts_are_self_hosted_with_licences():
+    css = (WEB / "css" / "app.css").read_text(encoding="utf-8")
+    fonts = re.findall(r'url\("\.\./fonts/([^"]+)"\)', css)
+    assert len(fonts) == 3
+    for f in fonts:
+        assert (WEB / "fonts" / f).is_file(), f
+    assert (WEB / "fonts" / "OFL-Archivo.txt").is_file() and (WEB / "fonts" / "OFL-JetBrainsMono.txt").is_file()
 
 
 def test_rendering_escapes_by_default():

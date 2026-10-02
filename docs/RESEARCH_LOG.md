@@ -77,4 +77,17 @@ Full scorecard: [08_negatives_and_mitigations.md](08_negatives_and_mitigations.m
   * A richer `GET /v1/assessments` listing.
 * **Pilot re-run** with the new fields. Verdicts and gates are identical (`pilot/results/summary.json` is unchanged). Consistency checks: the daily counts sum exactly to `requests` and to `parsed` (3,458,009 lines).
 * **Observation from the new per-day counts:** the combined NASA log has no lines at all on 1995-07-29, 07-30, 07-31 and 08-02. The console shades these days as gaps in logging, not silence. The engine's rate estimate counts them as observed time. That makes λ slightly lower, so D\* comes out slightly longer, which errs on the safe side.
-* **Defect found by browser testing:** the α input combined `step=0.001` with `min=0.0001`, so the default 0.01 failed HTML validation and the form silently refused to submit. Fixed with `step="any"`. The form was then verified end to end in headless Chromium: the real pilot plan, DNS export and app zip gave FAIL with 6 resources, matching the recorded strict run.
+* **Defect found by browser testing:** the α input combined `step=0.001` with `min=0.0001`, so the default 0.01 failed HTML validation and the form silently refused to submit. Fixed with `step="any"`. The form was then verified end to end in headless Chromium: the real pilot plan, DNS export and app zip, with no logs, gave FAIL with 6 resources (1 release, 3 tombstone, 2 not name-bearing). That is identical to `retiresafe assess` on the same inputs. *(Corrected 2026-10-02: an earlier note said this "matched the recorded strict run". It cannot: the recorded run includes the NASA logs. Without logs C4 is unverified, so strict mode keeps the names as tombstones instead of blocking.)*
+
+## 12. Console redesign (2026-10-02)
+* The first console was functional but generic. It was rebuilt as an editorial "case file":
+  * cream paper and ink with a single signal colour, and a light or dark theme
+  * a heavy condensed typeface with numbered sections, hairline rules and stamped verdicts
+* Inspiration came from the Obys Design Books library and the GertiX studio site. Both were blocked by this sandbox's egress policy, so the design worked from published descriptions of them and not from the sites themselves.
+* Fonts are self-hosted, so the strict CSP and the no-third-party-requests rule still hold: Archivo (variable weight and width) and JetBrains Mono, both SIL OFL, fetched from the npm `@fontsource` packages with their licences included.
+* **Usability changes:**
+  * a plain-language "What to do" list on each assessment, built from its verdicts
+  * the takeover chain redrawn as a matrix with each condition named once in the header
+  * plain-language condition names ("Still pointed at", "Still used")
+  * a required-field marker and an "Advanced" fold on the form
+  * a responsive layout checked at 390 px for horizontal overflow

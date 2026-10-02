@@ -78,15 +78,15 @@ export const VERDICT = {
   tombstone: { label: "Tombstone", hint: "keep owning the name, delete the content" },
   release: { label: "Release", hint: "the name can be let go" },
   review: { label: "Review", hint: "evidence is incomplete; a person decides" },
-  not_name_bearing: { label: "Not name-bearing", hint: "deleting it releases no reclaimable name" },
+  not_name_bearing: { label: "No name at risk", hint: "deleting it releases no reclaimable name" },
 };
 export const VERDICT_ORDER = ["block", "review", "tombstone", "release", "not_name_bearing"];
 export const COND = {
-  c1: { short: "Released", long: "C1 · The name is released", q: "Does this change give the name up?" },
-  c2: { short: "Reclaim­able", long: "C2 · Someone else can obtain it", q: "Can another account register the same name?" },
-  c3: { short: "Ref survives", long: "C3 · A reference survives", q: "Does something still point at the name after the change?" },
-  c4: { short: "Consumer", long: "C4 · A consumer remains", q: "Is anyone still sending requests along that reference?" },
-  c5: { short: "Controls permit", long: "C5 · Controls permit it", q: "Would the consumer accept content from a new owner?" },
+  c1: { short: "Released", long: "C1 · The name is given up", q: "Does this change give the name up?" },
+  c2: { short: "Claimable", long: "C2 · Someone else can claim it", q: "Could another account register the same name afterwards?" },
+  c3: { short: "Still pointed at", long: "C3 · A pointer survives", q: "Does a DNS record, config or code line still point at the name?" },
+  c4: { short: "Still used", long: "C4 · Someone still uses it", q: "Is anyone still sending requests along that pointer?" },
+  c5: { short: "Would be trusted", long: "C5 · Nothing would stop it", q: "Would the consumer accept content from a new owner?" },
 };
 export const verdictBadge = (v) => html`<span class="badge v-${v}">${(VERDICT[v] || { label: v }).label}</span>`;
 export const triLabel = (v) => v === "true" ? "TRUE" : v === "false" ? "FALSE" : "UNKNOWN";

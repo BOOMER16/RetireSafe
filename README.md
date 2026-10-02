@@ -39,7 +39,7 @@ Full method, numbers and caveats for each: [`docs/02_testbeds.md`](docs/02_testb
 | ![Consumers in access logs](docs/img/console_traffic.png) | ![Before and after](docs/img/console_compare.png) |
 | **Consumers.** Real NASA traffic per day, with the observed silence against the conservative quarantine D\* and the formula filled in with the numbers. Grey columns are days when the log recorded nothing, which are gaps in logging rather than silence | **Before / after.** The FAIL → PASS transition once RetireSafe's own patches are applied, with input fingerprints showing what changed |
 
-Other pages: upload your own plan, DNS export, repository and logs (**New assessment**); a scoped live **Drift scan**; and **Rules and sources**, the source register. The console is plain HTML, CSS and JavaScript with no build step and no third-party requests. It is served under a strict Content-Security-Policy (no inline script or style, `frame-ancestors 'none'`), and all record text is HTML-escaped before display.
+Other pages: upload your own plan, DNS export, repository and logs (**New assessment**); a scoped live **Drift scan**; and **Rules and sources**, the source register. The console is plain HTML, CSS and JavaScript with no build step and no third-party requests; its fonts (Archivo, JetBrains Mono, SIL OFL) are served locally. It is served under a strict Content-Security-Policy (no inline script or style, `frame-ancestors 'none'`), and all record text is HTML-escaped before display.
 
 ---
 
