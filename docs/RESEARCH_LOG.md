@@ -100,3 +100,7 @@ Full scorecard: [08_negatives_and_mitigations.md](08_negatives_and_mitigations.m
   * The home page is now an operations view: KPIs plus a cross-assessment findings queue with filters, search and CSV export. Cells starting with `= + - @` are quote-prefixed to block formula injection.
   * A command palette, keyboard shortcuts, a CLI reproduction block per assessment, raw JSON per path, and a status bar.
 * **Backend defect found by the new console:** the dashboard's parallel first requests raced to create the SQLite store, and one returned HTTP 500 "database is locked". Fixed with a lock around store creation and a 15 s SQLite busy timeout. The regression test slows `Store.__init__` and counts constructions, so it fails without the fix and passes with it.
+* **Dark minimal (requested):**
+  * The dark theme is now near-pure black with neutral greys; colour is kept for severity only.
+  * The auras are reduced to a faint hint, and white pills, buttons and row fills are replaced by dark surfaces with hairline borders.
+  * KPI frames are neutral, so only the number carries colour, and the chart bars are grey.

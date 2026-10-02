@@ -653,6 +653,76 @@ table.t td:first-child, table.t th:first-child { padding-left: 10px; }
   .statusbar span:nth-child(n+3) { display: none; }
 }
 
+/* ===================== Dark minimal =====================
+   Near-pure black, neutral greys, colour reserved for severity. */
+:root[data-theme="dark"] {
+  --paper: #000;
+  --paper-2: #0b0b0b;
+  --paper-3: #161616;
+  --ink: #e8e8e8;
+  --ink-2: #a3a3a3;
+  --muted: #666;
+  --rule: rgba(255, 255, 255, .07);
+  --rule-strong: rgba(255, 255, 255, .28);
+  --code: #080808;
+  --glass: rgba(14, 14, 14, .62);
+  --glass-strong: rgba(9, 9, 9, .88);
+  --glass-edge: rgba(255, 255, 255, .07);
+  --glass-line: rgba(255, 255, 255, .05);
+  --glass-shadow: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 20px 40px -24px rgba(0, 0, 0, .9);
+  --aura-1: rgba(255, 70, 40, .045);
+  --aura-2: rgba(255, 255, 255, .02);
+  --aura-3: rgba(90, 120, 170, .05);
+  --surface: #121212;
+  --surface-hi: #1c1c1c;
+}
+:root[data-theme="dark"] body::before { opacity: .025; }
+:root[data-theme="dark"] .mast { background: rgba(0, 0, 0, .72); }
+/* no white pills: active and primary states are dark surfaces with a hairline */
+:root[data-theme="dark"] .nav a.on { background: var(--surface-hi); color: var(--ink); box-shadow: inset 0 0 0 1px var(--glass-edge); }
+:root[data-theme="dark"] .nav a.on sup { color: var(--muted); }
+:root[data-theme="dark"] .nav a:hover { background: var(--surface); }
+:root[data-theme="dark"] .btn { border-color: rgba(255, 255, 255, .14); }
+:root[data-theme="dark"] .btn.primary { background: var(--surface-hi); color: var(--ink); border-color: rgba(255, 255, 255, .16); }
+:root[data-theme="dark"] .btn.primary:hover { background: var(--signal); border-color: var(--signal); color: #fff; }
+:root[data-theme="dark"] .btn:not(.primary):not(.ghost):hover { background: var(--surface-hi); color: var(--ink); border-color: rgba(255, 255, 255, .3); }
+:root[data-theme="dark"] .btn.ghost:hover { background: var(--surface); }
+:root[data-theme="dark"] .fbtn.on { background: var(--surface-hi); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1); }
+:root[data-theme="dark"] .fbtn.on b { color: var(--ink); }
+:root[data-theme="dark"] .seg { border-color: rgba(255, 255, 255, .16); }
+:root[data-theme="dark"] .seg label:has(input:checked) { background: var(--surface-hi); color: var(--ink); }
+:root[data-theme="dark"] .tabs a.on { border-bottom-color: var(--ink); }
+/* KPI cards: neutral frames, colour only in the number */
+:root[data-theme="dark"] .kpi, :root[data-theme="dark"] .kpi.bad { border-color: var(--glass-edge); background: var(--glass); }
+/* list rows: dark hover instead of a white fill */
+:root[data-theme="dark"] .irow::before { background: var(--surface); opacity: 1; }
+:root[data-theme="dark"] .irow:hover { color: var(--ink); }
+:root[data-theme="dark"] .irow:hover .muted, :root[data-theme="dark"] .irow:hover .label,
+:root[data-theme="dark"] .irow:hover .idx, :root[data-theme="dark"] .irow:hover .dim { color: var(--ink-2); }
+:root[data-theme="dark"] .irow:hover .badge:not(.v-tombstone) { color: inherit; }
+:root[data-theme="dark"] .irow:hover .v-block { color: var(--signal); }
+:root[data-theme="dark"] .irow:hover .v-release { color: var(--green); }
+:root[data-theme="dark"] .irow:hover .v-review { color: var(--ochre); }
+:root[data-theme="dark"] .irow:hover .v-not_name_bearing { color: var(--muted); }
+:root[data-theme="dark"] .irow:hover .v-tombstone { background: var(--ink); color: #000; border-color: var(--ink); }
+:root[data-theme="dark"] .irow:hover .chip { border-color: var(--glass-edge); color: var(--ink-2); }
+:root[data-theme="dark"] .irow:hover .chip b { color: var(--ink); }
+:root[data-theme="dark"] .irow:hover .gate-word.fail { color: var(--signal); }
+:root[data-theme="dark"] .irow:hover .gate-word.pass { color: var(--green); }
+:root[data-theme="dark"] table.t tr.click:hover td, :root[data-theme="dark"] table.t tr.click:focus td { background: rgba(255, 255, 255, .025); }
+/* palette selection */
+:root[data-theme="dark"] .pal-item.on, :root[data-theme="dark"] .pal-item:hover { background: var(--surface-hi); color: var(--ink); }
+:root[data-theme="dark"] .pal-item.on .hash, :root[data-theme="dark"] .pal-item:hover .hash { color: var(--muted); }
+:root[data-theme="dark"] .overlay { background: rgba(0, 0, 0, .65); }
+/* tags: quieter outline tags; tombstone no longer a white block */
+:root[data-theme="dark"] .v-tombstone { background: transparent; color: var(--ink); border-color: rgba(255, 255, 255, .4); }
+:root[data-theme="dark"] .stamp.v-tombstone { border-color: var(--ink); }
+:root[data-theme="dark"] .toast { background: var(--surface-hi); color: var(--ink); border-color: var(--glass-edge); }
+:root[data-theme="dark"] ::selection { background: #3a3a3a; color: #fff; }
+
+:root[data-theme="dark"] .chart .bar { fill: #8c8c8c; }
+:root[data-theme="dark"] .sw.bar { background: #8c8c8c; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
