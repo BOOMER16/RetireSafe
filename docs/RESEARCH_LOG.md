@@ -91,3 +91,7 @@ Full scorecard: [08_negatives_and_mitigations.md](08_negatives_and_mitigations.m
   * plain-language condition names ("Still pointed at", "Still used")
   * a required-field marker and an "Advanced" fold on the form
   * a responsive layout checked at 390 px for horizontal overflow
+* **Glass layer (requested):**
+  * Frosted panels (`backdrop-filter`, with a solid fallback where unsupported) over three slow-drifting colour auras fixed behind the page.
+  * Applied to the masthead, the verdict ledger, the "What to do" card, the takeover matrix, the inspector, side cards, the form drop zones and submit bar, notices and code blocks.
+  * The auras stop under `prefers-reduced-motion` and are hidden in print.
